@@ -118,6 +118,6 @@ button:hover {
 	fill-opacity: .365;
 }
 
-.leaflet-container:hover .leaflet-interactive {
+.leaflet-container:hover path.leaflet-interactive {
 	visibility: hidden;
 }

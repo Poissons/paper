@@ -117,3 +117,7 @@ button:hover {
 	fill: dodgerblue;
 	fill-opacity: .365;
 }
+
+.leaflet-container:hover .leaflet-interactive {
+	visibility: hidden;
+}

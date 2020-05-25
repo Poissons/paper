@@ -1,5 +1,5 @@
 /* global barGraphPromise L */
-barGraphPromise.then(([dataCollection]) => {
+barGraphPromise.then(([dataCollection, PhylumClassOrderFamilyGenusSpecies]) => {
   // var mymap = L.map("mapid").setView([37.595, 112.069], 2);
   // var myIcon = L.icon({
   //   iconUrl: "leaflet/images/marker-icon-2x.png",
@@ -92,95 +92,42 @@ barGraphPromise.then(([dataCollection]) => {
 
   window.reHighlight = function (nodeNameList, nodeDepth) {
     const dataRedraw = []
-    if (nodeDepth === 0) {
-      dataCollection.forEach(function (data) {
-        dataRedraw.push(data)
-      })
-    } else if (nodeDepth === 1) {
-      dataCollection.forEach(function (data) {
-        if (data.Phylum === nodeNameList[0]) {
-          dataRedraw.push(data)
-        }
-      })
-    } else if (nodeDepth === 2) {
-      dataCollection.forEach(function (data) {
-        if (data.Phylum === nodeNameList[0] && data.Class === nodeNameList[1]) {
-          dataRedraw.push(data)
-        }
-      })
-    } else if (nodeDepth === 3) {
-      dataCollection.forEach(function (data) {
-        if (
-          data.Phylum === nodeNameList[0] &&
-          data.Class === nodeNameList[1] &&
-          data.Order === nodeNameList[2]
-        ) {
-          dataRedraw.push(data)
-        }
-      })
-    } else if (nodeDepth === 4) {
-      dataCollection.forEach(function (data) {
-        if (
-          data.Phylum === nodeNameList[0] &&
-          data.Class === nodeNameList[1] &&
-          data.Order === nodeNameList[2] &&
-          data.Family === nodeNameList[3]
-        ) {
-          dataRedraw.push(data)
-        }
-      })
-    } else if (nodeDepth === 5) {
-      dataCollection.forEach(function (data) {
-        if (
-          data.Phylum === nodeNameList[0] &&
-          data.Class === nodeNameList[1] &&
-          data.Order === nodeNameList[2] &&
-          data.Family === nodeNameList[3] &&
-          data.Genus === nodeNameList[4]
-        ) {
-          dataRedraw.push(data)
-        }
-      })
-    } else {
-      dataCollection.forEach(function (data) {
-        if (
-          data.Phylum === nodeNameList[0] &&
-          data.Class === nodeNameList[1] &&
-          data.Order === nodeNameList[2] &&
-          data.Family === nodeNameList[3] &&
-          data.Genus === nodeNameList[4] &&
-          data.Species === nodeNameList[5]
-        ) {
-          dataRedraw.push(data)
-        }
-      })
+    let node = PhylumClassOrderFamilyGenusSpecies
+    for (const key of nodeNameList) {
+      node = node.get(key)
     }
+    // eslint-disable-next-line no-extra-semi
+    ;(function add(node) {
+      if (node instanceof Set) {
+        dataRedraw.push(...node)
+      } else {
+        for (const child of node.values()) {
+          add(child)
+        }
+      }
+    })(node)
     // mymap.removeLayer(this.layer);
-    reHelightCall1(dataRedraw)
-    reHelightCall2(dataRedraw)
+    reHelightCall(dataRedraw)
   }
 
   const myGroup1 = L.layerGroup().addTo(map1)
   const myGroup2 = L.layerGroup().addTo(map2)
 
-  reHelightCall1(dataCollection)
-  reHelightCall2(dataCollection)
+  reHelightCall(dataCollection)
 
-  function reHelightCall1(dataCollection) {
-    // for(let item of dataCollection){
-    //     let lng=Number(item["modern_longitude"]);
-    //     let lat=Number(item["modern_latitude"]);
-    //     let latlng = L.latLng(lat, lng);
-    //     L.marker(latlng).addTo(mymap);
-    //
-    //       }
-    myGroup1.clearLayers()
-    dataCollection.forEach(function (d) {
-      const lng = d.modern_longitude
-      const lat = d.modern_latitude
-      L.marker([lat, lng]).addTo(myGroup1)
-    })
-    myGroup1.addTo(map1)
+  function reHelightCall(dataCollection) {
+    for (const [myGroup, map] of [
+      [myGroup1, map1],
+      [myGroup2, map2],
+    ]) {
+      myGroup.clearLayers()
+      dataCollection.forEach(function (d) {
+        const lng = d.modern_longitude
+        const lat = d.modern_latitude
+        L.marker([lat, lng]).addTo(myGroup)
+      })
+      myGroup1.addTo(map)
+    }
   }
 
   // var TILE_SIZE = 256
@@ -213,14 +160,4 @@ barGraphPromise.then(([dataCollection]) => {
   //     Y: p.Y - start.Y,
   //   }
   // }
-
-  function reHelightCall2(dataCollection) {
-    myGroup2.clearLayers()
-    dataCollection.forEach(function (d) {
-      const lng = d.ancient_longitude
-      const lat = d.ancient_latitude
-      L.marker([lat, lng]).addTo(myGroup2)
-    })
-    myGroup2.addTo(map2)
-  }
 })

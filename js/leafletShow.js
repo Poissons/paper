@@ -112,23 +112,32 @@ barGraphPromise.then(([dataCollection, PhylumClassOrderFamilyGenusSpecies]) => {
 
   const myGroup1 = L.layerGroup().addTo(map1)
   const myGroup2 = L.layerGroup().addTo(map2)
-
-  reHelightCall(dataCollection)
+  const icon = L.icon({
+    iconUrl: './lib/leaflet/leaflet/images/marker-icon.png',
+    iconSize: [25, 41],
+    iconAnchor: [13, 41],
+    className: 'my-leaflet-marker',
+  })
+  const leafletConfig = {
+    icon,
+    keyboard: false,
+    interactive: false,
+  }
 
   function reHelightCall(dataCollection) {
-    for (const [myGroup, map] of [
-      [myGroup1, map1],
-      [myGroup2, map2],
-    ]) {
-      myGroup.clearLayers()
-      dataCollection.forEach(function (d) {
-        const lng = d.modern_longitude
-        const lat = d.modern_latitude
-        L.marker([lat, lng]).addTo(myGroup)
-      })
-      myGroup1.addTo(map)
-    }
+    requestAnimationFrame(() => {
+      myGroup1.clearLayers()
+      myGroup2.clearLayers()
+      for (const data of dataCollection) {
+        L.marker([data.modern_latitude, data.modern_longitude], leafletConfig).addTo(myGroup1)
+        L.marker([data.ancient_latitude, data.ancient_longitude], leafletConfig).addTo(myGroup2)
+      }
+      myGroup1.addTo(map1)
+      myGroup2.addTo(map2)
+    })
   }
+
+  reHelightCall(dataCollection)
 
   // var TILE_SIZE = 256
   // function project(lat, lng, zoom) {

@@ -121,3 +121,12 @@ button:hover {
 .leaflet-container:hover path.leaflet-interactive {
 	visibility: hidden;
 }
+
+.leaflet-marker-icon.leaflet-div-icon.light,
+.leaflet-pane.leaflet-shadow-pane {
+	display: none;
+}
+
+.my-leaflet-marker {
+	pointer-events: none;
+}

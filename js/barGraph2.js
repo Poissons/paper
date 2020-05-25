@@ -31,9 +31,8 @@ window.dataPromise = d3.csv('./data/data_combined_sorted.csv').then((dataCollect
     }
     if (!lastLane) lane++
     data.lane = lane
-    node.add(data.Species)
+    node.add(data)
   }
-  console.log(PhylumClassOrderFamilyGenusSpecies)
   return [dataCollection, PhylumClassOrderFamilyGenusSpecies]
 })
 window.barGraphPromise = dataPromise.then(([earlyData, PhylumClassOrderFamilyGenusSpecies]) => {

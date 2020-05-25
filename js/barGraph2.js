@@ -1,5 +1,5 @@
-/* globals d3 barGraphPromise */
-window.barGraphPromise = d3.csv('./data/data_combined_sorted.csv').then((dataCollection) => {
+/* globals d3 dataPromise */
+window.dataPromise = d3.csv('./data/data_combined_sorted.csv').then((dataCollection) => {
   const NUMERIC_KEYS = [
     'modern_longitude',
     'modern_latitude',
@@ -36,7 +36,7 @@ window.barGraphPromise = d3.csv('./data/data_combined_sorted.csv').then((dataCol
   console.log(PhylumClassOrderFamilyGenusSpecies)
   return [dataCollection, PhylumClassOrderFamilyGenusSpecies]
 })
-barGraphPromise.then(([earlyData, PhylumClassOrderFamilyGenusSpecies]) => {
+window.barGraphPromise = dataPromise.then(([earlyData, PhylumClassOrderFamilyGenusSpecies]) => {
   const padding = { top: 20, right: 40, bottom: 20, left: 30 }
   const width = 1500
   const height = 300
@@ -56,7 +56,20 @@ barGraphPromise.then(([earlyData, PhylumClassOrderFamilyGenusSpecies]) => {
 
   // 准备种数据
   const newData = new Array(maxYear - minYear).fill(0)
-  let newDataSum = 0
+  const datum = {
+    all: {
+      show: true,
+      data: newData,
+      dataSum: 0,
+    },
+  }
+  for (const phylumName of PhylumClassOrderFamilyGenusSpecies.keys()) {
+    datum[phylumName] = {
+      show: false,
+      data: new Array(maxYear - minYear).fill(0),
+      dataSum: 0,
+    }
+  }
   let lastDataLane = -1
   let lastDataMax = 0
   for (const data of earlyData) {
@@ -67,10 +80,17 @@ barGraphPromise.then(([earlyData, PhylumClassOrderFamilyGenusSpecies]) => {
     const min = Math.max(data.start_year - minYear, lastDataMax)
     const max = Math.max(data.end_year - minYear, lastDataMax)
     lastDataMax = max
-    newDataSum += max - min
+    datum[data.Phylum].dataSum += max - min
+    const arr = datum[data.Phylum].data
     for (let i = min; i < max; i++) {
-      newData[i]++
+      arr[i]++
     }
+  }
+  for (const phylumName of PhylumClassOrderFamilyGenusSpecies.keys()) {
+    for (const [key, val] of datum[phylumName].data.entries()) {
+      newData[key] += val
+    }
+    datum.all.dataSum += datum[phylumName].dataSum
   }
 
   function kde(kernel, thresholds, data, dataSum, offset) {
@@ -133,21 +153,19 @@ barGraphPromise.then(([earlyData, PhylumClassOrderFamilyGenusSpecies]) => {
 
   const text = document.getElementById('text')
   const range = document.getElementById('range')
-  myDrawFunction(range.value)
-  range.addEventListener(
-    'input',
-    (e) => {
-      const p = d3.select('#thisPath')
-      p.remove()
-      myDrawFunction(range.value)
-    },
-    false,
-  )
+  const redraw = () => {
+    text.value = Math.round(range.value * 1000) / 1000 + ' bandwidth'
+    d3.select('.thisPath').remove()
+    for (const [key, info] of Object.entries(datum)) {
+      if (!info.show) continue
+      drawLine(key, info)
+    }
+  }
+  range.addEventListener('input', redraw, false)
 
-  function myDrawFunction(bandwidth) {
-    text.value = Math.round(bandwidth * 1000) / 1000 + ' bandwidth'
-    // 需要能调整bandwidth
-    const density = kde(epanechnikov(bandwidth), thresholds, newData, newDataSum, minYear)
+  function drawLine(key, info) {
+    const bandwidth = range.value
+    const density = kde(epanechnikov(bandwidth), thresholds, info.data, info.dataSum, minYear)
 
     const line = d3
       .line()
@@ -158,11 +176,32 @@ barGraphPromise.then(([earlyData, PhylumClassOrderFamilyGenusSpecies]) => {
     svg
       .append('path')
       .datum(density)
-      .attr('id', 'thisPath')
+      .attr('class', 'thisPath path-' + key.toLowerCase())
       .attr('fill', 'none')
       .attr('stroke', '#000')
       .attr('stroke-width', 1.5)
       .attr('stroke-linejoin', 'round')
       .attr('d', line)
   }
+  for (const [key, info] of Object.entries(datum)) {
+    let show = false
+    Object.defineProperty(info, 'show', {
+      get() {
+        return show
+      },
+      set(newShow) {
+        if (show === newShow) return
+        show = newShow
+        if (newShow) {
+          drawLine(key, info)
+        } else {
+          d3.select('.thisPath.path-' + key.toLowerCase()).remove()
+        }
+      },
+      enumerable: true,
+      configurable: true,
+    })
+  }
+  datum.all.show = true
+  return [earlyData, PhylumClassOrderFamilyGenusSpecies, datum]
 })

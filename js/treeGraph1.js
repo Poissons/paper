@@ -1,5 +1,5 @@
 /* global barGraphPromise d3 reHighlight */
-barGraphPromise.then(([finalData, PhylumClassOrderFamilyGenusSpecies]) => {
+barGraphPromise.then(([finalData, PhylumClassOrderFamilyGenusSpecies, datum]) => {
   // 第一部分：画树
   // 处理数据为正确格式
   // 首先得到全部属的名字
@@ -89,31 +89,53 @@ barGraphPromise.then(([finalData, PhylumClassOrderFamilyGenusSpecies]) => {
       // .tween("resize", window.ResizeObserver ? null : () => () => svg1.dispatch("toggle"));
 
       const node = gNode.selectAll('g').data(nodes, (d) => d.id)
-
+      const handleClick = (d) => {
+        d.children = d.children ? null : d._children
+        update(d)
+        if (supressRehighlight) return
+        if (status === 1) {
+          if (d.parent) {
+            let nodeNameList = []
+            let node = d
+            const nodeDepth = d.depth
+            for (let i = 0; i < nodeDepth; i++) {
+              nodeNameList.push(node.data.name)
+              node = node.parent
+            }
+            nodeNameList = nodeNameList.reverse()
+            reHighlight(nodeNameList, nodeDepth)
+          } else {
+            reHighlight([], 0)
+          }
+        }
+      }
+      const handleDblClick = (d) => {
+        datum[d.data.name].show = !datum[d.data.name].show
+      }
+      let timer = 0
+      let lastNode = null
       const nodeEnter = node
         .enter()
         .append('g')
         .attr('transform', (d) => `translate(${source.y0},${source.x0})`)
         .attr('fill-opacity', 0)
         .attr('stroke-opacity', 0)
-        .on('click', (d) => {
-          d.children = d.children ? null : d._children
-          update(d)
-          if (supressRehighlight) return
-          if (status === 1) {
-            if (d.parent) {
-              let nodeNameList = []
-              let node = d
-              const nodeDepth = d.depth
-              for (let i = 0; i < nodeDepth; i++) {
-                nodeNameList.push(node.data.name)
-                node = node.parent
-              }
-              nodeNameList = nodeNameList.reverse()
-              reHighlight(nodeNameList, nodeDepth)
+        .on('click', (node) => {
+          if (node.depth === 1) {
+            if (node === lastNode) {
+              lastNode = null
+              if (timer) clearTimeout(timer)
+              handleDblClick(node)
             } else {
-              reHighlight([], 0)
+              lastNode = node
+              timer = setTimeout(() => {
+                timer = 0
+                lastNode = null
+                handleClick(node)
+              }, 300)
             }
+          } else {
+            handleClick(node)
           }
         })
 

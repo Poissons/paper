@@ -1,5 +1,5 @@
-/* global barGraphPromise L */
-barGraphPromise.then(([dataCollection, PhylumClassOrderFamilyGenusSpecies]) => {
+/* global dataPromise L */
+dataPromise.then(([dataCollection, PhylumClassOrderFamilyGenusSpecies]) => {
   // var mymap = L.map("mapid").setView([37.595, 112.069], 2);
   // var myIcon = L.icon({
   //   iconUrl: "leaflet/images/marker-icon-2x.png",

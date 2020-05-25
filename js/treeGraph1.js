@@ -1,110 +1,8 @@
 /* global barGraphPromise d3 reHighlight */
-barGraphPromise.then(([earlyT, midT, lateT, earlyJ, midJ, lateJ, earlyK, lateK]) => {
+barGraphPromise.then(([finalData, PhylumClassOrderFamilyGenusSpecies]) => {
   // 第一部分：画树
   // 处理数据为正确格式
   // 首先得到全部属的名字
-  const dataCollection = earlyT
-    .concat(midT)
-    .concat(lateT)
-    .concat(earlyJ)
-    .concat(midJ)
-    .concat(lateJ)
-    .concat(earlyK)
-    .concat(lateK)
-
-  dataCollection.sort(function (data1, data2) {
-    if (data1.Phylum === 'P' && data2.Phylum !== 'P') {
-      return 1
-    } else if (data1.Phylum !== 'P' && data2.Phylum === 'P') {
-      return -1
-    } else if (data1.Phylum < data2.Phylum) {
-      return -1
-    } else if (data1.Phylum > data2.Phylum) {
-      return 1
-    } else if (data1.Class === 'C' && data2.Class !== 'C') {
-      return 1
-    } else if (data1.Class !== 'C' && data2.Class === 'C') {
-      return -1
-    } else if (data1.Class < data2.Class) {
-      return -1
-    } else if (data1.Class > data2.Class) {
-      return 1
-    } else if (data1.Order === 'O' && data2.Order !== 'O') {
-      return 1
-    } else if (data1.Order !== 'O' && data2.Order === 'O') {
-      return -1
-    } else if (data1.Order < data2.Order) {
-      return -1
-    } else if (data1.Order > data2.Order) {
-      return 1
-    } else if (data1.Family === 'F' && data2.Family !== 'F') {
-      return 1
-    } else if (data1.Family !== 'F' && data2.Family === 'F') {
-      return -1
-    } else if (data1.Family < data2.Family) {
-      return -1
-    } else if (data1.Family > data2.Family) {
-      return 1
-    } else if (data1.Genus === 'G' && data2.Genus !== 'G') {
-      return 1
-    } else if (data1.Genus !== 'G' && data2.Genus === 'G') {
-      return -1
-    } else if (data1.Genus < data2.Genus) {
-      return -1
-    } else if (data1.Genus > data2.Genus) {
-      return 1
-    } else if (data1.Species === 'S' && data2.Species !== 'S') {
-      return 1
-    } else if (data1.Species !== 'S' && data2.Species === 'S') {
-      return -1
-    } else {
-      return data1.Species < data2.Species ? -1 : data1.Species > data2.Species ? 1 : 0
-    }
-  })
-
-  const PhylumClassOrderFamilyGenusSpecies = new Map()
-  for (const data of Object.values(dataCollection)) {
-    let map1
-    if (PhylumClassOrderFamilyGenusSpecies.has(data.Phylum)) {
-      map1 = PhylumClassOrderFamilyGenusSpecies.get(data.Phylum)
-    } else {
-      map1 = new Map()
-      PhylumClassOrderFamilyGenusSpecies.set(data.Phylum, map1)
-    }
-
-    let map2
-    if (map1.has(data.Class)) {
-      map2 = map1.get(data.Class)
-    } else {
-      map2 = new Map()
-      map1.set(data.Class, map2)
-    }
-
-    let map3
-    if (map2.has(data.Order)) {
-      map3 = map2.get(data.Order)
-    } else {
-      map3 = new Map()
-      map2.set(data.Order, map3)
-    }
-
-    let map4
-    if (map3.has(data.Family)) {
-      map4 = map3.get(data.Family)
-    } else {
-      map4 = new Map()
-      map3.set(data.Family, map4)
-    }
-
-    let set
-    if (map4.has(data.Genus)) {
-      set = map4.get(data.Genus)
-    } else {
-      set = new Set()
-      map4.set(data.Genus, set)
-    }
-    set.add(data.Species)
-  }
 
   // 画出动态图
 
@@ -126,7 +24,6 @@ barGraphPromise.then(([earlyT, midT, lateT, earlyJ, midJ, lateJ, earlyK, lateK])
       children: transform(childNode),
     }))
   }
-
   const myDict = {}
   myDict.name = 'all'
   myDict.children = transform(PhylumClassOrderFamilyGenusSpecies)
@@ -205,43 +102,14 @@ barGraphPromise.then(([earlyT, midT, lateT, earlyJ, midJ, lateJ, earlyK, lateK])
           if (supressRehighlight) return
           if (status === 1) {
             if (d.parent) {
-              const nodeNameList = []
-
+              let nodeNameList = []
+              let node = d
               const nodeDepth = d.depth
-              if (nodeDepth === 1) {
-                const nodeNameP = d.data.name
-                nodeNameList.push(nodeNameP)
-              } else if (nodeDepth === 2) {
-                const nodeNameC = d.data.name
-                const nodeNameP = d.parent.data.name
-                nodeNameList.push(nodeNameP, nodeNameC)
-              } else if (nodeDepth === 3) {
-                const nodeNameO = d.data.name
-                const nodeNameC = d.parent.data.name
-                const nodeNameP = d.parent.parent.data.name
-                nodeNameList.push(nodeNameP, nodeNameC, nodeNameO)
-              } else if (nodeDepth === 4) {
-                const nodeNameF = d.data.name
-                const nodeNameO = d.parent.data.name
-                const nodeNameC = d.parent.parent.data.name
-                const nodeNameP = d.parent.parent.parent.data.name
-                nodeNameList.push(nodeNameP, nodeNameC, nodeNameO, nodeNameF)
-              } else if (nodeDepth === 5) {
-                const nodeNameG = d.data.name
-                const nodeNameF = d.parent.data.name
-                const nodeNameO = d.parent.parent.data.name
-                const nodeNameC = d.parent.parent.parent.data.name
-                const nodeNameP = d.parent.parent.parent.parent.data.name
-                nodeNameList.push(nodeNameP, nodeNameC, nodeNameO, nodeNameF, nodeNameG)
-              } else {
-                const nodeNameS = d.data.name
-                const nodeNameG = d.parent.data.name
-                const nodeNameF = d.parent.parent.data.name
-                const nodeNameO = d.parent.parent.parent.data.name
-                const nodeNameC = d.parent.parent.parent.parent.data.name
-                const nodeNameP = d.parent.parent.parent.parent.parent.data.name
-                nodeNameList.push(nodeNameP, nodeNameC, nodeNameO, nodeNameF, nodeNameG, nodeNameS)
+              for (let i = 0; i < nodeDepth; i++) {
+                nodeNameList.push(node.data.name)
+                node = node.parent
               }
+              nodeNameList = nodeNameList.reverse()
               reHighlight(nodeNameList, nodeDepth)
             } else {
               reHighlight([], 0)
@@ -366,61 +234,12 @@ barGraphPromise.then(([earlyT, midT, lateT, earlyJ, midJ, lateJ, earlyK, lateK])
   document.getElementById('tree').appendChild(chart)
 
   // 第二部分，画动态timeline图
-  const earlyData = dataCollection.map((d) => {
-    return {
-      ...d,
-      start_year: +d.start_year,
-      end_year: +d.end_year,
-    }
-  })
-
-  const newEarlyData = []
-  let giveLane = 0
-  PhylumClassOrderFamilyGenusSpecies.forEach(function (value1, key1) {
-    value1.forEach(function (value2, key2) {
-      value2.forEach(function (value3, key3) {
-        value3.forEach(function (value4, key4) {
-          value4.forEach(function (value5, key5) {
-            value5.forEach(function (value) {
-              earlyData.forEach(function (record) {
-                if (
-                  record.Phylum === key1 &&
-                  record.Class === key2 &&
-                  record.Order === key3 &&
-                  record.Family === key4 &&
-                  record.Genus === key5 &&
-                  record.Species === value
-                ) {
-                  record.lane = giveLane
-                  newEarlyData.push(record)
-                }
-              })
-              giveLane = giveLane + 1
-            })
-          })
-        })
-      })
-    })
-  })
-
-  const newEarlyCSVSpeciesName = new Set()
-  newEarlyData.forEach(function (data) {
-    newEarlyCSVSpeciesName.add(data.Species)
-  })
 
   const lanes = []
-  newEarlyCSVSpeciesName.forEach(function (data) {
-    lanes.push(data)
-  })
-
-  const laneLength = lanes.length
-
-  const finalData = newEarlyData.map((d) => {
-    return {
-      ...d,
-      lane: +d.lane,
-    }
-  })
+  const laneLength = finalData[finalData.length - 1].lane + 1
+  for (let i = 0; i < laneLength; i++) {
+    lanes.push(i)
+  }
 
   const timeBegin = d3.min(finalData, (d) => d.start_year)
   const timeEnd = d3.max(finalData, (d) => d.end_year)

@@ -1,63 +1,5 @@
 /* global barGraphPromise L */
-barGraphPromise.then(([earlyT, midT, lateT, earlyJ, midJ, lateJ, earlyK, lateK]) => {
-  const dataCollection = earlyT
-    .concat(midT)
-    .concat(lateT)
-    .concat(earlyJ)
-    .concat(midJ)
-    .concat(lateJ)
-    .concat(earlyK)
-    .concat(lateK)
-  dataCollection.sort(function (data1, data2) {
-    if (data1.Phylum === 'P' && data2.Phylum !== 'P') {
-      return 1
-    } else if (data1.Phylum !== 'P' && data2.Phylum === 'P') {
-      return -1
-    } else if (data1.Phylum < data2.Phylum) {
-      return -1
-    } else if (data1.Phylum > data2.Phylum) {
-      return 1
-    } else if (data1.Class === 'C' && data2.Class !== 'C') {
-      return 1
-    } else if (data1.Class !== 'C' && data2.Class === 'C') {
-      return -1
-    } else if (data1.Class < data2.Class) {
-      return -1
-    } else if (data1.Class > data2.Class) {
-      return 1
-    } else if (data1.Order === 'O' && data2.Order !== 'O') {
-      return 1
-    } else if (data1.Order !== 'O' && data2.Order === 'O') {
-      return -1
-    } else if (data1.Order < data2.Order) {
-      return -1
-    } else if (data1.Order > data2.Order) {
-      return 1
-    } else if (data1.Family === 'F' && data2.Family !== 'F') {
-      return 1
-    } else if (data1.Family !== 'F' && data2.Family === 'F') {
-      return -1
-    } else if (data1.Family < data2.Family) {
-      return -1
-    } else if (data1.Family > data2.Family) {
-      return 1
-    } else if (data1.Genus === 'G' && data2.Genus !== 'G') {
-      return 1
-    } else if (data1.Genus !== 'G' && data2.Genus === 'G') {
-      return -1
-    } else if (data1.Genus < data2.Genus) {
-      return -1
-    } else if (data1.Genus > data2.Genus) {
-      return 1
-    } else if (data1.Species === 'S' && data2.Species !== 'S') {
-      return 1
-    } else if (data1.Species !== 'S' && data2.Species === 'S') {
-      return -1
-    } else {
-      return data1.Species < data2.Species ? -1 : data1.Species > data2.Species ? 1 : 0
-    }
-  })
-
+barGraphPromise.then(([dataCollection]) => {
   // var mymap = L.map("mapid").setView([37.595, 112.069], 2);
   // var myIcon = L.icon({
   //   iconUrl: "leaflet/images/marker-icon-2x.png",
@@ -149,6 +91,7 @@ barGraphPromise.then(([earlyT, midT, lateT, earlyJ, midJ, lateJ, earlyK, lateK])
   map2.sync(map1, { syncCursor: true })
 
   window.reHighlight = function (nodeNameList, nodeDepth) {
+    return
     const dataRedraw = []
     if (nodeDepth === 0) {
       dataCollection.forEach(function (data) {
@@ -225,6 +168,7 @@ barGraphPromise.then(([earlyT, midT, lateT, earlyJ, midJ, lateJ, earlyK, lateK])
   reHelightCall2(dataCollection)
 
   function reHelightCall1(dataCollection) {
+    return
     // for(let item of dataCollection){
     //     let lng=Number(item["modern_longitude"]);
     //     let lat=Number(item["modern_latitude"]);
@@ -234,8 +178,8 @@ barGraphPromise.then(([earlyT, midT, lateT, earlyJ, midJ, lateJ, earlyK, lateK])
     //       }
     myGroup1.clearLayers()
     dataCollection.forEach(function (d) {
-      const lng = +d.modern_longitude
-      const lat = +d.modern_latitude
+      const lng = d.modern_longitude
+      const lat = d.modern_latitude
       L.marker([lat, lng]).addTo(myGroup1)
     })
     myGroup1.addTo(map1)
@@ -273,10 +217,11 @@ barGraphPromise.then(([earlyT, midT, lateT, earlyJ, midJ, lateJ, earlyK, lateK])
   // }
 
   function reHelightCall2(dataCollection) {
+    return
     myGroup2.clearLayers()
     dataCollection.forEach(function (d) {
-      const lng = +d.ancient_longitude
-      const lat = +d.ancient_latitude
+      const lng = d.ancient_longitude
+      const lat = d.ancient_latitude
       L.marker([lat, lng]).addTo(myGroup2)
     })
     myGroup2.addTo(map2)

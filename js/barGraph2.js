@@ -57,15 +57,13 @@ barGraphPromise.then(([earlyData, PhylumClassOrderFamilyGenusSpecies]) => {
   // 准备种数据
   const newData = new Array(maxYear - minYear + 1).fill(0)
   let newDataSum = 0
-  let lastData = {
-    lane: -1,
-  }
+  let lastDataLane = -1
   let lastDataMax = 0
   for (const data of earlyData) {
-    if (lastData.lane !== data.lane) {
+    if (lastDataLane !== data.lane) {
       lastDataMax = 0
+      lastDataLane = data.lane
     }
-    lastData = data
     const max = data.end_year - minYear
     if (max <= lastDataMax) continue
     const min = Math.max(data.start_year - minYear, lastDataMax)

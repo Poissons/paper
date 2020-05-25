@@ -85,11 +85,131 @@ window.reHighlightPromise = dataPromise.then(
     //   map2.setView([10, 0], 1);
 
     var map2 = L.map('map2').setView([10, 0], 1)
-    var imageUrl = 'img/Map_200.jpg'
-    L.imageOverlay(imageUrl, imageBounds).addTo(map2)
+    var imageUrl2 = 'img/Map21a LtK Turonian_090.jpg'
+    L.imageOverlay(imageUrl2, imageBounds).addTo(map2)
+
+
+     var map3 = L.map('map3').setView([10, 0], 1)
+    var imageUrl3 = 'img/Map27a EK Early Albian_120.jpg'
+    L.imageOverlay(imageUrl3, imageBounds).addTo(map3)
+
+
+      var map4 = L.map('map4').setView([10, 0], 1)
+    var imageUrl4 = 'img/Map34a LtJ Kimmeridgian_155.jpg'
+    L.imageOverlay(imageUrl4, imageBounds).addTo(map4)
+
+
+      var map5 = L.map('map5').setView([10, 0], 1)
+    var imageUrl5 = 'img/Map38a MJ Aalenian_175.jpg'
+    L.imageOverlay(imageUrl5, imageBounds).addTo(map5)
+
+
+      var map6 = L.map('map6').setView([10, 0], 1)
+    var imageUrl6 = 'img/Map42a EJ Hettangian_195.jpg'
+    L.imageOverlay(imageUrl6, imageBounds).addTo(map6)
+
+
+      var map7 = L.map('map7').setView([10, 0], 1)
+    var imageUrl7 = 'img/Map44a LtTr Norian_210.jpg'
+    L.imageOverlay(imageUrl7, imageBounds).addTo(map7)
+
+      var map8 = L.map('map8').setView([10, 0], 1)
+    var imageUrl8 = 'img/Map47a MTr Anisian_240.jpg'
+    L.imageOverlay(imageUrl8, imageBounds).addTo(map8)
+
+
+      var map9 = L.map('map9').setView([10, 0], 1)
+    var imageUrl9 = 'img/Map48a ETr Induan-Olenekian_245.jpg'
+    L.imageOverlay(imageUrl9, imageBounds).addTo(map9)
+
 
     map1.sync(map2, { syncCursor: true })
+      map1.sync(map3, { syncCursor: true })
+      map1.sync(map4, { syncCursor: true })
+      map1.sync(map5, { syncCursor: true })
+      map1.sync(map6, { syncCursor: true })
+      map1.sync(map7, { syncCursor: true })
+      map1.sync(map8, { syncCursor: true })
+      map1.sync(map9, { syncCursor: true })
+
     map2.sync(map1, { syncCursor: true })
+       map2.sync(map3, { syncCursor: true })
+       map2.sync(map4, { syncCursor: true })
+       map2.sync(map5, { syncCursor: true })
+       map2.sync(map6, { syncCursor: true })
+       map2.sync(map7, { syncCursor: true })
+       map2.sync(map8, { syncCursor: true })
+       map2.sync(map9, { syncCursor: true })
+
+
+       map3.sync(map1, { syncCursor: true })
+       map3.sync(map2, { syncCursor: true })
+       map3.sync(map4, { syncCursor: true })
+       map3.sync(map5, { syncCursor: true })
+       map3.sync(map6, { syncCursor: true })
+       map3.sync(map7, { syncCursor: true })
+       map3.sync(map8, { syncCursor: true })
+       map3.sync(map9, { syncCursor: true })
+
+
+       map4.sync(map1, { syncCursor: true })
+       map4.sync(map2, { syncCursor: true })
+       map4.sync(map3, { syncCursor: true })
+       map4.sync(map5, { syncCursor: true })
+       map4.sync(map6, { syncCursor: true })
+       map4.sync(map7, { syncCursor: true })
+       map4.sync(map8, { syncCursor: true })
+       map4.sync(map9, { syncCursor: true })
+
+
+       map5.sync(map1, { syncCursor: true })
+       map5.sync(map2, { syncCursor: true })
+       map5.sync(map3, { syncCursor: true })
+       map5.sync(map4, { syncCursor: true })
+       map5.sync(map6, { syncCursor: true })
+       map5.sync(map7, { syncCursor: true })
+       map5.sync(map8, { syncCursor: true })
+       map5.sync(map9, { syncCursor: true })
+
+
+       map6.sync(map1, { syncCursor: true })
+       map6.sync(map2, { syncCursor: true })
+       map6.sync(map3, { syncCursor: true })
+       map6.sync(map4, { syncCursor: true })
+       map6.sync(map5, { syncCursor: true })
+       map6.sync(map7, { syncCursor: true })
+       map6.sync(map8, { syncCursor: true })
+       map6.sync(map9,{ syncCursor: true })
+
+
+       map7.sync(map1, { syncCursor: true })
+       map7.sync(map2, { syncCursor: true })
+       map7.sync(map3, { syncCursor: true })
+       map7.sync(map4, { syncCursor: true })
+       map7.sync(map5, { syncCursor: true })
+       map7.sync(map6, { syncCursor: true })
+       map7.sync(map8, { syncCursor: true })
+       map7.sync(map9,{ syncCursor: true })
+
+
+       map8.sync(map1, { syncCursor: true })
+       map8.sync(map2, { syncCursor: true })
+       map8.sync(map3, { syncCursor: true })
+       map8.sync(map4, { syncCursor: true })
+       map8.sync(map5, { syncCursor: true })
+       map8.sync(map6, { syncCursor: true })
+       map8.sync(map7, { syncCursor: true })
+       map8.sync(map9,{ syncCursor: true })
+
+
+       map9.sync(map1, { syncCursor: true })
+       map9.sync(map2, { syncCursor: true })
+       map9.sync(map3, { syncCursor: true })
+       map9.sync(map4, { syncCursor: true })
+       map9.sync(map5, { syncCursor: true })
+       map9.sync(map6, { syncCursor: true })
+       map9.sync(map7, { syncCursor: true })
+       map9.sync(map8,{ syncCursor: true })
 
     function reHighlight(nodeNameList, nodeDepth) {
       const dataRedraw = []
@@ -113,6 +233,15 @@ window.reHighlightPromise = dataPromise.then(
 
     const myGroup1 = L.layerGroup().addTo(map1)
     const myGroup2 = L.layerGroup().addTo(map2)
+    const myGroup3 = L.layerGroup().addTo(map3)
+    const myGroup4 = L.layerGroup().addTo(map4)
+    const myGroup5 = L.layerGroup().addTo(map5)
+    const myGroup6 = L.layerGroup().addTo(map6)
+    const myGroup7 = L.layerGroup().addTo(map7)
+    const myGroup8 = L.layerGroup().addTo(map8)
+    const myGroup9 = L.layerGroup().addTo(map9)
+
+
     const icon = L.icon({
       iconUrl: './lib/leaflet/leaflet/images/marker-icon.png',
       iconSize: [25, 41],
@@ -129,12 +258,33 @@ window.reHighlightPromise = dataPromise.then(
       requestAnimationFrame(() => {
         myGroup1.clearLayers()
         myGroup2.clearLayers()
+        myGroup3.clearLayers()
+        myGroup4.clearLayers()
+        myGroup5.clearLayers()
+        myGroup6.clearLayers()
+        myGroup7.clearLayers()
+        myGroup8.clearLayers()
+        myGroup9.clearLayers()
         for (const data of dataCollection) {
           L.marker([data.modern_latitude, data.modern_longitude], leafletConfig).addTo(myGroup1)
           L.marker([data.ancient_latitude, data.ancient_longitude], leafletConfig).addTo(myGroup2)
+          L.marker([data.ancient_latitude, data.ancient_longitude], leafletConfig).addTo(myGroup3)
+          L.marker([data.ancient_latitude, data.ancient_longitude], leafletConfig).addTo(myGroup4)
+          L.marker([data.ancient_latitude, data.ancient_longitude], leafletConfig).addTo(myGroup5)
+          L.marker([data.ancient_latitude, data.ancient_longitude], leafletConfig).addTo(myGroup6)
+          L.marker([data.ancient_latitude, data.ancient_longitude], leafletConfig).addTo(myGroup7)
+          L.marker([data.ancient_latitude, data.ancient_longitude], leafletConfig).addTo(myGroup8)
+          L.marker([data.ancient_latitude, data.ancient_longitude], leafletConfig).addTo(myGroup9)
         }
         myGroup1.addTo(map1)
         myGroup2.addTo(map2)
+        myGroup3.addTo(map3)
+        myGroup4.addTo(map4)
+        myGroup5.addTo(map5)
+        myGroup6.addTo(map6)
+        myGroup7.addTo(map7)
+        myGroup8.addTo(map8)
+        myGroup9.addTo(map9)
       })
     }
 

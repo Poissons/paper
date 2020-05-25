@@ -91,7 +91,6 @@ barGraphPromise.then(([dataCollection]) => {
   map2.sync(map1, { syncCursor: true })
 
   window.reHighlight = function (nodeNameList, nodeDepth) {
-    return
     const dataRedraw = []
     if (nodeDepth === 0) {
       dataCollection.forEach(function (data) {
@@ -168,7 +167,6 @@ barGraphPromise.then(([dataCollection]) => {
   reHelightCall2(dataCollection)
 
   function reHelightCall1(dataCollection) {
-    return
     // for(let item of dataCollection){
     //     let lng=Number(item["modern_longitude"]);
     //     let lat=Number(item["modern_latitude"]);
@@ -217,7 +215,6 @@ barGraphPromise.then(([dataCollection]) => {
   // }
 
   function reHelightCall2(dataCollection) {
-    return
     myGroup2.clearLayers()
     dataCollection.forEach(function (d) {
       const lng = d.ancient_longitude

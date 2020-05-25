@@ -1,0 +1,108 @@
+#mapid
+{
+    height: 500px;
+    width:  1500px;
+    margin: 0 auto;
+
+}
+
+#map1, #map2 { width: 49.5%; height: 100%; }
+
+#map1 { float: left; }
+#map2 { float: right; }
+
+#select
+{
+    margin-top: 20px;
+    margin-left: 1400px;
+}
+
+#barGraph
+{
+    width:1536px;
+    height:400px;
+    /*margin: 0 auto;*/
+    margin-left: 300px;
+}
+
+#timeandtree{
+    width: 2500px;
+    height:70000px;
+    /*overflow-x:scroll;*/
+    /*overflow-y:scroll;*/
+}
+
+#treePart{
+	width: 1800px;
+}
+
+#controlButton{
+	margin-left: 200px;
+	margin-bottom: 10px;
+}
+.controlButton{
+	width:70px;
+	height:30px;
+	color:#fff;
+	text-align: center;
+	background-color:darkslategray;
+	color:#fff;
+	line-height: 28px;
+	border-radius:15px;
+	border:0; outline: 0;
+	transition: background 0.2s
+}
+
+#treeButton{
+	margin-left: 50px;
+}
+
+.treeButton{
+	width:70px;
+	height:30px;
+	color:#fff;
+	text-align: center;
+	background-color:#c00;
+	color:#fff;
+	line-height: 28px;
+	border-radius:15px;
+	border:0; outline: 0;
+	transition: background 0.2s
+}
+
+button:hover{ background:#666}
+
+#tree{
+    width:1800px;
+    float: left;
+}
+
+#time{
+    width:700px;
+    float: right;
+}
+
+.chart {
+			shape-rendering: crispEdges;
+		}
+
+		.mini text {
+			font: 9px sans-serif;
+		}
+
+		.main text {
+			font: 12px sans-serif;
+		}
+
+
+		.minicolor {
+			fill: darkolivegreen;
+			fill-opacity: .7;
+			stroke-width: 6;
+		}
+
+		.brush .extent {
+			stroke: gray;
+			fill: dodgerblue;
+			fill-opacity: .365;
+		}

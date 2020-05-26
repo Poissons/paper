@@ -1,37 +1,19 @@
-#mapid {
-	display: grid;
-	grid-template-columns:repeat(8, 1fr);
-	/* grid-column: 4 / 6; */
-	grid-template-rows:repeat(2,1fr);
-	height: 700px;
-	width: 2500px;
-	margin: 0 auto;
-
+body {
+	margin: 0 !important
 }
 
-
+#mapid {
+	display: grid;
+	grid-template-columns: repeat(8, 1fr);
+	/* grid-column: 4 / 6; */
+	grid-template-rows: repeat(2, 1fr);
+	height: 25vw;
+	width: 100vw;
+}
 
 #select {
 	margin-top: 20px;
 	/*margin-left: 1400px;*/
-}
-
-#barGraph {
-	width: 1536px;
-	height: 400px;
-	/*margin: 0 auto;*/
-	/*margin-left: 300px;*/
-}
-
-#timeandtree {
-	width: 2500px;
-	height: 70000px;
-	/*overflow-x:scroll;*/
-	/*overflow-y:scroll;*/
-}
-
-#treePart {
-	width: 1800px;
 }
 
 #controlButton {
@@ -75,16 +57,6 @@ button:hover {
 	background: #666
 }
 
-#tree {
-	width: 1800px;
-	float: left;
-}
-
-#time {
-	width: 700px;
-	/* float: right; */
-}
-
 .chart {
 	shape-rendering: crispEdges;
 }
@@ -121,4 +93,9 @@ button:hover {
 
 .my-leaflet-marker {
 	pointer-events: none;
+}
+
+#time .chart .brush,
+#time .chart .brush .overlay {
+	pointer-events: none !important;
 }

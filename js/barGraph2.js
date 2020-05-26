@@ -183,7 +183,7 @@ window.barGraphPromise = dataPromise.then(([earlyData, PhylumClassOrderFamilyGen
       .attr('d', line)
   }
   for (const [key, info] of Object.entries(datum)) {
-    let show = false
+    let show = info.show
     Object.defineProperty(info, 'show', {
       get() {
         return show
@@ -201,6 +201,6 @@ window.barGraphPromise = dataPromise.then(([earlyData, PhylumClassOrderFamilyGen
       configurable: true,
     })
   }
-  datum.all.show = true
+  redraw()
   return [earlyData, PhylumClassOrderFamilyGenusSpecies, datum]
 })

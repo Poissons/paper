@@ -269,7 +269,7 @@ Promise.all([barGraphPromise, reHighlightPromise]).then(
 
     const m = [20, 15, 15, 240] // top right bottom left
     const w = 960 - m[1] - m[3]
-    const h = 80000 - m[0] - m[2]
+    const h = 40000 - m[0] - m[2]
 
     // 可改动
     const miniHeight = laneLength * 12 + 50
@@ -383,9 +383,26 @@ Promise.all([barGraphPromise, reHighlightPromise]).then(
 
     const itemRects = main.append('g').attr('clip-path', 'url(#clip)')
 
+    // brush
+    const brush = d3
+      .brushX()
+      .extent([
+        [0, 0],
+        [w, miniHeight],
+      ])
+      .on('brush', display)
+
+    mini
+      .append('g')
+      .attr('class', 'x brush')
+      .call(brush)
+      .selectAll('rect')
+      .attr('y', 1)
+      .attr('height', miniHeight - 1)
     // mini item rects
     mini
       .append('g')
+      .attr('class', 'mini-items-container')
       .selectAll('.miniItems')
       .data(finalData)
       .enter()
@@ -403,7 +420,23 @@ Promise.all([barGraphPromise, reHighlightPromise]).then(
       .attr('width', function (d) {
         return x(d.end_year) - x(d.start_year)
       })
-      .attr('height', 10)
+      .attr('height', 5)
+      .append('title')
+      .text((d) => d.Species)
+
+    const containerElem = document.querySelector('.mini-items-container')
+    containerElem.style.cursor = 'crosshair'
+    const overlayElem = document.querySelector('#time .chart .brush .overlay')
+    const eventProxy = (e) => {
+      e.preventDefault()
+      e.stopImmediatePropagation()
+      if (e.isTrusted) {
+        overlayElem.dispatchEvent(new MouseEvent(e.type, e))
+      }
+    }
+    containerElem.addEventListener('mousedown', eventProxy, false)
+    containerElem.addEventListener('mousemove', eventProxy, false)
+    containerElem.addEventListener('mouseup', eventProxy, false)
 
     timeChart
       .append('g')
@@ -412,40 +445,6 @@ Promise.all([barGraphPromise, reHighlightPromise]).then(
       // .attr("text-anchor", "end")
       .attr('font-weight', 'bold')
       .call(axisX)
-
-    mini
-      .append('g')
-      .selectAll('.miniLabels')
-      .data(finalData)
-      .enter()
-      .append('text')
-      .text(function (d) {
-        return d.Species
-      })
-      .attr('x', function (d) {
-        return x(d.start_year)
-      })
-      .attr('y', function (d) {
-        return y2(d.lane + 0.5)
-      })
-      .attr('dy', '.5ex')
-
-    // brush
-    const brush = d3
-      .brushX()
-      .extent([
-        [0, 0],
-        [w, miniHeight],
-      ])
-      .on('brush', display)
-
-    mini
-      .append('g')
-      .attr('class', 'x brush')
-      .call(brush)
-      .selectAll('rect')
-      .attr('y', 1)
-      .attr('height', miniHeight - 1)
 
     function display() {
       // v3变到v5语法改变
@@ -513,7 +512,7 @@ Promise.all([barGraphPromise, reHighlightPromise]).then(
           return x1(Math.max(d.start_year, minExtent))
         })
         .attr('y', function (d) {
-          return y1(d.lane + 0.5)
+          return y1(d.lane + 1)
         })
         .attr('text-anchor', 'start')
 

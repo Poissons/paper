@@ -96,10 +96,6 @@ button:hover {
 	pointer-events: none;
 }
 
-#tree svg {
-	width: 85vw;
-}
-
 #treePart {
 	overflow: hidden;
 }

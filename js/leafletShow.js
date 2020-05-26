@@ -240,7 +240,6 @@ window.reHighlightPromise = dataPromise.then(
     }
 
     function reHelightCall(dataCollection) {
-      return
       requestAnimationFrame(() => {
         myGroup1.clearLayers()
         myGroup2.clearLayers()

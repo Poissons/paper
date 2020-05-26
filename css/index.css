@@ -94,8 +94,3 @@ button:hover {
 .my-leaflet-marker {
 	pointer-events: none;
 }
-
-#time .chart .brush,
-#time .chart .brush .overlay {
-	pointer-events: none !important;
-}

@@ -154,7 +154,7 @@ window.barGraphPromise = dataPromise.then(([earlyData, PhylumClassOrderFamilyGen
   const range = document.getElementById('range')
   const redraw = () => {
     text.value = Math.round(range.value * 1000) / 1000 + ' bandwidth'
-    d3.select('.thisPath').remove()
+    d3.selectAll('.thisPath').remove()
     for (const [key, info] of Object.entries(datum)) {
       if (!info.show) continue
       drawLine(key, info)

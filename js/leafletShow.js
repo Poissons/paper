@@ -71,8 +71,8 @@ window.reHighlightPromise = dataPromise.then(
     map1.setView([10, 0], 1)
 
     var imageBounds = [
-      [-90, -360],
-      [90, 360],
+      [-90, -180],
+      [90, 180],
     ] // 对应古经纬度[-90, -180]和[90,180]
 
     // var map2 = L.map('map2', {
@@ -228,9 +228,9 @@ window.reHighlightPromise = dataPromise.then(
     const myGroup9 = L.layerGroup().addTo(map9)
 
     const icon = L.icon({
-      iconUrl: './lib/leaflet/leaflet/images/marker-icon.png',
-      iconSize: [25, 41],
-      iconAnchor: [13, 41],
+      iconUrl: './lib/leaflet/leaflet/images/dot_5x5.png',
+      iconSize: [5, 5],
+      // iconAnchor: [13, 41],
       className: 'my-leaflet-marker',
     })
     const leafletConfig = {

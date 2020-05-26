@@ -17,8 +17,8 @@ Promise.all([barGraphPromise, reHighlightPromise]).then(
     })
 
     function transform(node) {
-      if (node instanceof Set) {
-        return [...node].map((data) => ({ name: data.Species }))
+      if (Array.isArray(node)) {
+        return [...node[0]].map((name) => ({ name }))
       }
       return [...node.entries()].map(([name, childNode]) => ({
         name,
@@ -29,12 +29,15 @@ Promise.all([barGraphPromise, reHighlightPromise]).then(
     myDict.name = 'all'
     myDict.children = transform(PhylumClassOrderFamilyGenusSpecies)
 
-    const treewidth = 1800
-    const treePadding = { top: 10, right: 20, bottom: 10, left: 80 }
+    const treewidth = document.body.clientWidth * 0.85
+    const treePadding = { top: 10, right: 20, bottom: 10, left: 20 }
     const tdx = 20
     const tdy = treewidth / 15
 
-    const tree = d3.tree().nodeSize([tdx, tdy])
+    const tree = d3
+      .tree()
+      .nodeSize([tdx, tdy])
+      .separation((a, b) => 1)
     const diagonal = d3
       .linkHorizontal()
       .x((d) => d.y)
@@ -231,7 +234,6 @@ Promise.all([barGraphPromise, reHighlightPromise]).then(
         if (depth > 0) {
           if (!node.children) {
             node.children = node._children
-            update(node, true)
           }
           for (const child of node._children) {
             update1(child, depth - 1)
@@ -239,7 +241,6 @@ Promise.all([barGraphPromise, reHighlightPromise]).then(
         } else {
           if (node.children) {
             node.children = null
-            update(node, true)
           }
         }
       }
@@ -247,6 +248,7 @@ Promise.all([barGraphPromise, reHighlightPromise]).then(
       for (let i = 1; i <= 6; i++) {
         d3.select('#button' + i).on('click', function () {
           update1(root, i)
+          update(root, true)
         })
       }
 
@@ -267,13 +269,14 @@ Promise.all([barGraphPromise, reHighlightPromise]).then(
     const timeBegin = d3.min(finalData, (d) => d.start_year)
     const timeEnd = d3.max(finalData, (d) => d.end_year)
 
-    const m = [20, 15, 15, 240] // top right bottom left
-    const w = 960 - m[1] - m[3]
-    const h = 40000 - m[0] - m[2]
+    const m = [15, 15, 15, 45] // top right bottom left
+    const w = document.body.clientWidth / 2 - 10 - m[1] - m[3]
 
     // 可改动
     const miniHeight = laneLength * 12 + 50
-    const mainHeight = h - miniHeight - 50
+    const mainHeight = tdx * laneLength
+
+    const h = miniHeight + mainHeight
 
     const x = d3.scaleLinear().domain([timeBegin, timeEnd]).range([0, w])
 
@@ -481,7 +484,7 @@ Promise.all([barGraphPromise, reHighlightPromise]).then(
           return x1(d.start_year)
         })
         .attr('y', function (d) {
-          return y1(d.lane) + 10
+          return y1(d.lane) + 2.5
         })
         .attr('width', function (d) {
           return x1(d.end_year) - x1(d.start_year)
@@ -512,7 +515,7 @@ Promise.all([barGraphPromise, reHighlightPromise]).then(
           return x1(Math.max(d.start_year, minExtent))
         })
         .attr('y', function (d) {
-          return y1(d.lane + 1)
+          return y1(d.lane) + 15
         })
         .attr('text-anchor', 'start')
 

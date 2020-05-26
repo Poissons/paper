@@ -1,5 +1,6 @@
 body {
-	margin: 0 !important
+	margin: 0 !important;
+	overflow-x: hidden;
 }
 
 #mapid {
@@ -93,4 +94,22 @@ button:hover {
 
 .my-leaflet-marker {
 	pointer-events: none;
+}
+
+#tree svg {
+	width: 85vw;
+}
+
+#treePart {
+	overflow: hidden;
+}
+
+#time {
+	margin-top: 70px;
+}
+
+#treePart,
+#time {
+	width: 50%;
+	float: left;
 }

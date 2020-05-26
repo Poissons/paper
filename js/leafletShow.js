@@ -205,8 +205,8 @@ window.reHighlightPromise = dataPromise.then(
       }
       // eslint-disable-next-line no-extra-semi
       ;(function add(node) {
-        if (node instanceof Set) {
-          dataRedraw.push(...node)
+        if (Array.isArray(node)) {
+          dataRedraw.push(...node[1])
         } else {
           for (const child of node.values()) {
             add(child)

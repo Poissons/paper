@@ -18,20 +18,21 @@ window.dataPromise = d3.csv('./data/data_combined_sorted.csv').then((dataCollect
     }
     data.lives = data.end_year - data.start_year
     let node = PhylumClassOrderFamilyGenusSpecies
-    let lastLane = true
     for (const key of KEYS) {
       if (node.has(data[key])) {
         node = node.get(data[key])
       } else {
-        const newNode = key === LAST_KEY ? new Set() : new Map()
+        const newNode = key === LAST_KEY ? [new Set(), new Set()] : new Map()
         node.set(data[key], newNode)
         node = newNode
-        lastLane = false
       }
     }
-    if (!lastLane) lane++
+    if (!node[0].has(data.Species)) {
+      lane++
+      node[0].add(data.Species)
+    }
     data.lane = lane
-    node.add(data)
+    node[1].add(data)
   }
   return [dataCollection, PhylumClassOrderFamilyGenusSpecies]
 })

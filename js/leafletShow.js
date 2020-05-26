@@ -85,35 +85,35 @@ window.reHighlightPromise = dataPromise.then(
     //   map2.setView([10, 0], 1);
 
     var map2 = L.map('map2').setView([10, 0], 1)
-    var imageUrl2 = 'img/Map21a LtK Turonian_090.jpg'
+    var imageUrl2 = '../img/Map21a LtK Turonian_090.jpg'
     L.imageOverlay(imageUrl2, imageBounds).addTo(map2)
 
     var map3 = L.map('map3').setView([10, 0], 1)
-    var imageUrl3 = 'img/Map27a EK Early Albian_120.jpg'
+    var imageUrl3 = '../img/Map27a EK Early Albian_120.jpg'
     L.imageOverlay(imageUrl3, imageBounds).addTo(map3)
 
     var map4 = L.map('map4').setView([10, 0], 1)
-    var imageUrl4 = 'img/Map34a LtJ Kimmeridgian_155.jpg'
+    var imageUrl4 = '../img/Map34a LtJ Kimmeridgian_155.jpg'
     L.imageOverlay(imageUrl4, imageBounds).addTo(map4)
 
     var map5 = L.map('map5').setView([10, 0], 1)
-    var imageUrl5 = 'img/Map38a MJ Aalenian_175.jpg'
+    var imageUrl5 = '../img/Map38a MJ Aalenian_175.jpg'
     L.imageOverlay(imageUrl5, imageBounds).addTo(map5)
 
     var map6 = L.map('map6').setView([10, 0], 1)
-    var imageUrl6 = 'img/Map42a EJ Hettangian_195.jpg'
+    var imageUrl6 = '../img/Map42a EJ Hettangian_195.jpg'
     L.imageOverlay(imageUrl6, imageBounds).addTo(map6)
 
     var map7 = L.map('map7').setView([10, 0], 1)
-    var imageUrl7 = 'img/Map44a LtTr Norian_210.jpg'
+    var imageUrl7 = '../img/Map44a LtTr Norian_210.jpg'
     L.imageOverlay(imageUrl7, imageBounds).addTo(map7)
 
     var map8 = L.map('map8').setView([10, 0], 1)
-    var imageUrl8 = 'img/Map47a MTr Anisian_240.jpg'
+    var imageUrl8 = '../img/Map47a MTr Anisian_240.jpg'
     L.imageOverlay(imageUrl8, imageBounds).addTo(map8)
 
     var map9 = L.map('map9').setView([10, 0], 1)
-    var imageUrl9 = 'img/Map48a ETr Induan-Olenekian_245.jpg'
+    var imageUrl9 = '../img/Map48a ETr Induan-Olenekian_245.jpg'
     L.imageOverlay(imageUrl9, imageBounds).addTo(map9)
 
     map1.sync(map2, { syncCursor: true })

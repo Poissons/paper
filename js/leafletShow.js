@@ -227,13 +227,17 @@ window.reHighlightPromise = dataPromise.then(
           if (e.ctrlKey) {
             e.preventDefault()
             e.stopImmediatePropagation()
+            const id = Number(map.id.slice(3))
+            if (idList.length === 1 && idList[0] === id) {
+              return
+            }
             if (idList.length === 0) {
               for (const selected of document.querySelectorAll('.selected')) {
                 selected.classList.remove('selected', 'selected-1', 'selected-2')
               }
             }
 
-            idList.push(Number(map.id.slice(3)))
+            idList.push(id)
             map.classList.add('selected', 'selected-' + idList.length)
 
             if (idList.length === 2) {

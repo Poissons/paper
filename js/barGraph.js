@@ -7,6 +7,7 @@ window.dataPromise = d3.csv('./data/data_combined_sorted.csv').then((dataCollect
     'end_year',
     'ancient_longitude',
     'ancient_latitude',
+    'era',
   ]
   const PhylumClassOrderFamilyGenusSpecies = new Map()
   const KEYS = ['Phylum', 'Class', 'Order', 'Family', 'Genus']

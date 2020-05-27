@@ -1,4 +1,4 @@
-/* global dataPromise L d3 */
+/* global dataPromise L */
 window.reHighlightPromise = dataPromise.then(
   ([dataCollection, PhylumClassOrderFamilyGenusSpecies]) => {
     // var mymap = L.map("mapid").setView([37.595, 112.069], 2);

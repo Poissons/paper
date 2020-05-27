@@ -146,46 +146,27 @@ window.reHighlightPromise = dataPromise.then(
       // mymap.removeLayer(this.layer);
       reHelightCall(dataRedraw)
     }
-
-    const myGroups = maps.map((map) => L.layerGroup().addTo(map))
-
-    const icon = L.icon({
-      iconUrl: './lib/leaflet/leaflet/images/dot_5x5.png',
-      iconSize: [5, 5],
-      // iconAnchor: [13, 41],
-      className: 'my-leaflet-marker',
-    })
-    const leafletConfig = {
-      icon,
-      keyboard: false,
-      interactive: false,
+    const heatmapOptions = {
+      // radius should be small ONLY if scaleRadius is true (or small radius is intended)
+      // if scaleRadius is false it will be the constant radius used in pixels
+      radius: 10,
+      minOpacity: 0.8,
     }
+
+    const myHeatMaps = maps.map((map) => new L.HeatLayer([], heatmapOptions).addTo(map))
 
     function reHelightCall(dataCollection) {
       requestAnimationFrame(() => {
-        for (const myGroup of myGroups) {
-          myGroup.clearLayers()
+        const modern = dataCollection.map((data) => [data.modern_latitude, data.modern_longitude])
+        const ancient = dataCollection.map((data) => [
+          data.ancient_latitude,
+          data.ancient_longitude,
+        ])
+        myHeatMaps[0].setLatLngs(modern)
+        for (let i = 1; i < myHeatMaps.length; i++) {
+          myHeatMaps[i].setLatLngs(ancient)
         }
-        const modernCache = new Set()
-        const ancientCache = new Set()
-        for (const data of dataCollection) {
-          const modern = data.modern_latitude + ' ' + data.modern_longitude
-          if (!modernCache.has(modern)) {
-            modernCache.add(modern)
-            L.marker([data.modern_latitude, data.modern_longitude], leafletConfig).addTo(
-              myGroups[0],
-            )
-          }
-          const ancient = data.ancient_latitude + ' ' + data.ancient_latitude
-          if (!ancientCache.has(ancient)) {
-            ancientCache.add(ancient)
-            for (let i = 1; i < myGroups.length; i++) {
-              L.marker([data.ancient_latitude, data.ancient_longitude], leafletConfig).addTo(
-                myGroups[i],
-              )
-            }
-          }
-        }
+        console.log(myHeatMaps)
       })
     }
 

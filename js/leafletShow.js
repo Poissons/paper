@@ -112,7 +112,6 @@ window.reHighlightPromise = dataPromise.then(
         }).setView(center, 0)
       }),
     ]
-    console.log(maps)
 
     // var map2 = L.map('map2', {
     //         layers: [layer2],

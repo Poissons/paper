@@ -203,6 +203,48 @@ window.reHighlightPromise = dataPromise.then(
     //     Y: p.Y - start.Y,
     //   }
     // }
+
+    let clickTime = 0
+    let idList = []
+
+    for (const map of document.querySelectorAll('div[class^="selectMap"]')) {
+      map.addEventListener(
+        'click',
+        function (e) {
+          if (e.ctrlKey) {
+            e.preventDefault()
+            e.stopImmediatePropagation()
+            clickTime += 1
+            if (clickTime == 2) {
+              idList.push(parseInt(map.id[3]))
+              for (var i = 0; i < 2; i++) {
+                if(idList[0]==1){
+                  const map10 = L.map('map'+ (i + 10), {
+                     layers: [layer1],
+                     crs: L.CRS.EPSG3857,
+                     minZoom: 1, // mapbox will give a 404 when zoom level sets to 0
+                   }).setView(center, 1)
+             }else{
+
+               const thisLayers = imageBoundsArr.map((imageBounds) => L.imageOverlay(mapImgs[idList[i]-2], imageBounds))
+                 const map11=L.map('map'+ (i + 10),{
+                   thisLayers,
+                   maxBounds,
+                   crs: L.CRS.EPSG4326,
+                   minZoom: 0,
+                 }).setView(center, 0)
+               }
+              }
+
+              clickTime = 0
+              idList = []
+            }
+          }
+        },
+        true,
+      )
+    }
+
     return reHighlight
   },
 )

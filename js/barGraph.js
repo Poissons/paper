@@ -38,8 +38,8 @@ window.dataPromise = d3.csv('./data/data_combined_sorted.csv').then((dataCollect
 })
 window.barGraphPromise = dataPromise.then(([earlyData, PhylumClassOrderFamilyGenusSpecies]) => {
   const padding = { top: 20, right: 40, bottom: 20, left: 30 }
-  const width = 1500
-  const height = 300
+  const width = 910
+  const height = 130
   // 准备数据
   const minYear = d3.min(earlyData, (d) => d.start_year)
   const maxYear = d3.max(earlyData, (d) => d.end_year)
@@ -49,7 +49,7 @@ window.barGraphPromise = dataPromise.then(([earlyData, PhylumClassOrderFamilyGen
     .domain([minYear, maxYear])
     .range([padding.left, width - padding.right])
 
-  const formatDate = (d) => (d < 0 ? `${-d}BC` : `${d}AD`)
+  const formatDate = (d) => (d < 0 ? `${-d}MA` : `${d}AD`)
   const xAaxis = d3.axisBottom(x).tickFormat(formatDate)
 
   const thresholds = x.ticks(maxYear - minYear)

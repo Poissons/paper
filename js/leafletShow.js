@@ -71,8 +71,8 @@ window.reHighlightPromise = dataPromise.then(
     map1.setView([10, 0], 1)
 
     var imageBounds = [
-      [-90, -180],
-      [90, 180],
+      [-90, -360],
+      [90, 360],
     ] // 对应古经纬度[-90, -180]和[90,180]
 
     // var map2 = L.map('map2', {

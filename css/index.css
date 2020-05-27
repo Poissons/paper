@@ -1,15 +1,37 @@
 body {
 	margin: 0 !important;
 	overflow-x: hidden;
+	display: flex;
 }
 
 #mapid {
+	flex: none;
 	display: grid;
-	grid-template-columns: repeat(8, 1fr);
-	/* grid-column: 4 / 6; */
-	grid-template-rows: repeat(2, 1fr);
-	height: 25vw;
-	width: 100vw;
+	grid-template-columns: repeat(2, 1fr);
+	grid-template-rows: repeat(5, 1fr);
+	/* height: 25vw; */
+	/* width: 100vw; */
+	width: 600px;
+	height: 1000px;
+}
+
+
+#chooseMap{
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	width: 600px;
+	height:200px;
+}
+
+
+#right{
+	flex: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+#barPart{
+	flex: auto;
 }
 
 #select {

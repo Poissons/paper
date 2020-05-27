@@ -112,6 +112,7 @@ window.reHighlightPromise = dataPromise.then(
         }).setView(center, 0)
       }),
     ]
+    console.log(maps)
 
     // var map2 = L.map('map2', {
     //         layers: [layer2],
@@ -157,6 +158,8 @@ window.reHighlightPromise = dataPromise.then(
 
     let latLngDatum = null
 
+    const updateTop = []
+
     function reHelightCall(dataCollection) {
       requestAnimationFrame(() => {
         latLngDatum = myHeatMaps.map(() => [])
@@ -168,6 +171,7 @@ window.reHighlightPromise = dataPromise.then(
         for (const [i, data] of latLngDatum.entries()) {
           myHeatMaps[i].setLatLngs(data)
         }
+        for (const update of updateTop) update()
       })
     }
 
@@ -204,9 +208,19 @@ window.reHighlightPromise = dataPromise.then(
     //   }
     // }
 
-    let clickTime = 0
-    let idList = []
-
+    const mapsTop = []
+    const idList = []
+    const icon = L.icon({
+      iconUrl: './lib/leaflet/leaflet/images/dot_5x5.png',
+      iconSize: [5, 5],
+      // iconAnchor: [13, 41],
+      className: 'my-leaflet-marker',
+    })
+    const leafletConfig = {
+      icon,
+      keyboard: false,
+      interactive: false,
+    }
     for (const map of document.querySelectorAll('div[class^="selectMap"]')) {
       map.addEventListener(
         'click',
@@ -214,30 +228,88 @@ window.reHighlightPromise = dataPromise.then(
           if (e.ctrlKey) {
             e.preventDefault()
             e.stopImmediatePropagation()
-            clickTime += 1
-            if (clickTime == 2) {
-              idList.push(parseInt(map.id[3]))
-              for (var i = 0; i < 2; i++) {
-                if(idList[0]==1){
-                  const map10 = L.map('map'+ (i + 10), {
-                     layers: [layer1],
-                     crs: L.CRS.EPSG3857,
-                     minZoom: 1, // mapbox will give a 404 when zoom level sets to 0
-                   }).setView(center, 1)
-             }else{
-
-               const thisLayers = imageBoundsArr.map((imageBounds) => L.imageOverlay(mapImgs[idList[i]-2], imageBounds))
-                 const map11=L.map('map'+ (i + 10),{
-                   thisLayers,
-                   maxBounds,
-                   crs: L.CRS.EPSG4326,
-                   minZoom: 0,
-                 }).setView(center, 0)
-               }
+            if (idList.length === 0) {
+              for (const selected of document.querySelectorAll('.selected')) {
+                selected.classList.remove('selected', 'selected-1', 'selected-2')
               }
+            }
 
-              clickTime = 0
-              idList = []
+            idList.push(Number(map.id.slice(3)))
+            map.classList.add('selected', 'selected-' + idList.length)
+
+            if (idList.length === 2) {
+              if (mapsTop.length) {
+                mapsTop[0].unsync(mapsTop[1])
+                mapsTop[1].unsync(mapsTop[0])
+                for (const map of mapsTop) {
+                  for (const anotherMap of maps) {
+                    map.unsync(anotherMap)
+                    anotherMap.unsync(map)
+                  }
+                  map.remove()
+                }
+              }
+              for (const [i, id] of idList.entries()) {
+                let options
+                if (id === 1) {
+                  const layer1 = L.tileLayer(
+                    'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}',
+                    {
+                      attribution:
+                        'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+                      maxZoom: 18,
+                      id: 'mapbox/streets-v11',
+                      tileSize: 512,
+                      zoomOffset: -1,
+                      accessToken:
+                        'pk.eyJ1IjoidGF5dGF5dGF5dGF5bG9yIiwiYSI6ImNqeGZkMWxpZTBsNDYzb29nNnh4Nm5wOTIifQ.wqEeGFygVQ-Uor1_rWvVNg',
+                    },
+                    stamenOptions,
+                  )
+                  options = {
+                    layers: [layer1],
+                    crs: L.CRS.EPSG3857,
+                    minZoom: 1, // mapbox will give a 404 when zoom level sets to 0
+                  }
+                } else {
+                  const layers = imageBoundsArr.map((imageBounds) =>
+                    L.imageOverlay(mapImgs[id - 2], imageBounds),
+                  )
+                  options = {
+                    layers,
+                    maxBounds,
+                    crs: L.CRS.EPSG4326,
+                    minZoom: 0,
+                  }
+                }
+                const group = L.layerGroup()
+                options.layers.push(group)
+                mapsTop[i] = L.map('map' + (i + 10), options).setView(
+                  maps[id - 1].getCenter(),
+                  maps[id - 1].getZoom(),
+                )
+                for (const anotherMap of maps) {
+                  mapsTop[i].sync(anotherMap, { syncCursor: true })
+                  anotherMap.sync(mapsTop[i], { syncCursor: true })
+                }
+                updateTop[i] = () => {
+                  mapsTop[i].removeLayer(group)
+                  group.clearLayers()
+                  const cache = new Set()
+                  for (const [lat, lng] of latLngDatum[id - 1]) {
+                    const key = lat + ' ' + lng
+                    if (!cache.has(key)) {
+                      cache.add(key)
+                      L.marker([lat, lng], leafletConfig).addTo(group)
+                    }
+                  }
+                  mapsTop[i].addLayer(group)
+                }
+                updateTop[i]()
+              }
+              mapsTop[0].sync(mapsTop[1], { syncCursor: true })
+              mapsTop[1].sync(mapsTop[0], { syncCursor: true })
+              idList.length = 0
             }
           }
         },

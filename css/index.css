@@ -21,6 +21,7 @@ body {
 	grid-template-columns: repeat(2, 1fr);
 	width: 600px;
 	height: 200px;
+	margin: 0 auto;
 }
 
 
@@ -118,4 +119,27 @@ button:hover {
 #time {
 	width: 50%;
 	float: left;
+}
+
+.selectMap.selected::before {
+	display: block;
+	width: 300px;
+	height: 200px;
+	font-size: 150px;
+	line-height: 200px;
+	text-align: center;
+	position: relative;
+	z-index: 10000;
+	background: black;
+	color: white;
+	opacity: 0.5;
+	pointer-events: none;
+}
+
+.selectMap.selected-1::before {
+	content: '1';
+}
+
+.selectMap.selected-2::before {
+	content: '2';
 }

@@ -210,7 +210,7 @@ window.reHighlightPromise = dataPromise.then(
     const mapsTop = []
     const idList = []
     const icon = L.icon({
-      iconUrl: './lib/leaflet/leaflet/images/dot_5x5.png',
+      iconUrl: './img/dot_5x5.png',
       iconSize: [5, 5],
       // iconAnchor: [13, 41],
       className: 'my-leaflet-marker',

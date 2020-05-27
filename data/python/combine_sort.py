@@ -11,7 +11,15 @@ csv_list = ('../all_data_earlyT.csv',
             '../all_data_lateJ.csv',
             '../all_data_earlyK.csv',
             '../all_data_lateK.csv')
-all_csv = pd.concat((pd.read_csv(csv, index_col=[0]) for csv in csv_list))
+
+all_csv_data = []
+
+for era, csv in enumerate(csv_list):
+    csv_data = pd.read_csv(csv, index_col=[0])
+    csv_data['era'] = era
+    all_csv_data.append(csv_data)
+
+all_csv = pd.concat(all_csv_data)
 
 NAMES = ('Phylum', 'Class', 'Order', 'Family', 'Genus', 'Species')
 SPECIAL_VALUES = [name[0] for name in NAMES]

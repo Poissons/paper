@@ -1,4 +1,4 @@
-/* global dataPromise L */
+/* global dataPromise L d3 */
 window.reHighlightPromise = dataPromise.then(
   ([dataCollection, PhylumClassOrderFamilyGenusSpecies]) => {
     // var mymap = L.map("mapid").setView([37.595, 112.069], 2);
@@ -91,14 +91,14 @@ window.reHighlightPromise = dataPromise.then(
       [90, 360],
     ]
     const mapImgs = [
-      './img/Map21a LtK Turonian_090.jpg',
-      './img/Map27a EK Early Albian_120.jpg',
-      './img/Map34a LtJ Kimmeridgian_155.jpg',
-      './img/Map38a MJ Aalenian_175.jpg',
-      './img/Map42a EJ Hettangian_195.jpg',
-      './img/Map44a LtTr Norian_210.jpg',
-      './img/Map47a MTr Anisian_240.jpg',
       './img/Map48a ETr Induan-Olenekian_245.jpg',
+      './img/Map47a MTr Anisian_240.jpg',
+      './img/Map44a LtTr Norian_210.jpg',
+      './img/Map42a EJ Hettangian_195.jpg',
+      './img/Map38a MJ Aalenian_175.jpg',
+      './img/Map34a LtJ Kimmeridgian_155.jpg',
+      './img/Map27a EK Early Albian_120.jpg',
+      './img/Map21a LtK Turonian_090.jpg',
     ]
     const maps = [
       map1,
@@ -150,23 +150,24 @@ window.reHighlightPromise = dataPromise.then(
       // radius should be small ONLY if scaleRadius is true (or small radius is intended)
       // if scaleRadius is false it will be the constant radius used in pixels
       radius: 10,
-      minOpacity: 0.8,
+      minOpacity: 0.7,
     }
 
-    const myHeatMaps = maps.map((map) => new L.HeatLayer([], heatmapOptions).addTo(map))
+    const myHeatMaps = maps.map((map) => L.heatLayer([], heatmapOptions).addTo(map))
+
+    let latLngDatum = null
 
     function reHelightCall(dataCollection) {
       requestAnimationFrame(() => {
-        const modern = dataCollection.map((data) => [data.modern_latitude, data.modern_longitude])
-        const ancient = dataCollection.map((data) => [
-          data.ancient_latitude,
-          data.ancient_longitude,
-        ])
-        myHeatMaps[0].setLatLngs(modern)
-        for (let i = 1; i < myHeatMaps.length; i++) {
-          myHeatMaps[i].setLatLngs(ancient)
+        latLngDatum = myHeatMaps.map(() => [])
+        const modern = latLngDatum[0]
+        for (const data of dataCollection) {
+          modern.push([data.modern_latitude, data.modern_longitude])
+          latLngDatum[data.era + 1].push([data.ancient_latitude, data.ancient_longitude])
         }
-        console.log(myHeatMaps)
+        for (const [i, data] of latLngDatum.entries()) {
+          myHeatMaps[i].setLatLngs(data)
+        }
       })
     }
 

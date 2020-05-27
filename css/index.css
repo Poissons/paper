@@ -1,6 +1,6 @@
 body {
 	margin: 0 !important;
-	overflow-x: hidden;
+	/* overflow-x: hidden; */
 	display: flex;
 }
 
@@ -16,21 +16,21 @@ body {
 }
 
 
-#chooseMap{
+#chooseMap {
 	display: grid;
 	grid-template-columns: repeat(2, 1fr);
 	width: 600px;
-	height:200px;
+	height: 200px;
 }
 
 
-#right{
+#right {
 	flex: auto;
-    display: flex;
-    flex-direction: column;
+	display: flex;
+	flex-direction: column;
 }
 
-#barPart{
+#barPart {
 	flex: auto;
 }
 
@@ -56,10 +56,6 @@ body {
 	border: 0;
 	outline: 0;
 	transition: background 0.2s
-}
-
-#treeButton {
-	margin-left: 50px;
 }
 
 .treeButton {
@@ -118,15 +114,7 @@ button:hover {
 	pointer-events: none;
 }
 
-#treePart {
-	overflow: hidden;
-}
-
-#time {
-	margin-top: 70px;
-}
-
-#treePart,
+#tree,
 #time {
 	width: 50%;
 	float: left;

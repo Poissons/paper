@@ -28,11 +28,11 @@ Promise.all([barGraphPromise, reHighlightPromise]).then(
     const myDict = {}
     myDict.name = 'all'
     myDict.children = transform(PhylumClassOrderFamilyGenusSpecies)
-    const windowWidth = window.innerWidth
-    const treewidth = windowWidth * 0.85
+    const windowWidth = window.innerWidth - 20
+    const treewidth = (windowWidth - 600) / 2
     const treePadding = { top: 10, right: 20, bottom: 10, left: 20 }
     const tdx = 20
-    const tdy = treewidth / 15
+    const tdy = treewidth / 7.5
 
     const tree = d3
       .tree()
@@ -58,7 +58,7 @@ Promise.all([barGraphPromise, reHighlightPromise]).then(
         .create('svg')
         .attr('viewBox', [-treePadding.left, -treePadding.top, treewidth, tdx])
         .attr('width', treewidth)
-        .style('font', '10px sans-serif')
+        .style('font', '0.5vw sans-serif')
         .style('user-select', 'none')
 
       const gLink = svg1
@@ -270,8 +270,8 @@ Promise.all([barGraphPromise, reHighlightPromise]).then(
     const timeBegin = d3.min(finalData, (d) => d.start_year)
     const timeEnd = d3.max(finalData, (d) => d.end_year)
 
-    const m = [10, 15, 15, 45] // top right bottom left
-    const w = windowWidth / 2 - 10 - m[1] - m[3]
+    const m = [0, 15, 15, 45] // top right bottom left
+    const w = treewidth - m[1] - m[3]
 
     // 可改动
     const miniHeight = laneLength * 12 + 50

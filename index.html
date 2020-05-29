@@ -4,75 +4,61 @@
     <meta charset="UTF-8" />
     <title>Index</title>
     <link rel="stylesheet" href="./lib/leaflet/leaflet/leaflet.css" />
-    <link rel="stylesheet" href="./lib/leaflet/dist/leaflet.marker.highlight-src.css" />
     <link rel="stylesheet" href="./css/index.css" />
     <script src="./lib/leaflet/leaflet/leaflet.js"></script>
-    <script src="./lib/leaflet/leaflet/leaflet-side-by-side.js"></script>
     <script src="./lib/leaflet/leaflet/L.Map.Sync.js"></script>
     <script src="./lib/leaflet/leaflet-heat.js"></script>
-    <script
-      type="text/javascript"
-      src="./lib/leaflet/dist/leaflet.marker.highlight-src.js"
-    ></script>
     <script type="text/javascript" src="./lib/d3/d3.js"></script>
+    <script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js"></script>
   </head>
   <body>
-    <div id="mapid">
-      <div id="map2" class="selectMap"></div>
-      <div id="map3" class="selectMap"></div>
-      <div id="map4" class="selectMap"></div>
-      <div id="map5" class="selectMap"></div>
-      <div id="map6" class="selectMap"></div>
-      <div id="map7" class="selectMap"></div>
-      <div id="map8" class="selectMap"></div>
-      <div id="map9" class="selectMap"></div>
-      <div id="map1" class="selectMap"></div>
-    </div>
-    <div id="right">
-      <div id="chooseMap">
-        <div id="map10"></div>
-        <div id="map11"></div>
-      </div>
-      <div id="barPart">
-        <form id="select">
-          <input
-            type="range"
-            id="range"
-            name="i"
-            min="20"
-            max="40"
-            value="7"
-            step="any"
-            style="width: 180px;"
-          />
-          <output
-            type="text"
-            id="text"
-            name="o"
-            style="font-size: smaller; font-style: oblique;"
-          ></output>
-        </form>
-        <div id="barGraph"></div>
-      </div>
-      <div id="timeandtree">
-        <div id="controlButton">
-          <!-- <button type="button" class="controlButton" id="button7">Exclusive</button> -->
-          <!-- <button type="button" class="controlButton" id="button8">Multiple</button> -->
-        </div>
-        <div id="treeButton">
-          <button type="button" class="treeButton" id="button1">Phylum</button>
-          <button type="button" class="treeButton" id="button2">Class</button>
-          <button type="button" class="treeButton" id="button3">Order</button>
-          <button type="button" class="treeButton" id="button4">Family</button>
-          <button type="button" class="treeButton" id="button5">Genus</button>
-          <button type="button" class="treeButton" id="button6">Species</button>
-        </div>
+    <div id="up">
+      <div id="left">
+        <div id="map1" class="selectMap"></div>
         <div id="tree"></div>
+      </div>
+      <div id="right">
+        <div id="barPart">
+          <form id="select">
+            <input
+              type="range"
+              id="range"
+              name="i"
+              min="20"
+              max="40"
+              value="7"
+              step="any"
+              style="width: 180px;"
+            />
+            <output
+              type="text"
+              id="text"
+              name="o"
+              style="font-size: smaller; font-style: oblique;"
+            ></output>
+          </form>
+          <div id="barGraph"></div>
+        </div>
+        <div id="picture"></div>
         <div id="time"></div>
       </div>
     </div>
+    <div id="down">
+      <div></div>
+      <div id="mapid">
+        <div id="map2" class="selectMap"></div>
+        <div id="map3" class="selectMap"></div>
+        <div id="map4" class="selectMap"></div>
+        <div id="map5" class="selectMap"></div>
+        <div id="map6" class="selectMap"></div>
+        <div id="map7" class="selectMap"></div>
+        <div id="map8" class="selectMap"></div>
+        <div id="map9" class="selectMap"></div>
+      </div>
+    </div>
+
     <script type="text/javascript" src="js/barGraph.js"></script>
-    <script type="text/javascript" src="js/leafletShow.js"></script>
-    <script type="text/javascript" src="js/treeGraph.js"></script>
+    <!-- <script type="text/javascript" src="js/leafletShow.js"></script> -->
+    <!-- <script type="text/javascript" src="js/treeGraph.js"></script> -->
   </body>
 </html>

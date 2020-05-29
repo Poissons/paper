@@ -1,106 +1,45 @@
 body {
 	margin: 0 !important;
-	/* overflow-x: hidden; */
-	display: flex;
-}
-
-#mapid {
-	flex: none;
 	display: grid;
-	grid-template-columns: repeat(2, 1fr);
-	grid-template-rows: repeat(5, 1fr);
-	/* height: 25vw; */
-	/* width: 100vw; */
-	width: 600px;
-	height: 1000px;
+	grid-template-rows: 75% 25%;
+	height:1500px;
 }
 
-
-#chooseMap {
+#up{
 	display: grid;
-	grid-template-columns: repeat(2, 1fr);
-	width: 600px;
-	height: 200px;
-	margin: 0 auto;
+	grid-template-columns: 30% 70%;
 }
+
+#left {
+	display: grid;
+	grid-template-rows: 25% 75%;
+}
+
 
 
 #right {
-	flex: auto;
-	display: flex;
-	flex-direction: column;
+	display: grid;
+	grid-template-rows: 12.5% 12.5% 75%;
 }
 
-#barPart {
-	flex: auto;
-}
-
-#select {
-	margin-top: 20px;
-	/*margin-left: 1400px;*/
-}
-
-#controlButton {
-	margin-left: 200px;
-	margin-bottom: 10px;
-}
-
-.controlButton {
-	width: 70px;
-	height: 30px;
-	color: #fff;
-	text-align: center;
-	background-color: darkslategray;
-	color: #fff;
-	line-height: 28px;
-	border-radius: 15px;
-	border: 0;
-	outline: 0;
-	transition: background 0.2s
-}
-
-.treeButton {
-	width: 70px;
-	height: 30px;
-	color: #fff;
-	text-align: center;
-	background-color: #c00;
-	color: #fff;
-	line-height: 28px;
-	border-radius: 15px;
-	border: 0;
-	outline: 0;
-	transition: background 0.2s
-}
-
-button:hover {
-	background: #666
-}
-
-.chart {
-	shape-rendering: crispEdges;
-}
-
-.mini text {
-	font: 9px sans-serif;
-}
-
-.main text {
-	font: 12px sans-serif;
+#barPart{
+	display: grid;
+	grid-template-rows: 15% 85%;
 }
 
 
-.minicolor {
-	fill: darkolivegreen;
-	fill-opacity: .7;
-	stroke-width: 6;
+#down{
+	display: grid;
+	grid-template-columns: 30% 70%;
 }
 
-.brush .extent {
-	stroke: gray;
-	fill: dodgerblue;
-	fill-opacity: .365;
+#mapid{
+	float:right;
+	display: grid;
+	grid-template-columns: repeat(2,fr);
 }
+
+
 
 .leaflet-container:hover path.leaflet-interactive {
 	visibility: hidden;
@@ -115,31 +54,4 @@ button:hover {
 	pointer-events: none;
 }
 
-#tree,
-#time {
-	width: 50%;
-	float: left;
-}
 
-.selectMap.selected::before {
-	display: block;
-	width: 300px;
-	height: 200px;
-	font-size: 150px;
-	line-height: 200px;
-	text-align: center;
-	position: relative;
-	z-index: 10000;
-	background: black;
-	color: white;
-	opacity: 0.5;
-	pointer-events: none;
-}
-
-.selectMap.selected-1::before {
-	content: '1';
-}
-
-.selectMap.selected-2::before {
-	content: '2';
-}

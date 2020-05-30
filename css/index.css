@@ -34,8 +34,8 @@ body {
 }
 
 #mapid{
-	float:right;
 	display: grid;
+	overflow-x:scroll;
 	grid-template-columns: repeat(2,fr);
 }
 

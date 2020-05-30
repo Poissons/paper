@@ -1,0 +1,198 @@
+{
+	"name": "all",
+	"children": [{
+			"name": "TRIASSIC",
+			"children": [{
+					"name": "EARLY",
+					"children": [{
+							"name": "INDUAN",
+							"min": -251.9,
+							"max": -251.2
+						},
+						{
+							"name": "OLENEKIAN",
+							"min": -251.2,
+							"max": -247.2
+						}
+					]
+				},
+				{
+					"name": "MIDDLE",
+					"children": [{
+							"name": "ANISIAN",
+							"min": -247.2,
+							"max": -242
+						},
+						{
+							"name": "LADINIAN",
+							"min": -242,
+							"max": -237
+						}
+					]
+				},
+				{
+					"name": "LATE",
+					"children": [{
+							"name": "CARNIAN",
+							"min": -237,
+							"max": -227
+						},
+						{
+							"name": "NORIAN",
+							"min": -227,
+							"max": -208.5
+						},
+						{
+							"name": "RHAETIAN",
+							"min": -208.5,
+							"max": -201.3
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "JURASSIC",
+			"children": [{
+					"name": "EARLY",
+					"children": [{
+							"name": "HETTANGIAN",
+							"min": -201.3,
+							"max": -199.3
+						},
+						{
+							"name": "SINEMURIAN",
+							"min": -199.3,
+							"max": -190.8
+						},
+						{
+							"name": "PLIENSBACHIAN",
+							"min": -190.8,
+							"max": -182.7
+						},
+						{
+							"name": "TOARCIAN",
+							"min": -182.7,
+							"max": -174.1
+						}
+					]
+				},
+				{
+					"name": "MIDDLE",
+					"children": [{
+							"name": "AALENIAN",
+							"min": -174.1,
+							"max": -170.3
+						},
+						{
+							"name": "BAJOCIAN",
+							"min": -170.3,
+							"max": -168.3
+						},
+						{
+							"name": "BATHONIAN",
+							"min": -168.3,
+							"max": -166.1
+						},
+						{
+							"name": "CALLOVIAN",
+							"min": -166.1,
+							"max": -163.5
+						}
+					]
+				},
+				{
+					"name": "LATE",
+					"children": [{
+							"name": "OXFORDIAN",
+							"min": -163.5,
+							"max": -157.3
+						},
+						{
+							"name": "KIMMERIDGIAN",
+							"min": -157.3,
+							"max": -152.1
+						},
+						{
+							"name": "TITHONIAN",
+							"min": -152.1,
+							"max": -145.0
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "CRETACEOUS",
+			"children": [{
+					"name": "EARLY",
+					"children": [{
+							"name": "BERRIASIAN",
+							"min": -145.0,
+							"max": -139.8
+						},
+						{
+							"name": "VALANGINIAN",
+							"min": -139.8,
+							"max": -132.9
+						},
+						{
+							"name": "HAUTERIVIAN",
+							"min": -132.9,
+							"max": -129.4
+						},
+						{
+							"name": "BARREMIAN",
+							"min": -129.4,
+							"max": -125
+						},
+						{
+							"name": "APTIAN",
+							"min": -125,
+							"max": -113
+						},
+						{
+							"name": "CALLOVIAN",
+							"min": -113,
+							"max": -100.5
+						}
+					]
+				},
+				{
+					"name": "LATE",
+					"children": [{
+							"name": "CENOMANIAN",
+							"min": -100.5,
+							"max": -93.9
+						},
+						{
+							"name": "TURONIAN",
+							"min": -93.9,
+							"max": -89.8
+						},
+						{
+							"name": "CONIACIAN",
+							"min": -89.8,
+							"max": -86.3
+						},
+						{
+							"name": "SANTONIAN",
+							"min": -86.3,
+							"max": -83.6
+						},
+						{
+							"name": "CAMPANIAN",
+							"min": -83.6,
+							"max": -72.1
+						},
+						{
+							"name": "MAASTRICHTIAN",
+							"min": -72.1,
+							"max": -66.0
+						}
+					]
+				}
+			]
+		}
+	]
+}

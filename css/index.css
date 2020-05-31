@@ -1,11 +1,18 @@
 body {
 	margin: 0 !important;
-	display: grid;
-	grid-template-rows: 75% 25%;
-	height:1500px;
 }
 
-#up{
+#container {
+	display: grid;
+	grid-template-rows: 75% 25%;
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+}
+
+#up {
 	display: grid;
 	grid-template-columns: 30% 70%;
 }
@@ -22,21 +29,26 @@ body {
 	grid-template-rows: 12.5% 12.5% 75%;
 }
 
-#barPart{
+#barPart {
 	display: grid;
-	grid-template-rows: 15% 85%;
+	grid-template-rows: 25px auto;
 }
 
-
-#down{
+#down {
 	display: grid;
 	grid-template-columns: 30% 70%;
 }
 
-#mapid{
-	display: grid;
-	overflow-x:scroll;
-	grid-template-columns: repeat(2,fr);
+#mapid {
+	overflow-x: scroll;
+	overflow-y: hidden;
+	white-space: nowrap;
+}
+
+#mapid .selectMap {
+	display: inline-block;
+	width: calc((25vh - 20px) * 2);
+	height: calc(25vh - 20px);
 }
 
 
@@ -53,5 +65,3 @@ body {
 .my-leaflet-marker {
 	pointer-events: none;
 }
-
-

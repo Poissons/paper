@@ -1,6 +1,6 @@
 /* global barGraphPromise d3 reHighlightPromise */
 Promise.all([barGraphPromise]).then(([[finalData, PhylumClassOrderFamilyGenusSpecies, datum]]) => {
-  //并未引入rehighlight
+  // 并未引入rehighlight
   const height = $('#tree').height()
   const width = $('#tree').width()
 
@@ -30,8 +30,9 @@ Promise.all([barGraphPromise]).then(([[finalData, PhylumClassOrderFamilyGenusSpe
     const svg = d3
       .create('svg')
       .attr('viewBox', [0, 0, width, height])
+      .attr('width', width)
+      .attr('height', height)
       .style('font', '10px sans-serif')
-
     const cell = svg
       .selectAll('g')
       .data(root.descendants())
@@ -60,8 +61,7 @@ Promise.all([barGraphPromise]).then(([[finalData, PhylumClassOrderFamilyGenusSpe
 
     text.append('tspan').text((d) => d.data.name)
 
-    const tspan = text.append("tspan")
-        .attr("fill-opacity", d => labelVisible(d) * 0.7)
+    const tspan = text.append('tspan').attr('fill-opacity', (d) => labelVisible(d) * 0.7)
 
     cell.append('title').text(
       (d) =>

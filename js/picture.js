@@ -2,7 +2,6 @@ Promise.all([barGraphPromise]).then(([[finalData, PhylumClassOrderFamilyGenusSpe
   const height = $('#picture').height()
   const width = $('#picture').width()
 
-
   d3.json('./data/picture.json').then((pictureJson) => {
     format = d3.format('.2f')
     color = d3.scaleOrdinal(d3.quantize(d3.interpolateRainbow, pictureJson.children.length + 1))
@@ -19,8 +18,9 @@ Promise.all([barGraphPromise]).then(([[finalData, PhylumClassOrderFamilyGenusSpe
       const svg = d3
         .create('svg')
         .attr('viewBox', [0, 0, width, height])
+        .attr('width', width)
+        .attr('height', height)
         .style('font', '10px sans-serif')
-
 
       const cell = svg
         .selectAll('g')
@@ -83,8 +83,7 @@ Promise.all([barGraphPromise]).then(([[finalData, PhylumClassOrderFamilyGenusSpe
           .duration(750)
           .attr('transform', (d) => `translate(${d.target.x0},${d.target.y0})`)
 
-        rect.transition(t).attr('width', (d) => rectWidth
-        (d.target))
+        rect.transition(t).attr('width', (d) => rectWidth(d.target))
         text.transition(t).attr('fill-opacity', (d) => +labelVisible(d.target))
         tspan.transition(t).attr('fill-opacity', (d) => labelVisible(d.target) * 0.7)
       }

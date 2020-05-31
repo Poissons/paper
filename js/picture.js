@@ -1,6 +1,5 @@
 /* global d3 $ */
 d3.json('./data/picture.json').then((pictureJson) => {
-  console.log(pictureJson)
   const height = $('#picture').height()
   const width = $('#picture').width()
   const format = d3.format('.2f')

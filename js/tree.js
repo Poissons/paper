@@ -1,5 +1,5 @@
-/* global barGraphPromise d3 reHighlightPromise */
-Promise.all([barGraphPromise]).then(([[finalData, PhylumClassOrderFamilyGenusSpecies, datum]]) => {
+/* global barGraphPromise d3 $ */
+barGraphPromise.then(([finalData, PhylumClassOrderFamilyGenusSpecies, datum]) => {
   // 并未引入rehighlight
   const height = $('#tree').height()
   const width = $('#tree').width()
@@ -18,7 +18,7 @@ Promise.all([barGraphPromise]).then(([[finalData, PhylumClassOrderFamilyGenusSpe
   myDict.name = 'all'
   myDict.children = transform(PhylumClassOrderFamilyGenusSpecies)
 
-  partition = (data) => {
+  const partition = (data) => {
     const root = d3.hierarchy(data).count()
     return d3.partition().size([height, ((root.height + 1) * width) / 3])(root)
   }

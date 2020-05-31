@@ -1,4 +1,4 @@
-/* globals d3 dataPromise */
+/* globals d3 dataPromise $ */
 window.dataPromise = d3.csv('./data/data_combined_sorted.csv').then((dataCollection) => {
   const NUMERIC_KEYS = [
     'modern_longitude',

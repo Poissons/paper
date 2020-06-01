@@ -14,29 +14,29 @@ body {
 
 #up {
 	display: grid;
-	grid-template-columns: 30% 70%;
+	grid-template-columns: 20% 80%;
 }
 
 #left {
 	display: grid;
-	grid-template-rows: 25% 75%;
+	grid-template-rows: 30% 70%;
 }
 
 
 
 #right {
 	display: grid;
-	grid-template-rows: 12.5% 12.5% 75%;
+	grid-template-rows: 15% 15% 70%;
 }
 
 #barPart {
 	display: grid;
-	grid-template-rows: 25px auto;
+	grid-template-rows: 30px auto;
 }
 
 #down {
 	display: grid;
-	grid-template-columns: 30% 70%;
+	grid-template-columns: 20% 80%;
 }
 
 #mapid {

@@ -1,6 +1,7 @@
-/* global barGraphPromise d3 $ */
-barGraphPromise.then(([finalData, PhylumClassOrderFamilyGenusSpecies, datum]) => {
-  // 并未引入rehighlight
+/* global barGraphPromise d3 reHighlightPromise */
+Promise.all([barGraphPromise, reHighlightPromise]).then(
+  ([[finalData, PhylumClassOrderFamilyGenusSpecies, datum], reHighlight]) => {
+// barGraphPromise.then(([finalData, PhylumClassOrderFamilyGenusSpecies, datum]) => {
   const height = $('#tree').height()
   const width = $('#tree').width()
 

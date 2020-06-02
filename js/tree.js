@@ -152,7 +152,6 @@ Promise.all([barGraphPromise, reHighlightPromise]).then(
       const el = d3.select(this)
       const sx = xT(d.start_year)
       const w = xT(d.end_year) - xT(d.start_year)
-      const isLabelRight = sx > width / 2 ? sx + w < width : sx - w > 0
 
       el.style('cursor', 'pointer')
 
@@ -161,14 +160,8 @@ Promise.all([barGraphPromise, reHighlightPromise]).then(
         .attr('height', yT.bandwidth())
         .attr('width', w)
         .attr('fill', 'lightgrey')
-
-      el.append('text')
-        .text(d.species)
-        .attr('x', isLabelRight ? sx - 5 : sx + w + 5)
-        .attr('y', 2.5)
-        .attr('fill', 'black')
-        .style('text-anchor', isLabelRight ? 'end' : 'start')
-        .style('dominant-baseline', 'hanging')
+        .append('title')
+        .text(d.Species)
     }
 
     const formatDate = (d) => (d < 0 ? `${-d}MA` : `${d}AD`)
@@ -231,7 +224,7 @@ Promise.all([barGraphPromise, reHighlightPromise]).then(
       const civs = d3.selectAll('.civ')
 
       civs
-        .data(filteredData, (d) => d.species)
+        .data(filteredData, (d) => d.Species)
         .transition()
         .ease(d3.easeCubic)
         .attr('transform', (d, i) => `translate(0 ${yT(d.lane)})`)

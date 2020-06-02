@@ -1,6 +1,6 @@
 /* global barGraphPromise d3 reHighlightPromise $ */
 Promise.all([barGraphPromise, reHighlightPromise]).then(
-  ([[finalData, PhylumClassOrderFamilyGenusSpecies, datum], reHighlight]) => {
+  ([[finalData, PhylumClassOrderFamilyGenusSpecies], reHighlight]) => {
     // barGraphPromise.then(([finalData, PhylumClassOrderFamilyGenusSpecies, datum]) => {
     const height = $('#tree').height()
     const width = $('#tree').width()
@@ -123,18 +123,10 @@ Promise.all([barGraphPromise, reHighlightPromise]).then(
         return svg
       },
     }
-    let lastLane = -1
-    finalData = finalData.filter((data) => {
-      if (data.lane === lastLane) return false
-      else {
-        lastLane = data.lane
-        return true
-      }
-    })
 
     const yT = d3
       .scaleBand()
-      .domain(d3.range(finalData.length))
+      .domain(d3.range(finalData[finalData.length - 1].lane + 1))
       .range([0, heightT - marginT.bottom - marginT.top])
       .padding(0.2)
 
@@ -211,7 +203,7 @@ Promise.all([barGraphPromise, reHighlightPromise]).then(
         .attr('stroke', 'rgba(0,0,0,0.2)')
         .style('pointer-events', 'none')
 
-      groups.attr('transform', (d, i) => `translate(0 ${yT(i)})`)
+      groups.attr('transform', (d, i) => `translate(0 ${yT(d.lane)})`)
 
       groups
         .each(getRect)
@@ -242,7 +234,7 @@ Promise.all([barGraphPromise, reHighlightPromise]).then(
         .data(filteredData, (d) => d.species)
         .transition()
         .ease(d3.easeCubic)
-        .attr('transform', (d, i) => `translate(0 ${yT(i)})`)
+        .attr('transform', (d, i) => `translate(0 ${yT(d.lane)})`)
       return parent
     })()
 

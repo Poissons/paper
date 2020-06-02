@@ -1,4 +1,4 @@
-/* global barGraphPromise d3 reHighlightPromise */
+/* global barGraphPromise d3 reHighlightPromise $ */
 Promise.all([barGraphPromise, reHighlightPromise]).then(
   ([[finalData, PhylumClassOrderFamilyGenusSpecies, datum], reHighlight]) => {
     // barGraphPromise.then(([finalData, PhylumClassOrderFamilyGenusSpecies, datum]) => {
@@ -109,7 +109,7 @@ Promise.all([barGraphPromise, reHighlightPromise]).then(
 
     document.getElementById('tree').appendChild(chart)
 
-    //画timeline图
+    // 画timeline图
     const heightT = $('#time').height()
     const widthT = $('#time').width()
     const marginT = { top: 25, right: 30, bottom: 20, left: 10 }
@@ -123,6 +123,14 @@ Promise.all([barGraphPromise, reHighlightPromise]).then(
         return svg
       },
     }
+    let lastLane = -1
+    finalData = finalData.filter((data) => {
+      if (data.lane === lastLane) return false
+      else {
+        lastLane = data.lane
+        return true
+      }
+    })
 
     const yT = d3
       .scaleBand()

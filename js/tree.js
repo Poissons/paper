@@ -2,8 +2,8 @@
 Promise.all([barGraphPromise, reHighlightPromise]).then(
   ([[finalData, PhylumClassOrderFamilyGenusSpecies], reHighlight]) => {
     // barGraphPromise.then(([finalData, PhylumClassOrderFamilyGenusSpecies, datum]) => {
-    const height = $('#tree').height()
-    const width = $('#tree').width()
+    const height = 8000 // $('#tree').height()
+    const width = $('#tree').width() - 20
 
     function transform(node) {
       if (Array.isArray(node)) {

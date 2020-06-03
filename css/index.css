@@ -17,11 +17,14 @@ body {
 	grid-template-columns: 20% 80%;
 }
 
-#left {
-	display: grid;
-	grid-template-rows: 30% 70%;
+#map1 {
+	height: 22vh;
 }
 
+#tree {
+	height: 52vh;
+	overflow-y: scroll;
+}
 
 
 #right {

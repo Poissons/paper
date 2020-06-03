@@ -17,12 +17,13 @@ body {
 	grid-template-columns: 20% 80%;
 }
 
-#map1 {
-	height: 22vh;
+#left {
+	display: grid;
+	grid-template-rows: 30% 70%;
+	overflow: hidden;
 }
 
 #tree {
-	height: 52vh;
 	overflow-y: scroll;
 }
 

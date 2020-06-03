@@ -1,42 +1,4 @@
 /* globals d3 dataPromise $ */
-window.dataPromise = d3.csv('./data/data_combined_sorted.csv').then((dataCollection) => {
-  const NUMERIC_KEYS = [
-    'modern_longitude',
-    'modern_latitude',
-    'start_year',
-    'end_year',
-    'ancient_longitude',
-    'ancient_latitude',
-    'era',
-  ]
-  const PhylumClassOrderFamilyGenusSpecies = new Map()
-  const KEYS = ['Phylum', 'Class', 'Order', 'Family', 'Genus']
-  const LAST_KEY = KEYS[KEYS.length - 1]
-  let lane = -1
-  for (const data of dataCollection.values()) {
-    for (const key of NUMERIC_KEYS) {
-      data[key] = +data[key]
-    }
-    data.lives = data.end_year - data.start_year
-    let node = PhylumClassOrderFamilyGenusSpecies
-    for (const key of KEYS) {
-      if (node.has(data[key])) {
-        node = node.get(data[key])
-      } else {
-        const newNode = key === LAST_KEY ? [new Set(), new Set()] : new Map()
-        node.set(data[key], newNode)
-        node = newNode
-      }
-    }
-    if (!node[0].has(data.Species)) {
-      lane++
-      node[0].add(data.Species)
-    }
-    data.lane = lane
-    node[1].add(data)
-  }
-  return [dataCollection, PhylumClassOrderFamilyGenusSpecies]
-})
 window.barGraphPromise = dataPromise.then(([earlyData, PhylumClassOrderFamilyGenusSpecies]) => {
   const padding = { top: 20, right: 20, bottom: 20, left: 30 }
   const height = $('#barGraph').height()

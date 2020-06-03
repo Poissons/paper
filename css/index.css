@@ -26,18 +26,18 @@ body {
 #right {
 	display: grid;
 	grid-template-rows: 15% 15% 70%;
-	overflow: hidden;
+	/* overflow: hidden; */
 }
 
 #barPart {
 	display: grid;
 	grid-template-rows: 30px auto;
 }
-
+/* 
 #time{
 	overflow-y: scroll;
 	overflow-x: auto;
-}
+} */
 
 #down {
 	display: grid;

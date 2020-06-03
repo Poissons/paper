@@ -1,6 +1,6 @@
 /* global barGraphPromise d3 reHighlightPromise $ */
 Promise.all([barGraphPromise, reHighlightPromise]).then(
-  ([[finalData, PhylumClassOrderFamilyGenusSpecies], reHighlight]) => {
+  ([[finalData, PhylumClassOrderFamilyGenusSpecies, datum], reHighlight]) => {
     // barGraphPromise.then(([finalData, PhylumClassOrderFamilyGenusSpecies, datum]) => {
     const height = $('#tree').height()
     const width = $('#tree').width()
@@ -114,7 +114,7 @@ Promise.all([barGraphPromise, reHighlightPromise]).then(
         tspan.transition(t).attr('fill-opacity', (d) => labelVisible(d.target) * 0.7)
       }
 
-      let timer = 0
+      const timer = 0
       let lastNode = null
 
       function dblclicked(p) {
@@ -212,55 +212,55 @@ Promise.all([barGraphPromise, reHighlightPromise]).then(
     const sortName = ['Phylum', 'Class', 'Order', 'Family', 'Genus', 'Species']
 
     function reDrawBar(nodeNameList, nodeDepth) {
-      let newData = finalData.filter((d) => {
+      const newData = finalData.filter((d) => {
         var boolValue = true
         for (var i = 0; i < nodeDepth; i++) {
-          if (d[sortName[i]] != nodeNameList[i]) {
+          if (d[sortName[i]] !== nodeNameList[i]) {
             boolValue = false
           }
         }
         return boolValue
       })
 
-      let nextNameSet = new Set()
+      const nextNameSet = new Set()
       newData.forEach((element) => {
         nextNameSet.add(element[sortName[nodeDepth]])
       })
 
-      let nextNameList = [...nextNameSet]
+      const nextNameList = [...nextNameSet]
       console.log(nextNameList)
 
-      let nextItemList = []
+      const nextItemList = []
 
       for (var i = 0; i < nextNameList.length; i++) {
-        let obj = {}
+        const obj = {}
         let min, max
-        let element = nextNameList[i]
-        obj['name'] = element
-        let selectData = newData.filter((d) => {
-          return element == d[sortName[nodeDepth]]
+        const element = nextNameList[i]
+        obj.name = element
+        const selectData = newData.filter((d) => {
+          return element === d[sortName[nodeDepth]]
         })
         for (var j = 0; j < selectData.length; j++) {
-          element1 = selectData[j]
-          if (j == 0) {
-            min = element1['start_year']
-            max = element1['end_year']
+          const element1 = selectData[j]
+          if (j === 0) {
+            min = element1.start_year
+            max = element1.end_year
             console.log(min, max)
           } else {
-            min = Math.min(min, element1['start_year'])
-            max = Math.max(max, element1['end_year'])
+            min = Math.min(min, element1.start_year)
+            max = Math.max(max, element1.end_year)
           }
         }
-        obj['start_year'] = min
-        obj['end_year'] = max
+        obj.start_year = min
+        obj.end_year = max
         nextItemList.push(obj)
       }
     }
 
     const chartT = (() => {
       const filteredData = finalData
-      filteredData.forEach((d)=>{
-        d.color=d3.color('lightgrey')
+      filteredData.forEach((d) => {
+        d.color = d3.color('lightgrey')
       })
 
       const parent = document.createElement('div')
@@ -291,7 +291,7 @@ Promise.all([barGraphPromise, reHighlightPromise]).then(
       groups
         .each(getRect)
         .on('mouseover', function (d) {
-          d3.select(this).select("rect").attr("fill", d.color.darker())
+          d3.select(this).select('rect').attr('fill', d.color.darker())
         })
         .on('mouseleave', function (d) {
           d3.select(this).select('rect').attr('fill', 'lightgrey')

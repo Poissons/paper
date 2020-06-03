@@ -20,22 +20,23 @@ body {
 #left {
 	display: grid;
 	grid-template-rows: 30% 70%;
-	overflow: hidden;
-}
-
-#tree {
-	overflow-y: scroll;
 }
 
 
 #right {
 	display: grid;
 	grid-template-rows: 15% 15% 70%;
+	overflow: hidden;
 }
 
 #barPart {
 	display: grid;
 	grid-template-rows: 30px auto;
+}
+
+#time{
+	overflow-y: scroll;
+	overflow-x: auto;
 }
 
 #down {

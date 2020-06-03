@@ -2,8 +2,8 @@
 Promise.all([barGraphPromise, reHighlightPromise]).then(
   ([[finalData, PhylumClassOrderFamilyGenusSpecies], reHighlight]) => {
     // barGraphPromise.then(([finalData, PhylumClassOrderFamilyGenusSpecies, datum]) => {
-    const height = 8000 // $('#tree').height()
-    const width = $('#tree').width() - 20
+    const height =$('#tree').height()
+    const width = $('#tree').width() 
 
     function transform(node) {
       if (Array.isArray(node)) {
@@ -150,9 +150,9 @@ Promise.all([barGraphPromise, reHighlightPromise]).then(
     document.getElementById('tree').appendChild(chart)
 
     // 画timeline图
-    const heightT = $('#time').height()
+    const heightT = 19000
     const widthT = $('#time').width()
-    const marginT = { top: 25, right: 30, bottom: 20, left: 10 }
+    const marginT = { top: 30, right: 30, bottom: 20, left: 10 }
 
     const DOM = {
       svg(width, height) {
@@ -167,7 +167,6 @@ Promise.all([barGraphPromise, reHighlightPromise]).then(
     const yT = d3
       .scaleBand()
       .domain(d3.range(finalData[finalData.length - 1].lane + 1))
-      //改
       .range([0, heightT - marginT.bottom - marginT.top])
       .padding(0.2)
 
@@ -220,7 +219,6 @@ Promise.all([barGraphPromise, reHighlightPromise]).then(
 
       parent.classList.add('timeGraph')
 
-      //改
       const svg = d3.select(DOM.svg(widthT + 200, heightT))
 
       const g = svg
@@ -234,7 +232,6 @@ Promise.all([barGraphPromise, reHighlightPromise]).then(
       const line = svg
         .append('line')
         .attr('y1', marginT.top - 10)
-        //改
         .attr('y2', heightT - marginT.bottom)
         .attr('stroke', 'rgba(0,0,0,0.2)')
         .style('pointer-events', 'none')
@@ -243,11 +240,11 @@ Promise.all([barGraphPromise, reHighlightPromise]).then(
 
       groups
         .each(getRect)
-        // .on('mouseover', function (d) {
-        //   d3.select(this).select('rect').attr('fill', d.color.darker())
-        // })
-        .on('mouseleave', function (d) {
+        .on('mouseover', function (d) {
           d3.select(this).select('rect').attr('fill', 'grey')
+        })
+        .on('mouseleave', function (d) {
+          d3.select(this).select('rect').attr('fill', 'lightgrey')
           tooltip.style('opacity', 0)
         })
 
@@ -258,7 +255,6 @@ Promise.all([barGraphPromise, reHighlightPromise]).then(
 
       svg
         .append('g')
-        //改
         .attr('transform', (d, i) => `translate(${marginT.left} ${heightT - marginT.bottom})`)
         .call(axisBottom)
 

@@ -2,8 +2,8 @@
 Promise.all([barGraphPromise, reHighlightPromise]).then(
   ([[finalData, PhylumClassOrderFamilyGenusSpecies], reHighlight]) => {
     // barGraphPromise.then(([finalData, PhylumClassOrderFamilyGenusSpecies, datum]) => {
-    const height =$('#tree').height()
-    const width = $('#tree').width() 
+    const height = $('#tree').height()-30
+    const width = $('#tree').width()
 
     function transform(node) {
       if (Array.isArray(node)) {
@@ -51,7 +51,7 @@ Promise.all([barGraphPromise, reHighlightPromise]).then(
         })
         .style('cursor', 'pointer')
         .on('click', clicked)
-        .on('dblclick',dblclicked)
+        .on('dblclick', dblclicked)
 
       const text = cell
         .append('text')
@@ -76,7 +76,6 @@ Promise.all([barGraphPromise, reHighlightPromise]).then(
 
       function clicked(p) {
         focus = focus === p ? (p = p.parent) : p
-        console.log(focus)
 
         if (focus.parent) {
           let nodeNameList = []
@@ -85,13 +84,14 @@ Promise.all([barGraphPromise, reHighlightPromise]).then(
           for (let i = 0; i < nodeDepth; i++) {
             nodeNameList.push(node.data.name)
             node = node.parent
-            console.log(node)
           }
 
           nodeNameList = nodeNameList.reverse()
           reHighlight(nodeNameList, nodeDepth)
+          reDrawBar(nodeNameList, nodeDepth)
         } else {
           reHighlight([], 0)
+          reDrawBar([], 0)
         }
 
         root.each(
@@ -115,20 +115,19 @@ Promise.all([barGraphPromise, reHighlightPromise]).then(
       }
 
       let timer = 0
-        let lastNode = null
+      let lastNode = null
 
-      function dblclicked(p){
+      function dblclicked(p) {
         focus = focus === p ? (p = p.parent) : p
         console.log(focus)
         if (focus.depth === 1) {
           if (focus === lastNode) {
-            lastNode=null
-            if(timer){
+            lastNode = null
+            if (timer) {
               clearTimeout(timer)
               handleDblClick(focus)
             }
           }
-          
         }
       }
 
@@ -210,14 +209,22 @@ Promise.all([barGraphPromise, reHighlightPromise]).then(
 
     const axisBottom = d3.axisBottom(xT).tickPadding(2).tickFormat(formatDate)
 
+    const reDrawColor=['red','orange','yellow','green','blue','purple']
+    function reDrawBar(nodeNameList, nodeDepth){
+      if(nodeDepth==1){
+        var phylum=nodeNameList[0]
+        var chooseRect = d3.selectAll(`.civ[data-phylum="${phylum}"]`)
+        chooseRect.select('rect').attr('fill', reDrawColor[nodeDepth-1])
+      }
+    }
+
     const chartT = (() => {
       const filteredData = finalData
-
-      // filteredData.forEach((d) => (d.color = d3.color(color(d.species_name))));
+      filteredData.forEach((d)=>{
+        d.color=d3.color('lightgrey')
+      })
 
       const parent = document.createElement('div')
-
-      parent.classList.add('timeGraph')
 
       const svg = d3.select(DOM.svg(widthT + 200, heightT))
 
@@ -225,7 +232,18 @@ Promise.all([barGraphPromise, reHighlightPromise]).then(
         .append('g')
         .attr('transform', (d, i) => `translate(${marginT.left} ${marginT.top})`)
 
-      const groups = g.selectAll('g').data(filteredData).enter().append('g').attr('class', 'civ')
+      const groups = g
+        .selectAll('g')
+        .data(filteredData)
+        .enter()
+        .append('g')
+        .attr('class', 'civ')
+        .attr('data-phylum', (d) => d.Phylum)
+        .attr('data-class', (d) => d.Class)
+        .attr('data-order', (d) => d.Order)
+        .attr('data-family', (d) => d.Family)
+        .attr('data-genus', (d) => d.Genus)
+        .attr('data-species', (d) => d.Species)
 
       const tooltip = d3.select(document.createElement('div')).call(createTooltip)
 
@@ -241,7 +259,7 @@ Promise.all([barGraphPromise, reHighlightPromise]).then(
       groups
         .each(getRect)
         .on('mouseover', function (d) {
-          d3.select(this).select('rect').attr('fill', 'grey')
+          d3.select(this).select("rect").attr("fill", d.color.darker())
         })
         .on('mouseleave', function (d) {
           d3.select(this).select('rect').attr('fill', 'lightgrey')

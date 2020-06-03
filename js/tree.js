@@ -39,6 +39,8 @@ timeGraphPromise.then(([PhylumClassOrderFamilyGenusSpecies, datum, reHighlight, 
       .join('g')
       .attr('transform', (d) => `translate(${d.y0},${d.x0})`)
 
+    let timer = 0
+    let lastFocus = null
     const rect = cell
       .append('rect')
       .attr('width', (d) => d.y1 - d.y0 - 1)
@@ -49,8 +51,25 @@ timeGraphPromise.then(([PhylumClassOrderFamilyGenusSpecies, datum, reHighlight, 
         else return 'lightgrey'
       })
       .style('cursor', 'pointer')
-      .on('click', clicked)
-      .on('dblclick', dblclicked)
+      .on('click', (node) => {
+        focus = focus === node ? node.parent : node
+        if (focus.depth === 1) {
+          if (focus === lastFocus) {
+            lastFocus = null
+            if (timer) clearTimeout(timer)
+            handleDblClick(focus)
+          } else {
+            lastFocus = focus
+            timer = setTimeout(() => {
+              timer = 0
+              lastFocus = null
+              clicked(focus)
+            }, 300)
+          }
+        } else {
+          clicked(focus)
+        }
+      })
 
     const text = cell
       .append('text')
@@ -73,9 +92,7 @@ timeGraphPromise.then(([PhylumClassOrderFamilyGenusSpecies, datum, reHighlight, 
           .join('/')}\n`,
     )
 
-    function clicked(p) {
-      focus = focus === p ? (p = p.parent) : p
-
+    function clicked(focus) {
       if (focus.parent) {
         let nodeNameList = []
         let node = focus
@@ -96,10 +113,10 @@ timeGraphPromise.then(([PhylumClassOrderFamilyGenusSpecies, datum, reHighlight, 
       root.each(
         (d) =>
           (d.target = {
-            x0: ((d.x0 - p.x0) / (p.x1 - p.x0)) * height,
-            x1: ((d.x1 - p.x0) / (p.x1 - p.x0)) * height,
-            y0: d.y0 - p.y0,
-            y1: d.y1 - p.y0,
+            x0: ((d.x0 - focus.x0) / (focus.x1 - focus.x0)) * height,
+            x1: ((d.x1 - focus.x0) / (focus.x1 - focus.x0)) * height,
+            y0: d.y0 - focus.y0,
+            y1: d.y1 - focus.y0,
           }),
       )
 
@@ -111,23 +128,6 @@ timeGraphPromise.then(([PhylumClassOrderFamilyGenusSpecies, datum, reHighlight, 
       rect.transition(t).attr('height', (d) => rectHeight(d.target))
       text.transition(t).attr('fill-opacity', (d) => +labelVisible(d.target))
       tspan.transition(t).attr('fill-opacity', (d) => labelVisible(d.target) * 0.7)
-    }
-
-    const timer = 0
-    let lastNode = null
-
-    function dblclicked(p) {
-      focus = focus === p ? (p = p.parent) : p
-      console.log(focus)
-      if (focus.depth === 1) {
-        if (focus === lastNode) {
-          lastNode = null
-          if (timer) {
-            clearTimeout(timer)
-            handleDblClick(focus)
-          }
-        }
-      }
     }
 
     const handleDblClick = (d) => {

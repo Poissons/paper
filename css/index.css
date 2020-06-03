@@ -20,8 +20,12 @@ body {
 #left {
 	display: grid;
 	grid-template-rows: 30% 70%;
+	overflow: hidden;
 }
 
+#tree {
+	overflow-y: scroll;
+}
 
 
 #right {

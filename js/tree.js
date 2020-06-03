@@ -40,7 +40,7 @@ timeGraphPromise.then(([PhylumClassOrderFamilyGenusSpecies, datum, reHighlight, 
       .attr('transform', (d) => `translate(${d.y0},${d.x0})`)
 
     let timer = 0
-    let lastFocus = null
+    let lastNode = null
     const rect = cell
       .append('rect')
       .attr('width', (d) => d.y1 - d.y0 - 1)
@@ -52,22 +52,21 @@ timeGraphPromise.then(([PhylumClassOrderFamilyGenusSpecies, datum, reHighlight, 
       })
       .style('cursor', 'pointer')
       .on('click', (node) => {
-        focus = focus === node ? node.parent : node
-        if (focus.depth === 1) {
-          if (focus === lastFocus) {
-            lastFocus = null
+        if (node.depth === 1) {
+          if (node === lastNode) {
+            lastNode = null
             if (timer) clearTimeout(timer)
-            handleDblClick(focus)
+            handleDblClick(node)
           } else {
-            lastFocus = focus
+            lastNode = node
             timer = setTimeout(() => {
               timer = 0
-              lastFocus = null
-              clicked(focus)
+              lastNode = null
+              clicked(node)
             }, 300)
           }
         } else {
-          clicked(focus)
+          clicked(node)
         }
       })
 
@@ -92,7 +91,8 @@ timeGraphPromise.then(([PhylumClassOrderFamilyGenusSpecies, datum, reHighlight, 
           .join('/')}\n`,
     )
 
-    function clicked(focus) {
+    function clicked(node) {
+      focus = focus === node ? node.parent : node
       if (focus.parent) {
         let nodeNameList = []
         let node = focus
@@ -103,11 +103,11 @@ timeGraphPromise.then(([PhylumClassOrderFamilyGenusSpecies, datum, reHighlight, 
         }
 
         nodeNameList = nodeNameList.reverse()
-        reHighlight(nodeNameList, nodeDepth)
-        reDrawBar(nodeNameList, nodeDepth)
+        reHighlight(nodeNameList)
+        reDrawBar(nodeNameList)
       } else {
-        reHighlight([], 0)
-        reDrawBar([], 0)
+        reHighlight([])
+        reDrawBar([])
       }
 
       root.each(

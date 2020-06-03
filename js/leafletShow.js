@@ -127,7 +127,7 @@ window.reHighlightPromise = dataPromise.then(
       }
     }
 
-    function reHighlight(nodeNameList, nodeDepth) {
+    function reHighlight(nodeNameList) {
       const dataRedraw = []
       let node = PhylumClassOrderFamilyGenusSpecies
       for (const key of nodeNameList) {

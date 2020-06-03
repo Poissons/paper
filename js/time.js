@@ -9,18 +9,12 @@ window.timeGraphPromise = Promise.all([barGraphPromise, reHighlightPromise]).the
     const DOM = {
       svg(width, height) {
         const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
-        svg.setAttribute('viewBox', [0, 0, widthT, heightT])
-        svg.setAttribute('width', widthT)
-        svg.setAttribute('height', heightT)
+        svg.setAttribute('viewBox', [0, 0, width, height])
+        svg.setAttribute('width', width)
+        svg.setAttribute('height', height)
         return svg
       },
     }
-
-    const yT = d3
-      .scaleBand()
-      .domain(d3.range(finalData[finalData.length - 1].lane + 1))
-      .range([0, heightT - marginT.bottom - marginT.top])
-      .padding(0.2)
 
     const xT = d3
       .scaleLinear()
@@ -46,79 +40,36 @@ window.timeGraphPromise = Promise.all([barGraphPromise, reHighlightPromise]).the
 
     const axisBottom = d3.axisBottom(xT).tickPadding(2).tickFormat(formatDate)
 
-    const getRect = function (d) {
-      const el = d3.select(this)
-      const sx = xT(d.start_year)
-      const w = xT(d.end_year) - xT(d.start_year)
+    const lightGrey = d3.color('lightgrey')
+    const darkGrey = lightGrey.darker()
 
-      el.style('cursor', 'pointer')
+    let chartT = null
+    const draw = (filteredData) => {
+      const yT = d3
+        .scaleBand()
+        .domain(d3.range(filteredData[filteredData.length - 1].lane + 1))
+        .range([0, heightT - marginT.bottom - marginT.top])
+        .padding(0.2)
 
-      el.append('rect')
-        .attr('x', sx)
-        .attr('height', yT.bandwidth())
-        .attr('width', w)
-        .attr('fill', 'lightgrey')
-        .append('title')
-        .text(d.Species)
-    }
+      const getRect = function (d) {
+        const el = d3.select(this)
+        const sx = xT(d.start_year)
+        const w = xT(d.end_year) - xT(d.start_year)
 
-    const sortName = ['Phylum', 'Class', 'Order', 'Family', 'Genus', 'Species']
+        el.style('cursor', 'pointer')
 
-    function reDrawBar(nodeNameList, nodeDepth) {
-      const newData = finalData.filter((d) => {
-        var boolValue = true
-        for (var i = 0; i < nodeDepth; i++) {
-          if (d[sortName[i]] !== nodeNameList[i]) {
-            boolValue = false
-          }
-        }
-        return boolValue
-      })
-
-      const nextNameSet = new Set()
-      newData.forEach((element) => {
-        nextNameSet.add(element[sortName[nodeDepth]])
-      })
-
-      const nextNameList = [...nextNameSet]
-      console.log(nextNameList)
-
-      const nextItemList = []
-
-      for (var i = 0; i < nextNameList.length; i++) {
-        const obj = {}
-        let min, max
-        const element = nextNameList[i]
-        obj.name = element
-        const selectData = newData.filter((d) => {
-          return element === d[sortName[nodeDepth]]
-        })
-        for (var j = 0; j < selectData.length; j++) {
-          const element1 = selectData[j]
-          if (j === 0) {
-            min = element1.start_year
-            max = element1.end_year
-            console.log(min, max)
-          } else {
-            min = Math.min(min, element1.start_year)
-            max = Math.max(max, element1.end_year)
-          }
-        }
-        obj.start_year = min
-        obj.end_year = max
-        nextItemList.push(obj)
+        el.append('rect')
+          .attr('x', sx)
+          .attr('height', yT.bandwidth())
+          .attr('width', w)
+          .attr('fill', 'lightgrey')
+          .append('title')
+          .text(d.Species)
       }
-    }
-
-    const chartT = (() => {
-      const filteredData = finalData
-      filteredData.forEach((d) => {
-        d.color = d3.color('lightgrey')
-      })
 
       const parent = document.createElement('div')
 
-      const svg = d3.select(DOM.svg(widthT + 200, heightT))
+      const svg = d3.select(DOM.svg(widthT, heightT))
 
       const g = svg
         .append('g')
@@ -144,7 +95,7 @@ window.timeGraphPromise = Promise.all([barGraphPromise, reHighlightPromise]).the
       groups
         .each(getRect)
         .on('mouseover', function (d) {
-          d3.select(this).select('rect').attr('fill', d.color.darker())
+          d3.select(this).select('rect').attr('fill', darkGrey)
         })
         .on('mouseleave', function (d) {
           d3.select(this).select('rect').attr('fill', 'lightgrey')
@@ -171,8 +122,43 @@ window.timeGraphPromise = Promise.all([barGraphPromise, reHighlightPromise]).the
         .transition()
         .ease(d3.easeCubic)
         .attr('transform', (d, i) => `translate(0 ${yT(d.lane)})`)
-      return parent
-    })()
+      document.getElementById('time').appendChild(parent)
+      chartT = parent
+    }
+
+    function reDrawBar(nodeNameList) {
+      let collection = PhylumClassOrderFamilyGenusSpecies
+      for (const key of nodeNameList) {
+        collection = collection.get(key)
+      }
+
+      const nextList = []
+      let lane = -1
+      let lastLane = -1
+      ;(function flatten(node) {
+        if (Array.isArray(node)) {
+          for (const data of node[1]) {
+            if (data.lane !== lastLane) {
+              lastLane = data.lane
+              lane++
+            }
+            nextList.push({
+              ...data,
+              lane,
+            })
+          }
+        } else {
+          for (const childNode of node.values()) {
+            flatten(childNode)
+          }
+        }
+      })(collection)
+
+      chartT.remove()
+      draw(nextList)
+    }
+
+    draw(finalData)
 
     // const chartT = (() => {
     //   const parent = document.createElement('div')
@@ -196,8 +182,6 @@ window.timeGraphPromise = Promise.all([barGraphPromise, reHighlightPromise]).the
     //   parent.appendChild(svg.node())
     //   return parent
     // })()
-
-    document.getElementById('time').appendChild(chartT)
 
     return [PhylumClassOrderFamilyGenusSpecies, datum, reHighlight, reDrawBar]
   },

@@ -51,6 +51,7 @@ Promise.all([barGraphPromise, reHighlightPromise]).then(
         })
         .style('cursor', 'pointer')
         .on('click', clicked)
+        .on('dblclick',dblclicked)
 
       const text = cell
         .append('text')
@@ -75,6 +76,23 @@ Promise.all([barGraphPromise, reHighlightPromise]).then(
 
       function clicked(p) {
         focus = focus === p ? (p = p.parent) : p
+        console.log(focus)
+
+        if (focus.parent) {
+          let nodeNameList = []
+          let node = focus
+          const nodeDepth = focus.depth
+          for (let i = 0; i < nodeDepth; i++) {
+            nodeNameList.push(node.data.name)
+            node = node.parent
+            console.log(node)
+          }
+
+          nodeNameList = nodeNameList.reverse()
+          reHighlight(nodeNameList, nodeDepth)
+        } else {
+          reHighlight([], 0)
+        }
 
         root.each(
           (d) =>
@@ -94,6 +112,28 @@ Promise.all([barGraphPromise, reHighlightPromise]).then(
         rect.transition(t).attr('height', (d) => rectHeight(d.target))
         text.transition(t).attr('fill-opacity', (d) => +labelVisible(d.target))
         tspan.transition(t).attr('fill-opacity', (d) => labelVisible(d.target) * 0.7)
+      }
+
+      let timer = 0
+        let lastNode = null
+
+      function dblclicked(p){
+        focus = focus === p ? (p = p.parent) : p
+        console.log(focus)
+        if (focus.depth === 1) {
+          if (focus === lastNode) {
+            lastNode=null
+            if(timer){
+              clearTimeout(timer)
+              handleDblClick(focus)
+            }
+          }
+          
+        }
+      }
+
+      const handleDblClick = (d) => {
+        datum[d.data.name].show = !datum[d.data.name].show
       }
 
       function rectHeight(d) {
@@ -127,6 +167,7 @@ Promise.all([barGraphPromise, reHighlightPromise]).then(
     const yT = d3
       .scaleBand()
       .domain(d3.range(finalData[finalData.length - 1].lane + 1))
+      //改
       .range([0, heightT - marginT.bottom - marginT.top])
       .padding(0.2)
 
@@ -179,6 +220,7 @@ Promise.all([barGraphPromise, reHighlightPromise]).then(
 
       parent.classList.add('timeGraph')
 
+      //改
       const svg = d3.select(DOM.svg(widthT + 200, heightT))
 
       const g = svg
@@ -192,6 +234,7 @@ Promise.all([barGraphPromise, reHighlightPromise]).then(
       const line = svg
         .append('line')
         .attr('y1', marginT.top - 10)
+        //改
         .attr('y2', heightT - marginT.bottom)
         .attr('stroke', 'rgba(0,0,0,0.2)')
         .style('pointer-events', 'none')
@@ -215,6 +258,7 @@ Promise.all([barGraphPromise, reHighlightPromise]).then(
 
       svg
         .append('g')
+        //改
         .attr('transform', (d, i) => `translate(${marginT.left} ${heightT - marginT.bottom})`)
         .call(axisBottom)
 

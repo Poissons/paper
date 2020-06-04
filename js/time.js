@@ -51,7 +51,7 @@ window.timeGraphPromise = Promise.all([barGraphPromise, reHighlightPromise]).the
           .attr('width', w)
           .attr('fill', 'lightgrey')
           .append('title')
-          .text(d.Species)
+          .text(d.name)
       }
 
       const parent = document.createElement('div')
@@ -62,18 +62,7 @@ window.timeGraphPromise = Promise.all([barGraphPromise, reHighlightPromise]).the
         .append('g')
         .attr('transform', (d, i) => `translate(${marginT.left} ${marginT.top})`)
 
-      const groups = g
-        .selectAll('g')
-        .data(filteredData)
-        .enter()
-        .append('g')
-        .attr('class', 'civ')
-        .attr('data-phylum', (d) => d.Phylum)
-        .attr('data-class', (d) => d.Class)
-        .attr('data-order', (d) => d.Order)
-        .attr('data-family', (d) => d.Family)
-        .attr('data-genus', (d) => d.Genus)
-        .attr('data-species', (d) => d.Species)
+      const groups = g.selectAll('g').data(filteredData).enter().append('g').attr('class', 'civ')
 
       groups.attr('transform', (d, i) => `translate(0 ${yT(d.lane)})`)
 
@@ -102,37 +91,107 @@ window.timeGraphPromise = Promise.all([barGraphPromise, reHighlightPromise]).the
       chartT = parent
     }
 
+    class LineSegments {
+      constructor(name, lane) {
+        this.name = name
+        this.lane = lane
+        this.segments = []
+      }
+
+      _lowerBound(key) {
+        const segments = this.segments
+        let first = 0
+        let len = segments.length
+        while (len > 0) {
+          const half = len >> 1
+          const middle = first + half
+          if (segments[middle] < key) {
+            first = middle + 1
+            len = len - half - 1
+          } else {
+            len = half
+          }
+        }
+        return first
+      }
+
+      _upperBound(key) {
+        const segments = this.segments
+        let first = 0
+        let len = segments.length - 1
+        while (len > 0) {
+          const half = len >> 1
+          const middle = first + half
+          if (segments[middle] > key) {
+            len = half
+          } else {
+            first = middle + 1
+            len = len - half - 1
+          }
+        }
+        return first
+      }
+
+      add(data) {
+        const segments = this.segments
+        const { start_year: startYear, end_year: endYear } = data
+        const end = (((this._upperBound(endYear) - 1) >> 1) << 1) + 1
+        if (end === -1) {
+          segments.unshift(startYear, endYear)
+          return
+        }
+        const start = (this._lowerBound(startYear) >> 1) << 1
+        segments.splice(
+          start,
+          end - start + 1,
+          Math.min(startYear, segments[start]),
+          Math.max(endYear, segments[end]),
+        )
+      }
+
+      pushResults(result) {
+        const { segments, name, lane } = this
+        for (let i = 0; i < segments.length; i += 2) {
+          result.push(
+            Object.freeze({
+              start_year: segments[i],
+              end_year: segments[i + 1],
+              name,
+              lane,
+            }),
+          )
+        }
+      }
+    }
+
     function reDrawBar(nodeNameList) {
       let collection = PhylumClassOrderFamilyGenusSpecies
       for (const key of nodeNameList) {
         collection = collection.get(key)
       }
       const nextList = []
-      const addData = (data, lane) =>
-        nextList.push(
-          Object.freeze({
-            ...data,
-            lane,
-          }),
-        )
       if (Array.isArray(collection)) {
-        let lane = -1
+        let lane = 0
         let lastLane = -1
+        let lineSegments = null
         for (const data of collection[1]) {
           if (data.lane !== lastLane) {
             lastLane = data.lane
-            lane++
+            if (lineSegments) lineSegments.pushResults(nextList)
+            lineSegments = new LineSegments(data.Species, lane++)
           }
-          addData(data, lane)
+          lineSegments.add(data)
         }
+        if (lineSegments) lineSegments.pushResults(nextList)
       } else {
-        let lane = -1
-        for (const node of collection.values()) {
-          lane++
+        let lane = 0
+        console.log(collection)
+        for (const [name, node] of collection.entries()) {
+          const lineSegments = new LineSegments(name, lane++)
           ;(function flatten(node) {
             if (Array.isArray(node)) {
               for (const data of node[1]) {
-                addData(data, lane)
+                lineSegments.add(data)
               }
             } else {
               for (const childNode of node.values()) {
@@ -140,6 +199,7 @@ window.timeGraphPromise = Promise.all([barGraphPromise, reHighlightPromise]).the
               }
             }
           })(node)
+          lineSegments.pushResults(nextList)
         }
       }
 

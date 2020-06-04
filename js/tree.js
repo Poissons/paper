@@ -28,9 +28,9 @@ timeGraphPromise.then(([PhylumClassOrderFamilyGenusSpecies, datum, reHighlight, 
         for (const child of node.children) {
           logSum += child._logValue = Math.log2(child.value + 1)
         }
-        logSum /= node.value
+        const factor = node.value / logSum
         for (const child of node.children) {
-          child.value = child._logValue / logSum
+          child.value = child._logValue * factor
         }
       })
     return d3.partition().size([height, ((root.height + 1) * width) / 2])(root)

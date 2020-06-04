@@ -19,7 +19,20 @@ timeGraphPromise.then(([PhylumClassOrderFamilyGenusSpecies, datum, reHighlight, 
   myDict.children = transform(PhylumClassOrderFamilyGenusSpecies)
 
   const partition = (data) => {
-    const root = d3.hierarchy(data).count()
+    const root = d3
+      .hierarchy(data)
+      .count()
+      .eachBefore(function (node) {
+        if (!node.children || !node.children.length) return
+        let logSum = 0
+        for (const child of node.children) {
+          logSum += child._logValue = Math.log2(child.value + 1)
+        }
+        logSum /= node.value
+        for (const child of node.children) {
+          child.value = child._logValue / logSum
+        }
+      })
     return d3.partition().size([height, ((root.height + 1) * width) / 2])(root)
   }
 

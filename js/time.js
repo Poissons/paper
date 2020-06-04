@@ -185,7 +185,6 @@ window.timeGraphPromise = Promise.all([barGraphPromise, reHighlightPromise]).the
         if (lineSegments) lineSegments.pushResults(nextList)
       } else {
         let lane = 0
-        console.log(collection)
         for (const [name, node] of collection.entries()) {
           const lineSegments = new LineSegments(name, lane++)
           ;(function flatten(node) {

@@ -21,19 +21,6 @@ window.timeGraphPromise = Promise.all([barGraphPromise, reHighlightPromise]).the
       .domain([d3.min(finalData, (d) => d.start_year), d3.max(finalData, (d) => d.end_year)])
       .range([0, widthT - marginT.left - marginT.right])
 
-    const createTooltip = function (el) {
-      el.style('position', 'absolute')
-        .style('pointer-events', 'none')
-        .style('top', 0)
-        .style('opacity', 0)
-        .style('background', 'white')
-        .style('border-radius', '5px')
-        .style('box-shadow', '0 0 10px rgba(0,0,0,.25)')
-        .style('padding', '10px')
-        .style('line-height', '1.3')
-        .style('font', '11px sans-serif')
-    }
-
     const formatDate = (d) => (d < 0 ? `${-d}MA` : `${d}AD`)
 
     const axisTop = d3.axisTop(xT).tickPadding(2).tickFormat(formatDate)
@@ -88,8 +75,6 @@ window.timeGraphPromise = Promise.all([barGraphPromise, reHighlightPromise]).the
         .attr('data-genus', (d) => d.Genus)
         .attr('data-species', (d) => d.Species)
 
-      const tooltip = d3.select(document.createElement('div')).call(createTooltip)
-
       groups.attr('transform', (d, i) => `translate(0 ${yT(d.lane)})`)
 
       groups
@@ -99,7 +84,6 @@ window.timeGraphPromise = Promise.all([barGraphPromise, reHighlightPromise]).the
         })
         .on('mouseleave', function (d) {
           d3.select(this).select('rect').attr('fill', 'lightgrey')
-          tooltip.style('opacity', 0)
         })
 
       svg
@@ -113,83 +97,57 @@ window.timeGraphPromise = Promise.all([barGraphPromise, reHighlightPromise]).the
         .call(axisBottom)
 
       parent.appendChild(svg.node())
-      parent.appendChild(tooltip.node())
       parent.groups = groups
-      const civs = d3.selectAll('.civ')
-
-      civs
-        .data(filteredData, (d) => d.Species)
-        .transition()
-        .ease(d3.easeCubic)
-        .attr('transform', (d, i) => `translate(0 ${yT(d.lane)})`)
       document.getElementById('time').appendChild(parent)
       chartT = parent
     }
 
     function reDrawBar(nodeNameList) {
       let collection = PhylumClassOrderFamilyGenusSpecies
-      const children = []
       for (const key of nodeNameList) {
         collection = collection.get(key)
-        for (const key1 of collection) {
-          children.push(key1[0])
-        }
       }
-
-      console.log(children)
-
       const nextList = []
-      let lane = -1
-      let lastLane = -1
-      ;(function flatten(node) {
-        if (Array.isArray(node)) {
-          for (const data of node[1]) {
-            if (data.lane !== lastLane) {
-              lastLane = data.lane
-              lane++
-            }
-            nextList.push(
-              Object.freeze({
-                ...data,
-                lane,
-              }),
-            )
+      const addData = (data, lane) =>
+        nextList.push(
+          Object.freeze({
+            ...data,
+            lane,
+          }),
+        )
+      if (Array.isArray(collection)) {
+        let lane = -1
+        let lastLane = -1
+        for (const data of collection[1]) {
+          if (data.lane !== lastLane) {
+            lastLane = data.lane
+            lane++
           }
-        } else {
-          for (const childNode of node.values()) {
-            flatten(childNode)
-          }
+          addData(data, lane)
         }
-      })(collection)
-
-      const mergeList = []
-      let mergeLane = 0
-
-      const depthToName = ['Phylum', 'Class', 'Order', 'Family', 'Genus', 'Species']
-
-      function merge(nextList, nodeDepth) {
-        let lastName = children[0]
-        nextList.forEach((d) => {
-          if (d[depthToName[nodeDepth]] !== lastName) {
-            lastName = d[depthToName[nodeDepth]]
-            mergeLane = mergeLane + 1
-          }
-
-          d.lane = mergeLane
-          mergeList.push(d)
-        })
-      }
-
-      chartT.remove()
-      if (nodeNameList.length < 5) {
-        merge(nextList, nodeNameList.length)
-        draw(mergeList)
       } else {
-        draw(nextList)
+        let lane = -1
+        for (const node of collection.values()) {
+          lane++
+          ;(function flatten(node) {
+            if (Array.isArray(node)) {
+              for (const data of node[1]) {
+                addData(data, lane)
+              }
+            } else {
+              for (const childNode of node.values()) {
+                flatten(childNode)
+              }
+            }
+          })(node)
+        }
       }
+
+      if (chartT) chartT.remove()
+      draw(nextList)
     }
 
-    draw(finalData)
+    reDrawBar([])
 
     // const chartT = (() => {
     //   const parent = document.createElement('div')

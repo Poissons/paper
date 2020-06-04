@@ -33,6 +33,7 @@ window.dataPromise = d3.csv('./data/data_combined_sorted.csv').then((dataCollect
       node[0].add(data.Species)
     }
     data.lane = lane
+    Object.freeze(data)
     node[1].add(data)
   }
   return [dataCollection, PhylumClassOrderFamilyGenusSpecies]

@@ -126,11 +126,17 @@ window.timeGraphPromise = Promise.all([barGraphPromise, reHighlightPromise]).the
       chartT = parent
     }
 
-    function reDrawBar(nodeNameList) {
+    function reDrawBar(nodeNameList, nodeDepth) {
       let collection = PhylumClassOrderFamilyGenusSpecies
+      let children=[]
       for (const key of nodeNameList) {
         collection = collection.get(key)
+        for(const key1 of collection){
+            children.push(key1[0])
+        }
       }
+
+      console.log(children)
 
       const nextList = []
       let lane = -1
@@ -154,8 +160,31 @@ window.timeGraphPromise = Promise.all([barGraphPromise, reHighlightPromise]).the
         }
       })(collection)
 
+      const mergeList = []
+      let mergeLane = 0
+
+      const depthToName = ['Phylum', 'Class', 'Order', 'Family', 'Genus', 'Species']
+
+      function merge(nextList, nodeDepth) {
+        lastName = children[0]
+        nextList.forEach((d) => {
+          if (d[depthToName[nodeDepth]] != lastName) {
+            lastName=d[depthToName[nodeDepth]]
+            mergeLane = mergeLane + 1
+          }
+
+          d.lane = mergeLane
+          mergeList.push(d)
+        })
+      }
+
       chartT.remove()
-      draw(nextList)
+      if (nodeDepth < 5) {
+        merge(nextList,nodeDepth)
+        draw(mergeList)
+      } else {
+        draw(nextList)
+      }
     }
 
     draw(finalData)

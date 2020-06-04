@@ -104,10 +104,10 @@ timeGraphPromise.then(([PhylumClassOrderFamilyGenusSpecies, datum, reHighlight, 
 
         nodeNameList = nodeNameList.reverse()
         reHighlight(nodeNameList)
-        reDrawBar(nodeNameList)
+        reDrawBar(nodeNameList,nodeDepth)
       } else {
         reHighlight([])
-        reDrawBar([])
+        reDrawBar([],0)
       }
 
       root.each(

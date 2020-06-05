@@ -47,7 +47,8 @@ window.timeGraphPromise = Promise.all([barGraphPromise, reHighlightPromise]).the
 
         el.append('rect')
           .attr('x', sx)
-          .attr('height', yT.bandwidth())
+          // .attr('height', yT.bandwidth())
+          .attr('height', 3)
           .attr('width', w)
           .attr('fill', 'lightgrey')
           .append('title')

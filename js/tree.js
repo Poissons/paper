@@ -18,25 +18,25 @@ timeGraphPromise.then(([PhylumClassOrderFamilyGenusSpecies, datum, reHighlight, 
   myDict.name = 'all'
   myDict.children = transform(PhylumClassOrderFamilyGenusSpecies)
 
-//   const myDict = {}
-//   myDict.name = 'all'
-//   myDict.children = transform(PhylumClassOrderFamilyGenusSpecies)
+  //   const myDict = {}
+  //   myDict.name = 'all'
+  //   myDict.children = transform(PhylumClassOrderFamilyGenusSpecies)
 
-//   function assignValue(myDict,beforeValue){
-//     let array=myDict['children']
-//     if(!array){
-//         myDict['value']=1/beforeValue
-//         console.log(myDict['value'])
-//     }else{
-//       let arrayLength=array.length
-//       beforeValue=beforeValue*arrayLength
-//       array.forEach((d)=>{
-//         assignValue(d,beforeValue)
-//       })
-//     }
+  //   function assignValue(myDict,beforeValue){
+  //     let array=myDict['children']
+  //     if(!array){
+  //         myDict['value']=1/beforeValue
+  //         console.log(myDict['value'])
+  //     }else{
+  //       let arrayLength=array.length
+  //       beforeValue=beforeValue*arrayLength
+  //       array.forEach((d)=>{
+  //         assignValue(d,beforeValue)
+  //       })
+  //     }
 
-// }
-// assignValue(myDict,1)
+  // }
+  // assignValue(myDict,1)
 
   const partition = (data) => {
     const root = d3

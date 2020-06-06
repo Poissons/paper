@@ -79,14 +79,16 @@ timeGraphPromise.then(([PhylumClassOrderFamilyGenusSpecies, datum, reHighlight, 
       .attr('width', (d) => d.y1 - d.y0 - 1)
       .attr('height', (d) => rectHeight(d))
       .attr('fill-opacity', 0.6)
-      .attr('fill','white'
-      // (d) => {
-      //   if (!d.depth) return 'grey'
-      //   else return 'lightgrey'
-      // }
+      .attr(
+        'fill',
+        'white',
+        // (d) => {
+        //   if (!d.depth) return 'grey'
+        //   else return 'lightgrey'
+        // }
       )
-      .attr('stroke','grey')
-      .attr('d',"M5 20 l215 0")
+      .attr('stroke', 'grey')
+      .attr('d', 'M5 20 l215 0')
       .style('cursor', 'pointer')
       .on('click', (node) => {
         if (node.depth === 1) {

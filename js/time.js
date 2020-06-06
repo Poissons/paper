@@ -1,4 +1,4 @@
-/* global barGraphPromise d3 reHighlightPromise $ */
+/* global d3 $ barGraphPromise reHighlightPromise picturePromise */
 window.timeGraphPromise = Promise.all([barGraphPromise, picturePromise, reHighlightPromise]).then(
   ([[finalData, PhylumClassOrderFamilyGenusSpecies, datum], linePosition, reHighlight]) => {
     // 画timeline图
@@ -7,7 +7,7 @@ window.timeGraphPromise = Promise.all([barGraphPromise, picturePromise, reHighli
     const marginT = { top: 30, right: 30, bottom: 20, left: 10 }
 
     console.log(linePosition)
-    
+
     const DOM = {
       svg(width, height) {
         const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
@@ -88,19 +88,17 @@ window.timeGraphPromise = Promise.all([barGraphPromise, picturePromise, reHighli
         .attr('transform', (d, i) => `translate(${marginT.left} ${heightT - marginT.bottom})`)
         .call(axisBottom)
 
-      let ha=d3.select('#time')
-        .selectAll('line')
-        .data(linePosition)
-        // .enter()
-        // .append('line')
-        // .attr('x1', (d) => d)
-        // .attr('y1', 0)
-        // .attr('x2', (d) => d)
-        // .attr('y2', heightT)
-        // .attr('stroke', 'black')
-        // .attr('stroke-width', '2px')
+      const ha = d3.select('#time').selectAll('line').data(linePosition)
+      // .enter()
+      // .append('line')
+      // .attr('x1', (d) => d)
+      // .attr('y1', 0)
+      // .attr('x2', (d) => d)
+      // .attr('y2', heightT)
+      // .attr('stroke', 'black')
+      // .attr('stroke-width', '2px')
 
-        console.log([...linePosition])
+      console.log([...linePosition])
 
       parent.appendChild(svg.node())
       parent.groups = groups

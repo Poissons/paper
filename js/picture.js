@@ -10,7 +10,7 @@ window.picturePromise = d3.json('./data/picture.json').then((pictureJson) => {
     return d3.partition().size([width, ((root.height + 1) * height) / 3])(root)
   }
 
-  const chart = (() => {
+  const [chart, linePosition] = (() => {
     const root = partition(pictureJson)
     let focus = root
 
@@ -27,14 +27,14 @@ window.picturePromise = d3.json('./data/picture.json').then((pictureJson) => {
       .join('g')
       .attr('transform', (d) => `translate(${d.x0},${d.y0})`)
 
-      let descendantsN = root.descendants()
-      globalThis.linePosiion = []
-      descendantsN.forEach((element) => {
-        if (element.depth == 2) {
-          linePosiion.push(element.x0)
-        }
-      })
-      
+    const descendantsN = root.descendants()
+    const linePosition = []
+    descendantsN.forEach((element) => {
+      if (element.depth === 2) {
+        linePosition.push(element.x0)
+      }
+    })
+
     const rect = cell
       .append('rect')
       .attr('width', (d) => rectWidth(d))
@@ -104,8 +104,10 @@ window.picturePromise = d3.json('./data/picture.json').then((pictureJson) => {
       return d.y1 <= height && d.y0 >= 0 && d.x1 - d.x0 > 16
     }
 
-    return svg.node()
+    return [svg.node(), linePosition]
   })()
 
   document.getElementById('picture').appendChild(chart)
+
+  return linePosition
 })

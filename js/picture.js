@@ -1,5 +1,5 @@
 /* global d3 $ */
-d3.json('./data/picture.json').then((pictureJson) => {
+window.picturePromise = d3.json('./data/picture.json').then((pictureJson) => {
   const height = $('#picture').height()
   const width = $('#picture').width()
   const format = d3.format('.2f')
@@ -27,6 +27,14 @@ d3.json('./data/picture.json').then((pictureJson) => {
       .join('g')
       .attr('transform', (d) => `translate(${d.x0},${d.y0})`)
 
+      let descendantsN = root.descendants()
+      globalThis.linePosiion = []
+      descendantsN.forEach((element) => {
+        if (element.depth == 2) {
+          linePosiion.push(element.x0)
+        }
+      })
+      
     const rect = cell
       .append('rect')
       .attr('width', (d) => rectWidth(d))

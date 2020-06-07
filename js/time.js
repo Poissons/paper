@@ -6,8 +6,6 @@ window.timeGraphPromise = Promise.all([barGraphPromise, picturePromise, reHighli
     const widthT = $('#time').width()
     const marginT = { top: 30, right: 30, bottom: 20, left: 10 }
 
-    console.log(linePosition)
-
     const DOM = {
       svg(width, height) {
         const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
@@ -88,17 +86,17 @@ window.timeGraphPromise = Promise.all([barGraphPromise, picturePromise, reHighli
         .attr('transform', (d, i) => `translate(${marginT.left} ${heightT - marginT.bottom})`)
         .call(axisBottom)
 
-      const ha = d3.select('#time').selectAll('line').data(linePosition)
-      // .enter()
-      // .append('line')
-      // .attr('x1', (d) => d)
-      // .attr('y1', 0)
-      // .attr('x2', (d) => d)
-      // .attr('y2', heightT)
-      // .attr('stroke', 'black')
-      // .attr('stroke-width', '2px')
 
-      console.log([...linePosition])
+      for (let i = 0; i < linePosition.length; i++) {
+        svg
+          .append('line')
+          .attr('x1', linePosition[i + 1])
+          .attr('y1', 0)
+          .attr('x2', linePosition[i + 1])
+          .attr('y2', heightT)
+          .attr('stroke', 'lightblue')
+          .attr('stroke-width', '0.7px')
+      }
 
       parent.appendChild(svg.node())
       parent.groups = groups

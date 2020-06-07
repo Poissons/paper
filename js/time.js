@@ -1,6 +1,6 @@
-/* global d3 $ barGraphPromise reHighlightPromise picturePromise */
-window.timeGraphPromise = Promise.all([barGraphPromise, picturePromise, reHighlightPromise]).then(
-  ([[finalData, PhylumClassOrderFamilyGenusSpecies, datum], linePosition, reHighlight]) => {
+/* global d3 $ barGraphPromise reHighlightPromise */
+window.timeGraphPromise = Promise.all([barGraphPromise, reHighlightPromise]).then(
+  ([[finalData, PhylumClassOrderFamilyGenusSpecies, kdeDatum], reHighlight]) => {
     // 画timeline图
     const heightT = $('#time').height()
     const widthT = $('#time').width()
@@ -16,44 +16,44 @@ window.timeGraphPromise = Promise.all([barGraphPromise, picturePromise, reHighli
       },
     }
 
-    const xT = d3
+    const yT = d3
       .scaleLinear()
-      .domain([d3.min(finalData, (d) => d.start_year), d3.max(finalData, (d) => d.end_year)])
-      .range([0, widthT - marginT.left - marginT.right])
+      .domain([0, 1])
+      .range([0, heightT - marginT.bottom - marginT.top])
 
     const formatDate = (d) => (d < 0 ? `${-d}MA` : `${d}AD`)
-
-    const axisTop = d3.axisTop(xT).tickPadding(2).tickFormat(formatDate)
-
-    const axisBottom = d3.axisBottom(xT).tickPadding(2).tickFormat(formatDate)
 
     const lightGrey = d3.color('lightgrey')
     const darkGrey = lightGrey.darker()
 
+    const lineWidth = 0.7
+    const strokeWidth = `${lineWidth}px`
     let chartT = null
-    const draw = (filteredData) => {
-      const yT = d3
-        .scaleBand()
-        .domain(d3.range(filteredData[filteredData.length - 1].lane + 1))
-        .range([0, heightT - marginT.bottom - marginT.top])
-        .padding(0.2)
+    let filteredData = null
+    let lineXPosition = null
+    let lineYPosition = null
+    let xT = null
+    let axisTop = null
+    let axisBottom = null
+    const getRect = function (d) {
+      const el = d3.select(this)
+      const sx = xT(d.start_year)
+      const w = xT(d.end_year) - sx
 
-      const getRect = function (d) {
-        const el = d3.select(this)
-        const sx = xT(d.start_year)
-        const w = xT(d.end_year) - xT(d.start_year)
+      el.style('cursor', 'pointer')
 
-        el.style('cursor', 'pointer')
-
-        el.append('rect')
-          .attr('x', sx)
-          // .attr('height', yT.bandwidth())
-          .attr('height', 3)
-          .attr('width', w)
-          .attr('fill', 'lightgrey')
-          .append('title')
-          .text(d.name)
-      }
+      el.append('rect')
+        .attr('x', sx)
+        // .attr('height', yT.bandwidth())
+        .attr('height', 3)
+        .attr('width', w)
+        .attr('fill', 'lightgrey')
+        .append('title')
+        .text(d.name)
+    }
+    const draw = () => {
+      if (!lineXPosition || !lineYPosition) return
+      if (chartT) chartT.remove()
 
       const parent = document.createElement('div')
 
@@ -65,7 +65,7 @@ window.timeGraphPromise = Promise.all([barGraphPromise, picturePromise, reHighli
 
       const groups = g.selectAll('g').data(filteredData).enter().append('g').attr('class', 'civ')
 
-      groups.attr('transform', (d, i) => `translate(0 ${yT(d.lane)})`)
+      groups.attr('transform', (d, i) => `translate(0 ${yT(d.centerPos)})`)
 
       groups
         .each(getRect)
@@ -86,15 +86,27 @@ window.timeGraphPromise = Promise.all([barGraphPromise, picturePromise, reHighli
         .attr('transform', (d, i) => `translate(${marginT.left} ${heightT - marginT.bottom})`)
         .call(axisBottom)
 
-      for (let i = 0; i < linePosition.length; i++) {
+      for (const y of lineXPosition) {
+        const yPos = marginT.top + yT(y) - lineWidth / 2
         svg
           .append('line')
-          .attr('x1', linePosition[i + 1])
+          .attr('x1', 0)
+          .attr('y1', yPos)
+          .attr('x2', widthT)
+          .attr('y2', yPos)
+          .attr('stroke', 'lightblue')
+          .attr('stroke-width', strokeWidth)
+      }
+      for (const x of lineYPosition) {
+        const xPos = marginT.left + xT(x) - lineWidth / 2
+        svg
+          .append('line')
+          .attr('x1', xPos)
           .attr('y1', 0)
-          .attr('x2', linePosition[i + 1])
+          .attr('x2', xPos)
           .attr('y2', heightT)
           .attr('stroke', 'lightblue')
-          .attr('stroke-width', '0.7px')
+          .attr('stroke-width', strokeWidth)
       }
 
       parent.appendChild(svg.node())
@@ -104,9 +116,9 @@ window.timeGraphPromise = Promise.all([barGraphPromise, picturePromise, reHighli
     }
 
     class LineSegments {
-      constructor(name, lane) {
+      constructor(name, centerPos) {
         this.name = name
-        this.lane = lane
+        this.centerPos = centerPos
         this.segments = []
       }
 
@@ -162,63 +174,45 @@ window.timeGraphPromise = Promise.all([barGraphPromise, picturePromise, reHighli
       }
 
       pushResults(result) {
-        const { segments, name, lane } = this
+        const { segments, name, centerPos } = this
         for (let i = 0; i < segments.length; i += 2) {
           result.push(
             Object.freeze({
               start_year: segments[i],
               end_year: segments[i + 1],
               name,
-              lane,
+              centerPos,
             }),
           )
         }
       }
     }
 
-    function reDrawBar(nodeNameList) {
-      let collection = PhylumClassOrderFamilyGenusSpecies
-      for (const key of nodeNameList) {
-        collection = collection.get(key)
-      }
+    function reDrawBarByX(datumArr, lineXPos) {
       const nextList = []
-      if (Array.isArray(collection)) {
-        let lane = 0
-        let lastLane = -1
-        let lineSegments = null
-        for (const data of collection[1]) {
-          if (data.lane !== lastLane) {
-            lastLane = data.lane
-            if (lineSegments) lineSegments.pushResults(nextList)
-            lineSegments = new LineSegments(data.Species, lane++)
-          }
+      for (const [name, centerPos, datum] of datumArr) {
+        const lineSegments = new LineSegments(name, centerPos)
+        for (const data of datum) {
           lineSegments.add(data)
         }
-        if (lineSegments) lineSegments.pushResults(nextList)
-      } else {
-        let lane = 0
-        for (const [name, node] of collection.entries()) {
-          const lineSegments = new LineSegments(name, lane++)
-          ;(function flatten(node) {
-            if (Array.isArray(node)) {
-              for (const data of node[1]) {
-                lineSegments.add(data)
-              }
-            } else {
-              for (const childNode of node.values()) {
-                flatten(childNode)
-              }
-            }
-          })(node)
-          lineSegments.pushResults(nextList)
-        }
+        lineSegments.pushResults(nextList)
       }
-
-      if (chartT) chartT.remove()
-      draw(nextList)
+      filteredData = nextList
+      lineXPosition = lineXPos
+      draw()
     }
+    function reDrawBarByY(lineYPos, minYear, maxYear) {
+      lineYPosition = lineYPos
+      xT = d3
+        .scaleLinear()
+        .domain([minYear, maxYear])
+        .range([0, widthT - marginT.left - marginT.right])
 
-    reDrawBar([])
+      axisTop = d3.axisTop(xT).tickPadding(2).tickFormat(formatDate)
+
+      axisBottom = d3.axisBottom(xT).tickPadding(2).tickFormat(formatDate)
+      draw()
+    }
 
     // const chartT = (() => {
     //   const parent = document.createElement('div')
@@ -243,6 +237,6 @@ window.timeGraphPromise = Promise.all([barGraphPromise, picturePromise, reHighli
     //   return parent
     // })()
 
-    return [PhylumClassOrderFamilyGenusSpecies, datum, reHighlight, reDrawBar]
+    return { PhylumClassOrderFamilyGenusSpecies, kdeDatum, reHighlight, reDrawBarByX, reDrawBarByY }
   },
 )

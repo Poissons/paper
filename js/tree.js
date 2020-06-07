@@ -1,191 +1,198 @@
 /* global timeGraphPromise d3 $ */
-timeGraphPromise.then(([PhylumClassOrderFamilyGenusSpecies, datum, reHighlight, reDrawBar]) => {
-  // barGraphPromise.then(([finalData, PhylumClassOrderFamilyGenusSpecies, datum]) => {
-  const height = $('#tree').height()
-  const width = $('#tree').width()
+timeGraphPromise.then(
+  ({ PhylumClassOrderFamilyGenusSpecies, kdeDatum, reHighlight, reDrawBarByX }) => {
+    // barGraphPromise.then(([finalData, PhylumClassOrderFamilyGenusSpecies, kdeDatum]) => {
+    const height = $('#tree').height()
+    const width = $('#tree').width()
 
-  function transform(node) {
-    if (Array.isArray(node)) {
-      return [...node[0]].map((name) => ({ name }))
+    function transform(node) {
+      if (Array.isArray(node)) {
+        return [...node[1]].map((data) => ({ name: data.Species, data }))
+      }
+      return [...node.entries()].map(([name, childNode]) => ({
+        name,
+        children: transform(childNode),
+      }))
     }
-    return [...node.entries()].map(([name, childNode]) => ({
-      name,
-      children: transform(childNode),
-    }))
-  }
 
-  const myDict = {}
-  myDict.name = 'all'
-  myDict.children = transform(PhylumClassOrderFamilyGenusSpecies)
+    const myDict = {}
+    myDict.name = 'all'
+    myDict.children = transform(PhylumClassOrderFamilyGenusSpecies)
 
-  //   const myDict = {}
-  //   myDict.name = 'all'
-  //   myDict.children = transform(PhylumClassOrderFamilyGenusSpecies)
+    //   const myDict = {}
+    //   myDict.name = 'all'
+    //   myDict.children = transform(PhylumClassOrderFamilyGenusSpecies)
 
-  //   function assignValue(myDict,beforeValue){
-  //     let array=myDict['children']
-  //     if(!array){
-  //         myDict['value']=1/beforeValue
-  //         console.log(myDict['value'])
-  //     }else{
-  //       let arrayLength=array.length
-  //       beforeValue=beforeValue*arrayLength
-  //       array.forEach((d)=>{
-  //         assignValue(d,beforeValue)
-  //       })
-  //     }
+    //   function assignValue(myDict,beforeValue){
+    //     let array=myDict['children']
+    //     if(!array){
+    //         myDict['value']=1/beforeValue
+    //         console.log(myDict['value'])
+    //     }else{
+    //       let arrayLength=array.length
+    //       beforeValue=beforeValue*arrayLength
+    //       array.forEach((d)=>{
+    //         assignValue(d,beforeValue)
+    //       })
+    //     }
 
-  // }
-  // assignValue(myDict,1)
+    // }
+    // assignValue(myDict,1)
 
-  const partition = (data) => {
-    const root = d3
-      .hierarchy(data)
-      .count()
-      .eachBefore(function (node) {
-        if (!node.children || !node.children.length) return
-        let logSum = 0
-        for (const child of node.children) {
-          logSum += child._logValue = Math.log2(child.value + 1)
-        }
-        const factor = node.value / logSum
-        for (const child of node.children) {
-          child.value = child._logValue * factor
-        }
-      })
-    return d3.partition().size([height, ((root.height + 1) * width) / 2])(root)
-  }
-
-  const chart = (() => {
-    const root = partition(myDict)
-    let focus = root
-
-    const svg = d3
-      .create('svg')
-      .attr('viewBox', [0, 0, width, height])
-      .attr('width', width)
-      .attr('height', height)
-      .style('font', '10px sans-serif')
-    const cell = svg
-      .selectAll('g')
-      .data(root.descendants())
-      .join('g')
-      .attr('transform', (d) => `translate(${d.y0},${d.x0})`)
-
-    let timer = 0
-    let lastNode = null
-    const rect = cell
-      .append('rect')
-      .attr('width', (d) => d.y1 - d.y0 - 1)
-      .attr('height', (d) => rectHeight(d))
-      .attr('fill-opacity', 0.6)
-      .attr(
-        'fill',
-        'white',
-        // (d) => {
-        //   if (!d.depth) return 'grey'
-        //   else return 'lightgrey'
-        // }
-      )
-      .attr('stroke', 'grey')
-      .attr('d', 'M5 20 l215 0')
-      .style('cursor', 'pointer')
-      .on('click', (node) => {
-        if (node.depth === 1) {
-          if (node === lastNode) {
-            lastNode = null
-            if (timer) clearTimeout(timer)
-            handleDblClick(node)
-          } else {
-            lastNode = node
-            timer = setTimeout(() => {
-              timer = 0
-              lastNode = null
-              clicked(node)
-            }, 300)
+    const partition = (data) => {
+      const root = d3
+        .hierarchy(data)
+        .count()
+        .eachBefore(function (node) {
+          if (!node.children || !node.children.length) return
+          let logSum = 0
+          for (const child of node.children) {
+            logSum += child._logValue = Math.log2(child.value + 1)
           }
-        } else {
-          clicked(node)
-        }
-      })
+          let sum = 0
+          const linePos = []
+          for (const child of node.children) {
+            const ratio = child._logValue / logSum
+            child.value = ratio * node.value
+            child.data.centerPos = sum + ratio / 2
+            sum += ratio
+            linePos.push(sum)
+          }
+          linePos.pop()
+          node.data.linePos = linePos
+        })
+      return d3.partition().size([height, ((root.height + 1) * width) / 2])(root)
+    }
 
-    const text = cell
-      .append('text')
-      .style('user-select', 'none')
-      .attr('pointer-events', 'none')
-      .attr('x', 33)
-      .attr('y', (d) => rectHeight(d) / 2 + 5)
-      .attr('fill-opacity', (d) => +labelVisible(d))
+    const chart = (() => {
+      const root = partition(myDict)
+      let focus = root
 
-    text.append('tspan').text((d) => d.data.name)
+      const svg = d3
+        .create('svg')
+        .attr('viewBox', [0, 0, width, height])
+        .attr('width', width)
+        .attr('height', height)
+        .style('font', '10px sans-serif')
+      const cell = svg
+        .selectAll('g')
+        .data(root.descendants())
+        .join('g')
+        .attr('transform', (d) => `translate(${d.y0},${d.x0})`)
 
-    const tspan = text.append('tspan').attr('fill-opacity', (d) => labelVisible(d) * 0.7)
+      let timer = 0
+      let lastNode = null
+      const rect = cell
+        .append('rect')
+        .attr('width', (d) => d.y1 - d.y0 - 1)
+        .attr('height', (d) => rectHeight(d))
+        .attr('fill-opacity', 0.6)
+        .attr(
+          'fill',
+          'white',
+          // (d) => {
+          //   if (!d.depth) return 'grey'
+          //   else return 'lightgrey'
+          // }
+        )
+        .attr('stroke', 'grey')
+        .attr('d', 'M5 20 l215 0')
+        .style('cursor', 'pointer')
+        .on('click', (node) => {
+          if (node.depth === 1) {
+            if (node === lastNode) {
+              lastNode = null
+              if (timer) clearTimeout(timer)
+              handleDblClick(node)
+            } else {
+              lastNode = node
+              timer = setTimeout(() => {
+                timer = 0
+                lastNode = null
+                clicked(node)
+              }, 300)
+            }
+          } else {
+            clicked(node)
+          }
+        })
 
-    cell.append('title').text(
-      (d) =>
-        `${d
-          .ancestors()
-          .map((d) => d.data.name)
-          .reverse()
-          .join('/')}\n`,
-    )
+      const text = cell
+        .append('text')
+        .style('user-select', 'none')
+        .attr('pointer-events', 'none')
+        .attr('x', 33)
+        .attr('y', (d) => rectHeight(d) / 2 + 5)
+        .attr('fill-opacity', (d) => +labelVisible(d))
 
-    function clicked(node) {
-      focus = focus === node ? node.parent : node
-      if (focus.parent) {
-        let nodeNameList = []
-        let node = focus
-        const nodeDepth = focus.depth
-        for (let i = 0; i < nodeDepth; i++) {
-          nodeNameList.push(node.data.name)
-          node = node.parent
-        }
+      text.append('tspan').text((d) => d.data.name)
 
-        nodeNameList = nodeNameList.reverse()
-        reHighlight(nodeNameList)
-        reDrawBar(nodeNameList)
-      } else {
-        reHighlight([])
-        reDrawBar([])
+      const tspan = text.append('tspan').attr('fill-opacity', (d) => labelVisible(d) * 0.7)
+
+      cell.append('title').text(
+        (d) =>
+          `${d
+            .ancestors()
+            .map((d) => d.data.name)
+            .reverse()
+            .join('/')}\n`,
+      )
+
+      function trigger(node) {
+        const datumArr = node.children.map((child) => [
+          child.data.name,
+          child.data.centerPos,
+          child.leaves().map((leave) => leave.data.data),
+        ])
+        reHighlight(datumArr.map((arr) => arr[2]).flat())
+        reDrawBarByX(datumArr, node.data.linePos)
       }
 
-      root.each(
-        (d) =>
-          (d.target = {
-            x0: ((d.x0 - focus.x0) / (focus.x1 - focus.x0)) * height,
-            x1: ((d.x1 - focus.x0) / (focus.x1 - focus.x0)) * height,
-            y0: d.y0 - focus.y0,
-            y1: d.y1 - focus.y0,
-          }),
-      )
+      function clicked(node) {
+        if (!node.children) return
+        focus = focus === node ? node.parent : node
+        trigger(focus)
 
-      const t = cell
-        .transition()
-        .duration(750)
-        .attr('transform', (d) => `translate(${d.target.y0},${d.target.x0})`)
+        root.each(
+          (d) =>
+            (d.target = {
+              x0: ((d.x0 - focus.x0) / (focus.x1 - focus.x0)) * height,
+              x1: ((d.x1 - focus.x0) / (focus.x1 - focus.x0)) * height,
+              y0: d.y0 - focus.y0,
+              y1: d.y1 - focus.y0,
+            }),
+        )
 
-      rect.transition(t).attr('height', (d) => rectHeight(d.target))
-      text
-        .transition(t)
-        .attr('fill-opacity', (d) => +labelVisible(d.target))
-        .attr('y', (d) => rectHeight(d.target) / 2 + 5)
-      tspan.transition(t).attr('fill-opacity', (d) => labelVisible(d.target) * 0.7)
-    }
+        const t = cell
+          .transition()
+          .duration(750)
+          .attr('transform', (d) => `translate(${d.target.y0},${d.target.x0})`)
 
-    const handleDblClick = (d) => {
-      datum[d.data.name].show = !datum[d.data.name].show
-    }
+        rect.transition(t).attr('height', (d) => rectHeight(d.target))
+        text
+          .transition(t)
+          .attr('fill-opacity', (d) => +labelVisible(d.target))
+          .attr('y', (d) => rectHeight(d.target) / 2 + 5)
+        tspan.transition(t).attr('fill-opacity', (d) => labelVisible(d.target) * 0.7)
+      }
 
-    function rectHeight(d) {
-      return d.x1 - d.x0 - Math.min(1, (d.x1 - d.x0) / 2)
-    }
+      const handleDblClick = (d) => {
+        kdeDatum[d.data.name].show = !kdeDatum[d.data.name].show
+      }
 
-    function labelVisible(d) {
-      return d.y1 <= width && d.y0 >= 0 && d.x1 - d.x0 > 16
-    }
+      function rectHeight(d) {
+        return d.x1 - d.x0 - Math.min(1, (d.x1 - d.x0) / 2)
+      }
 
-    return svg.node()
-  })()
+      function labelVisible(d) {
+        return d.y1 <= width && d.y0 >= 0 && d.x1 - d.x0 > 16
+      }
 
-  document.getElementById('tree').appendChild(chart)
-})
+      trigger(root)
+
+      return svg.node()
+    })()
+
+    document.getElementById('tree').appendChild(chart)
+  },
+)

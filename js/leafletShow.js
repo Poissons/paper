@@ -125,26 +125,6 @@ window.reHighlightPromise = dataPromise.then(
       }
     }
 
-    function reHighlight(nodeNameList) {
-      const dataRedraw = []
-      let node = PhylumClassOrderFamilyGenusSpecies
-      for (const key of nodeNameList) {
-        node = node.get(key)
-      }
-      // eslint-disable-next-line no-extra-semi
-      ;(function add(node) {
-        if (Array.isArray(node)) {
-          dataRedraw.push(...node[1])
-        } else {
-          for (const child of node.values()) {
-            add(child)
-          }
-        }
-      })(node)
-      // mymap.removeLayer(this.layer);
-      reHelightCall(dataRedraw)
-    }
-
     const myGroup = L.layerGroup().addTo(map1)
 
     const icon = L.icon({
@@ -168,7 +148,7 @@ window.reHighlightPromise = dataPromise.then(
 
     const myHeatMaps = ancientMaps.map((map) => L.heatLayer([], heatmapOptions).addTo(map))
 
-    function reHelightCall(dataCollection) {
+    function reHighlight(dataCollection) {
       requestAnimationFrame(() => {
         const latLngDatum = myHeatMaps.map(() => [])
         const modernSet = new Set()
@@ -190,8 +170,6 @@ window.reHighlightPromise = dataPromise.then(
         }
       })
     }
-
-    reHelightCall(dataCollection)
 
     // 之前select功能
     // const mapsTop = []

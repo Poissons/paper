@@ -1,7 +1,7 @@
 /* globals d3 dataPromise $ */
 window.barGraphPromise = dataPromise.then(([earlyData, PhylumClassOrderFamilyGenusSpecies]) => {
   const padding = { top: 20, right: 20, bottom: 20, left: 30 }
-  const height = $('#barGraph').height()+60
+  const height = $('#barGraph').height()
   const width = $('#barGraph').width()
   // 准备数据
   const minYear = d3.min(earlyData, (d) => d.start_year)

@@ -31,7 +31,7 @@ body {
 
 #barPart {
 	display: grid;
-	/* grid-template-rows: 30px auto; */
+	grid-template-columns: 120px auto;
 	overflow-y: scroll;
 	overflow-x: hidden;
 }
@@ -69,8 +69,8 @@ body {
 }
 
 #tree {
-	padding-top: 30px;
-	padding-bottom: 20px;
+	padding-top: 29px;
+	padding-bottom: 19px;
 }
 
 #picture {

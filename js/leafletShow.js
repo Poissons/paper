@@ -106,6 +106,7 @@ window.reHighlightPromise = dataPromise.then(
         layers,
         maxBounds,
         crs: L.CRS.EPSG4326,
+        zoomControl: false,
         minZoom: 0,
       }).setView(center, 0)
     })
@@ -149,6 +150,8 @@ window.reHighlightPromise = dataPromise.then(
     const myHeatMaps = ancientMaps.map((map) => L.heatLayer([], heatmapOptions).addTo(map))
 
     function reHighlight(dataCollection) {
+      const skip = false
+      if (skip) return
       requestAnimationFrame(() => {
         const latLngDatum = myHeatMaps.map(() => [])
         const modernSet = new Set()
@@ -164,10 +167,12 @@ window.reHighlightPromise = dataPromise.then(
         for (const [i, data] of latLngDatum.entries()) {
           myHeatMaps[i].setLatLngs(data)
         }
+        map1.removeLayer(myGroup)
         myGroup.clearLayers()
         for (const data of modern) {
           L.marker(data, leafletConfig).addTo(myGroup)
         }
+        myGroup.addTo(map1)
       })
     }
 

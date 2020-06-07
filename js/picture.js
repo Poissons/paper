@@ -1,6 +1,6 @@
 /* global d3 $ timeGraphPromise */
 Promise.all([d3.json('./data/picture.json'), timeGraphPromise]).then(
-  ([pictureJson, { reDrawBarByY }]) => {
+  ([pictureJson, { redrawBarByY }]) => {
     const height = $('#picture').height()
     const width = $('#picture').width()
     const format = d3.format('.2f')
@@ -8,8 +8,17 @@ Promise.all([d3.json('./data/picture.json'), timeGraphPromise]).then(
       d3.quantize(d3.interpolateRainbow, pictureJson.children.length + 1),
     )
 
+    ;(function ensureMinMax(node) {
+      if (!node.children) return
+      for (const child of node.children) {
+        ensureMinMax(child)
+      }
+      node.min = node.children[0].min
+      node.max = node.children[node.children.length - 1].max
+    })(pictureJson)
+
     const partition = (data) => {
-      const root = d3.hierarchy(data).sum((d) => d.max - d.min)
+      const root = d3.hierarchy(data).sum((d) => (d.children ? 0 : d.max - d.min))
       return d3.partition().size([width, ((root.height + 1) * height) / 3])(root)
     }
 
@@ -30,9 +39,6 @@ Promise.all([d3.json('./data/picture.json'), timeGraphPromise]).then(
         .join('g')
         .attr('transform', (d) => `translate(${d.x0},${d.y0})`)
 
-      const getMin = (node) => (node.children ? getMin(node.children[0]) : node.data.min)
-      const getMax = (node) =>
-        node.children ? getMax(node.children[node.children.length - 1]) : node.data.max
       function updateLineY(node) {
         let lineYPosition
         if (!node.children) lineYPosition = []
@@ -40,20 +46,26 @@ Promise.all([d3.json('./data/picture.json'), timeGraphPromise]).then(
           lineYPosition = (node.children[0].children
             ? node.children.map((child) => child.children).flat()
             : node.children
-          ).map(getMax)
+          ).map((child) => child.data.max)
           lineYPosition.pop()
         }
-        reDrawBarByY(lineYPosition, getMin(node), getMax(node))
+        redrawBarByY(lineYPosition, node.data.min, node.data.max)
+      }
+      root._color = 'rgb(224, 224, 224)'
+      for (const child of root.children) {
+        const fill = d3.color(color(child.data.name))
+        fill.r = fill.r * 0.6 + 0xff * 0.4
+        fill.g = fill.g * 0.6 + 0xff * 0.4
+        fill.b = fill.b * 0.6 + 0xff * 0.4
+        child._color = fill.toString()
       }
       const rect = cell
         .append('rect')
         .attr('width', (d) => rectWidth(d))
         .attr('height', (d) => d.y1 - d.y0 - 1)
-        .attr('fill-opacity', 0.6)
         .attr('fill', (d) => {
-          if (!d.depth) return '#ccc'
-          while (d.depth > 1) d = d.parent
-          return color(d.data.name)
+          while (!d._color) d = d.parent
+          return d._color
         })
         .style('cursor', 'pointer')
         .on('click', clicked)
@@ -69,7 +81,6 @@ Promise.all([d3.json('./data/picture.json'), timeGraphPromise]).then(
       text.append('tspan').text((d) => d.data.name)
 
       const tspan = text
-        .filter((d) => 'min' in d.data)
         .append('tspan')
         .attr('fill-opacity', (d) => Number(labelVisible(d)) * 0.7)
         .text((d) => ` ${format(d.data.min)}~${format(d.data.max)}`)

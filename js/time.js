@@ -58,6 +58,33 @@ window.timeGraphPromise = Promise.all([barGraphPromise, reHighlightPromise]).the
       const parent = document.createElement('div')
 
       const svg = d3.select(DOM.svg(widthT, heightT))
+      const lines = svg.append('g')
+      for (const y of lineXPosition) {
+        const yPos = marginT.top + yT(y) - lineWidth / 2
+        lines
+          .append('line')
+          .attr('x1', 0)
+          .attr('y1', yPos)
+          .attr('x2', widthT)
+          .attr('y2', yPos)
+          .attr('stroke', 'lightblue')
+          .attr('stroke-width', strokeWidth)
+          .attr('stroke-dasharray', '10')
+          .attr('pointer-events', 'none')
+      }
+      for (const x of lineYPosition) {
+        const xPos = marginT.left + xT(x) - lineWidth / 2
+        lines
+          .append('line')
+          .attr('x1', xPos)
+          .attr('y1', 0)
+          .attr('x2', xPos)
+          .attr('y2', heightT)
+          .attr('stroke', 'lightblue')
+          .attr('stroke-width', strokeWidth)
+          .attr('stroke-dasharray', '10')
+          .attr('pointer-events', 'none')
+      }
 
       const g = svg
         .append('g')
@@ -65,7 +92,7 @@ window.timeGraphPromise = Promise.all([barGraphPromise, reHighlightPromise]).the
 
       const groups = g.selectAll('g').data(filteredData).enter().append('g').attr('class', 'civ')
 
-      groups.attr('transform', (d, i) => `translate(0 ${yT(d.centerPos)})`)
+      groups.attr('transform', (d, i) => `translate(0 ${yT(d.centerPos) - 1.5})`)
 
       groups
         .each(getRect)
@@ -85,29 +112,6 @@ window.timeGraphPromise = Promise.all([barGraphPromise, reHighlightPromise]).the
         .append('g')
         .attr('transform', (d, i) => `translate(${marginT.left} ${heightT - marginT.bottom})`)
         .call(axisBottom)
-
-      for (const y of lineXPosition) {
-        const yPos = marginT.top + yT(y) - lineWidth / 2
-        svg
-          .append('line')
-          .attr('x1', 0)
-          .attr('y1', yPos)
-          .attr('x2', widthT)
-          .attr('y2', yPos)
-          .attr('stroke', 'lightblue')
-          .attr('stroke-width', strokeWidth)
-      }
-      for (const x of lineYPosition) {
-        const xPos = marginT.left + xT(x) - lineWidth / 2
-        svg
-          .append('line')
-          .attr('x1', xPos)
-          .attr('y1', 0)
-          .attr('x2', xPos)
-          .attr('y2', heightT)
-          .attr('stroke', 'lightblue')
-          .attr('stroke-width', strokeWidth)
-      }
 
       parent.appendChild(svg.node())
       parent.groups = groups
@@ -188,7 +192,7 @@ window.timeGraphPromise = Promise.all([barGraphPromise, reHighlightPromise]).the
       }
     }
 
-    function reDrawBarByX(datumArr, lineXPos) {
+    function redrawBarByX(datumArr, lineXPos) {
       const nextList = []
       for (const [name, centerPos, datum] of datumArr) {
         const lineSegments = new LineSegments(name, centerPos)
@@ -201,7 +205,7 @@ window.timeGraphPromise = Promise.all([barGraphPromise, reHighlightPromise]).the
       lineXPosition = lineXPos
       draw()
     }
-    function reDrawBarByY(lineYPos, minYear, maxYear) {
+    function redrawBarByY(lineYPos, minYear, maxYear) {
       lineYPosition = lineYPos
       xT = d3
         .scaleLinear()
@@ -237,6 +241,6 @@ window.timeGraphPromise = Promise.all([barGraphPromise, reHighlightPromise]).the
     //   return parent
     // })()
 
-    return { PhylumClassOrderFamilyGenusSpecies, kdeDatum, reHighlight, reDrawBarByX, reDrawBarByY }
+    return { PhylumClassOrderFamilyGenusSpecies, kdeDatum, reHighlight, redrawBarByX, redrawBarByY }
   },
 )

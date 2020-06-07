@@ -1,9 +1,10 @@
 /* global timeGraphPromise d3 $ */
 timeGraphPromise.then(
-  ({ PhylumClassOrderFamilyGenusSpecies, kdeDatum, reHighlight, reDrawBarByX }) => {
+  ({ PhylumClassOrderFamilyGenusSpecies, kdeDatum, reHighlight, redrawBarByX }) => {
     // barGraphPromise.then(([finalData, PhylumClassOrderFamilyGenusSpecies, kdeDatum]) => {
-    const height = $('#tree').height()
-    const width = $('#tree').width()
+    const marginT = { top: 1, bottom: 1, left: 1 }
+    const height = $('#tree').height() - marginT.top - marginT.bottom
+    const width = $('#tree').width() - marginT.left
 
     function transform(node) {
       if (Array.isArray(node)) {
@@ -70,15 +71,15 @@ timeGraphPromise.then(
 
       const svg = d3
         .create('svg')
-        .attr('viewBox', [0, 0, width, height])
-        .attr('width', width)
-        .attr('height', height)
+        .attr('viewBox', [0, 0, width + marginT.left, height + marginT.top + marginT.bottom])
+        .attr('width', width + marginT.left)
+        .attr('height', height + marginT.top + marginT.bottom)
         .style('font', '10px sans-serif')
       const cell = svg
         .selectAll('g')
         .data(root.descendants())
         .join('g')
-        .attr('transform', (d) => `translate(${d.y0},${d.x0})`)
+        .attr('transform', (d) => `translate(${d.y0 + marginT.left},${d.x0 + marginT.top})`)
 
       let timer = 0
       let lastNode = null
@@ -86,7 +87,6 @@ timeGraphPromise.then(
         .append('rect')
         .attr('width', (d) => d.y1 - d.y0 - 1)
         .attr('height', (d) => rectHeight(d))
-        .attr('fill-opacity', 0.6)
         .attr(
           'fill',
           'white',
@@ -95,7 +95,7 @@ timeGraphPromise.then(
           //   else return 'lightgrey'
           // }
         )
-        .attr('stroke', 'grey')
+        .attr('style', 'outline: rgb(179, 179, 179) solid 1px;')
         .attr('d', 'M5 20 l215 0')
         .style('cursor', 'pointer')
         .on('click', (node) => {
@@ -145,11 +145,11 @@ timeGraphPromise.then(
           child.leaves().map((leave) => leave.data.data),
         ])
         reHighlight(datumArr.map((arr) => arr[2]).flat())
-        reDrawBarByX(datumArr, node.data.linePos)
+        redrawBarByX(datumArr, node.data.linePos)
       }
 
       function clicked(node) {
-        if (!node.children) return
+        if (!node.children || node === root) return
         focus = focus === node ? node.parent : node
         trigger(focus)
 
@@ -166,7 +166,10 @@ timeGraphPromise.then(
         const t = cell
           .transition()
           .duration(750)
-          .attr('transform', (d) => `translate(${d.target.y0},${d.target.x0})`)
+          .attr(
+            'transform',
+            (d) => `translate(${d.target.y0 + marginT.left},${d.target.x0 + marginT.top})`,
+          )
 
         rect.transition(t).attr('height', (d) => rectHeight(d.target))
         text

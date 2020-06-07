@@ -67,3 +67,8 @@ body {
 .my-leaflet-marker {
 	pointer-events: none;
 }
+
+#tree {
+	padding-top: 30px;
+	padding-bottom: 20px;
+}

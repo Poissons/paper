@@ -114,7 +114,7 @@ timeGraphPromise.then(([PhylumClassOrderFamilyGenusSpecies, datum, reHighlight, 
       .style('user-select', 'none')
       .attr('pointer-events', 'none')
       .attr('x', 33)
-      .attr('y', 13)
+      .attr('y', (d) => rectHeight(d) / 2 + 5)
       .attr('fill-opacity', (d) => +labelVisible(d))
 
     text.append('tspan').text((d) => d.data.name)
@@ -165,7 +165,10 @@ timeGraphPromise.then(([PhylumClassOrderFamilyGenusSpecies, datum, reHighlight, 
         .attr('transform', (d) => `translate(${d.target.y0},${d.target.x0})`)
 
       rect.transition(t).attr('height', (d) => rectHeight(d.target))
-      text.transition(t).attr('fill-opacity', (d) => +labelVisible(d.target))
+      text
+        .transition(t)
+        .attr('fill-opacity', (d) => +labelVisible(d.target))
+        .attr('y', (d) => rectHeight(d.target) / 2 + 5)
       tspan.transition(t).attr('fill-opacity', (d) => labelVisible(d.target) * 0.7)
     }
 

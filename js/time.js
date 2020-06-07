@@ -86,7 +86,6 @@ window.timeGraphPromise = Promise.all([barGraphPromise, picturePromise, reHighli
         .attr('transform', (d, i) => `translate(${marginT.left} ${heightT - marginT.bottom})`)
         .call(axisBottom)
 
-
       for (let i = 0; i < linePosition.length; i++) {
         svg
           .append('line')

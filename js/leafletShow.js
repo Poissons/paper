@@ -100,18 +100,16 @@ window.reHighlightPromise = dataPromise.then(
       './img/Map27a EK Early Albian_120.jpg',
       './img/Map21a LtK Turonian_090.jpg',
     ]
-    const maps = [
-      map1,
-      ...mapImgs.map((url, i) => {
-        const layers = imageBoundsArr.map((imageBounds) => L.imageOverlay(url, imageBounds))
-        return L.map('map' + (i + 2), {
-          layers,
-          maxBounds,
-          crs: L.CRS.EPSG4326,
-          minZoom: 0,
-        }).setView(center, 0)
-      }),
-    ]
+    const ancientMaps = mapImgs.map((url, i) => {
+      const layers = imageBoundsArr.map((imageBounds) => L.imageOverlay(url, imageBounds))
+      return L.map('map' + (i + 2), {
+        layers,
+        maxBounds,
+        crs: L.CRS.EPSG4326,
+        minZoom: 0,
+      }).setView(center, 0)
+    })
+    const maps = [map1, ...ancientMaps]
 
     // var map2 = L.map('map2', {
     //         layers: [layer2],
@@ -168,37 +166,34 @@ window.reHighlightPromise = dataPromise.then(
       minOpacity: 0.7,
     }
 
-    const myHeatMaps = maps.map((map) => L.heatLayer([], heatmapOptions).addTo(map))
-
-    let latLngDatum = null
-
-    const updateTop = []
+    const myHeatMaps = ancientMaps.map((map) => L.heatLayer([], heatmapOptions).addTo(map))
 
     function reHelightCall(dataCollection) {
       requestAnimationFrame(() => {
-        latLngDatum = myHeatMaps.map(() => [])
-        const modern = latLngDatum[0]
+        const latLngDatum = myHeatMaps.map(() => [])
+        const modernSet = new Set()
+        const modern = []
         for (const data of dataCollection) {
-          modern.push([data.modern_latitude, data.modern_longitude])
-          latLngDatum[data.era + 1].push([data.ancient_latitude, data.ancient_longitude])
+          const key = data.modern_latitude + ' ' + data.modern_longitude
+          if (!modernSet.has(key)) {
+            modernSet.add(key)
+            modern.push([data.modern_latitude, data.modern_longitude])
+          }
+          latLngDatum[data.era].push([data.ancient_latitude, data.ancient_longitude])
         }
         for (const [i, data] of latLngDatum.entries()) {
-          if (i == 0) {
-            myGroup.clearLayers()
-            data.forEach((d) => {
-              L.marker([d[0], d[1]], leafletConfig).addTo(myGroup)
-            })
-          } else {
-            myHeatMaps[i].setLatLngs(data)
-          }
+          myHeatMaps[i].setLatLngs(data)
         }
-        for (const update of updateTop) update()
+        myGroup.clearLayers()
+        for (const data of modern) {
+          L.marker(data, leafletConfig).addTo(myGroup)
+        }
       })
     }
 
     reHelightCall(dataCollection)
 
-    //之前select功能
+    // 之前select功能
     // const mapsTop = []
     // const idList = []
 

@@ -10,12 +10,12 @@ window.dataPromise = d3.csv('./data/data_combined_sorted.csv').then((dataCollect
     'era',
   ]
 
-  dataCollection.forEach((d)=>{
-    if(d['start_year']<-251){
-      d['start_year']=-251
+  dataCollection.forEach((d) => {
+    if (d.start_year < -251) {
+      d.start_year = -251
     }
-    if(d['end_year']>-66){
-      d['end_year']=-66
+    if (d.end_year > -66) {
+      d.end_year = -66
     }
   })
   const PhylumClassOrderFamilyGenusSpecies = new Map()

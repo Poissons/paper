@@ -75,68 +75,80 @@ timeGraphPromise.then(
         .attr('width', width + marginT.left)
         .attr('height', height + marginT.top + marginT.bottom)
         .style('font', '10px sans-serif')
-      const cell = svg
-        .selectAll('g')
-        .data(root.descendants())
-        .join('g')
-        .attr('transform', (d) => `translate(${d.y0 + marginT.left},${d.x0 + marginT.top})`)
 
       let timer = 0
       let lastNode = null
-      const rect = cell
-        .append('rect')
-        .attr('width', (d) => d.y1 - d.y0 - 1)
-        .attr('height', (d) => rectHeight(d))
-        .attr(
-          'fill',
-          'white',
-          // (d) => {
-          //   if (!d.depth) return 'grey'
-          //   else return 'lightgrey'
-          // }
-        )
-        .attr('style', 'outline: rgb(179, 179, 179) solid 1px;')
-        .attr('d', 'M5 20 l215 0')
-        .style('cursor', 'pointer')
-        .on('click', (node) => {
-          if (node.depth === 1) {
-            if (node === lastNode) {
-              lastNode = null
-              if (timer) clearTimeout(timer)
-              handleDblClick(node)
-            } else {
-              lastNode = node
-              timer = setTimeout(() => {
-                timer = 0
-                lastNode = null
-                clicked(node)
-              }, 300)
-            }
+      let isAnimating = false
+      const clickListener = (node) => {
+        if (isAnimating) return
+        if (node.depth === 1) {
+          if (node === lastNode) {
+            lastNode = null
+            if (timer) clearTimeout(timer)
+            handleDblClick(node)
           } else {
-            clicked(node)
+            lastNode = node
+            timer = setTimeout(() => {
+              timer = 0
+              lastNode = null
+              clicked(node)
+            }, 300)
           }
-        })
+        } else {
+          clicked(node)
+        }
+      }
 
-      const text = cell
-        .append('text')
-        .style('user-select', 'none')
-        .attr('pointer-events', 'none')
-        .attr('x', 33)
-        .attr('y', (d) => rectHeight(d) / 2 + 5)
-        .attr('fill-opacity', (d) => +labelVisible(d))
+      const createCell = (nodes) => {
+        const cell = svg
+          .selectAll(null)
+          .data(nodes)
+          .enter()
+          .insert('g')
+          .attr('class', 'tree-cell')
+          .attr(
+            'transform',
+            (d) =>
+              `translate(${(d.target || d).y0 + marginT.left},${(d.target || d).x0 + marginT.top})`,
+          )
 
-      text.append('tspan').text((d) => d.data.name)
+        cell
+          .append('rect')
+          .attr('class', 'tree-rect')
+          .attr('width', (d) => (d.target || d).y1 - (d.target || d).y0 - 1)
+          .attr('height', (d) => rectHeight(d.target || d))
+          .attr(
+            'fill',
+            'white',
+            // (d) => {
+            //   if (!d.depth) return 'grey'
+            //   else return 'lightgrey'
+            // }
+          )
+          .attr('style', 'outline: rgb(179, 179, 179) solid 1px;')
+          .style('cursor', 'pointer')
+          .on('click', clickListener)
 
-      const tspan = text.append('tspan').attr('fill-opacity', (d) => labelVisible(d) * 0.7)
+        const text = cell
+          .append('text')
+          .attr('class', 'tree-text')
+          .style('user-select', 'none')
+          .attr('pointer-events', 'none')
+          .attr('x', 33)
+          .attr('y', (d) => rectHeight(d.target || d) / 2 + 5)
+          .attr('fill-opacity', (d) => +labelVisible(d.target || d))
 
-      cell.append('title').text(
-        (d) =>
-          `${d
-            .ancestors()
-            .map((d) => d.data.name)
-            .reverse()
-            .join('/')}\n`,
-      )
+        text.append('tspan').text((d) => d.data.name)
+
+        cell.append('title').text(
+          (d) =>
+            `${d
+              .ancestors()
+              .map((d) => d.data.name)
+              .reverse()
+              .join('/')}\n`,
+        )
+      }
 
       function trigger(node) {
         const datumArr = node.children.map((child) => [
@@ -148,9 +160,55 @@ timeGraphPromise.then(
         redrawBarByX(datumArr, node.data.linePos)
       }
 
+      function ensureNodes(focus) {
+        const nodes = []
+        const check = (node) => {
+          if (!node._inDom) {
+            nodes.push(node)
+          }
+        }
+        check(focus)
+        if (focus.parent) {
+          check(focus.parent)
+          for (const child of focus.parent.children) {
+            check(child)
+          }
+        }
+        for (const child of focus.children) {
+          check(child)
+        }
+        for (const node of nodes) {
+          node._inDom = true
+        }
+        createCell(nodes)
+      }
+
+      function endAnimation() {
+        isAnimating = false
+        svg
+          .attr('pointer-events', 'auto')
+          .selectAll('.tree-cell')
+          .filter((d) => {
+            if (
+              d.parent !== focus &&
+              d.parent !== focus.parent &&
+              d !== focus &&
+              focus.parent !== d
+            ) {
+              d._inDom = false
+              return true
+            }
+            return false
+          })
+          .remove()
+      }
+
       function clicked(node) {
         if (!node.children || node === root) return
+        isAnimating = true
+        svg.attr('pointer-events', 'none')
         focus = focus === node ? node.parent : node
+        ensureNodes(focus)
         trigger(focus)
 
         root.each(
@@ -163,7 +221,8 @@ timeGraphPromise.then(
             }),
         )
 
-        const t = cell
+        const t = svg
+          .selectAll('.tree-cell')
           .transition()
           .duration(750)
           .attr(
@@ -171,12 +230,17 @@ timeGraphPromise.then(
             (d) => `translate(${d.target.y0 + marginT.left},${d.target.x0 + marginT.top})`,
           )
 
-        rect.transition(t).attr('height', (d) => rectHeight(d.target))
-        text
+        svg
+          .selectAll('.tree-rect')
+          .transition(t)
+          .attr('height', (d) => rectHeight(d.target))
+        svg
+          .selectAll('.tree-text')
           .transition(t)
           .attr('fill-opacity', (d) => +labelVisible(d.target))
           .attr('y', (d) => rectHeight(d.target) / 2 + 5)
-        tspan.transition(t).attr('fill-opacity', (d) => labelVisible(d.target) * 0.7)
+
+        t.end().then(endAnimation)
       }
 
       const handleDblClick = (d) => {
@@ -188,9 +252,10 @@ timeGraphPromise.then(
       }
 
       function labelVisible(d) {
-        return d.y1 <= width && d.y0 >= 0 && d.x1 - d.x0 > 16
+        return d.x1 - d.x0 > 16
       }
 
+      ensureNodes(root)
       trigger(root)
 
       return svg.node()

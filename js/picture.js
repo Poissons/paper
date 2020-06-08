@@ -95,8 +95,8 @@ Promise.all([d3.json('./data/picture.json'), timeGraphPromise]).then(
       )
 
       function clicked(p) {
+        if (p === root) return
         focus = focus === p ? (p = p.parent) : p
-
         root.each(
           (d) =>
             (d.target = {

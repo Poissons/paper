@@ -1,25 +1,16 @@
-/* global d3 $ barGraphPromise reHighlightPromise */
+/* global d3 barGraphPromise reHighlightPromise */
 window.timeGraphPromise = Promise.all([barGraphPromise, reHighlightPromise]).then(
   ([[finalData, PhylumClassOrderFamilyGenusSpecies, kdeDatum], reHighlight]) => {
     // 画timeline图
-    const heightT = $('#time').height()
-    const widthT = $('#time').width()
-    const marginT = { top: 30, right: 30, bottom: 20, left: 10 }
+    const time = document.getElementById('time')
+    const { width: widthT, height: heightT } = time.getBoundingClientRect()
 
-    const DOM = {
-      svg(width, height) {
-        const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
-        svg.setAttribute('viewBox', [0, 0, width, height])
-        svg.setAttribute('width', width)
-        svg.setAttribute('height', height)
-        return svg
-      },
-    }
+    const marginTime = { top: 30, right: 30, bottom: 20, left: 10 }
 
     const yT = d3
       .scaleLinear()
       .domain([0, 1])
-      .range([0, heightT - marginT.bottom - marginT.top])
+      .range([0, heightT - marginTime.bottom - marginTime.top])
 
     const formatDate = (d) => (d < 0 ? `${-d}MA` : `${d}AD`)
 
@@ -49,18 +40,20 @@ window.timeGraphPromise = Promise.all([barGraphPromise, reHighlightPromise]).the
         .attr('width', w)
         .attr('fill', 'lightgrey')
         .append('title')
-        .text(d.name)
+        .text(`${d.name}\n${d.start_year}~${d.end_year}`)
     }
     const draw = () => {
       if (!lineXPosition || !lineYPosition) return
       if (chartT) chartT.remove()
 
-      const parent = document.createElement('div')
-
-      const svg = d3.select(DOM.svg(widthT, heightT))
+      const svg = d3
+        .create('svg')
+        .attr('width', widthT)
+        .attr('height', heightT)
+        .attr('viewBox', [0, 0, widthT, heightT])
       const lines = svg.append('g')
       for (const y of lineXPosition) {
-        const yPos = marginT.top + yT(y) - lineWidth / 2
+        const yPos = marginTime.top + yT(y) - lineWidth / 2
         lines
           .append('line')
           .attr('x1', 0)
@@ -73,7 +66,7 @@ window.timeGraphPromise = Promise.all([barGraphPromise, reHighlightPromise]).the
           .attr('pointer-events', 'none')
       }
       for (const x of lineYPosition) {
-        const xPos = marginT.left + xT(x) - lineWidth / 2
+        const xPos = marginTime.left + xT(x) - lineWidth / 2
         lines
           .append('line')
           .attr('x1', xPos)
@@ -88,7 +81,7 @@ window.timeGraphPromise = Promise.all([barGraphPromise, reHighlightPromise]).the
 
       const g = svg
         .append('g')
-        .attr('transform', (d, i) => `translate(${marginT.left} ${marginT.top})`)
+        .attr('transform', (d, i) => `translate(${marginTime.left} ${marginTime.top})`)
 
       const groups = g.selectAll('g').data(filteredData).enter().append('g').attr('class', 'civ')
 
@@ -105,18 +98,16 @@ window.timeGraphPromise = Promise.all([barGraphPromise, reHighlightPromise]).the
 
       svg
         .append('g')
-        .attr('transform', (d, i) => `translate(${marginT.left} ${marginT.top - 10})`)
+        .attr('transform', (d, i) => `translate(${marginTime.left} ${marginTime.top - 10})`)
         .call(axisTop)
 
       svg
         .append('g')
-        .attr('transform', (d, i) => `translate(${marginT.left} ${heightT - marginT.bottom})`)
+        .attr('transform', (d, i) => `translate(${marginTime.left} ${heightT - marginTime.bottom})`)
         .call(axisBottom)
 
-      parent.appendChild(svg.node())
-      parent.groups = groups
-      document.getElementById('time').appendChild(parent)
-      chartT = parent
+      chartT = svg.node()
+      time.appendChild(chartT)
     }
 
     class LineSegments {
@@ -214,7 +205,7 @@ window.timeGraphPromise = Promise.all([barGraphPromise, reHighlightPromise]).the
       xT = d3
         .scaleLinear()
         .domain([minYear, maxYear])
-        .range([0, widthT - marginT.left - marginT.right])
+        .range([0, widthT - marginTime.left - marginTime.right])
 
       axisTop = d3.axisTop(xT).tickPadding(2).tickFormat(formatDate)
 
@@ -229,22 +220,29 @@ window.timeGraphPromise = Promise.all([barGraphPromise, reHighlightPromise]).the
 
     //   const g = svg
     //     .append('g')
-    //     .attr('transform', (d, i) => `translate(${marginT.left} ${marginT.top})`)
+    //     .attr('transform', (d, i) => `translate(${marginTime.left} ${marginTime.top})`)
 
     //   svg
     //     .append('g')
-    //     .attr('transform', (d, i) => `translate(${marginT.left} ${marginT.top - 10})`)
+    //     .attr('transform', (d, i) => `translate(${marginTime.left} ${marginTime.top - 10})`)
     //     .call(axisTop)
 
     //   svg
     //     .append('g')
-    //     .attr('transform', (d, i) => `translate(${marginT.left} ${heightT - marginT.bottom})`)
+    //     .attr('transform', (d, i) => `translate(${marginTime.left} ${heightT - marginTime.bottom})`)
     //     .call(axisBottom)
 
     //   parent.appendChild(svg.node())
     //   return parent
     // })()
 
-    return { PhylumClassOrderFamilyGenusSpecies, kdeDatum, reHighlight, redrawBarByX, redrawBarByY }
+    return {
+      PhylumClassOrderFamilyGenusSpecies,
+      kdeDatum,
+      reHighlight,
+      redrawBarByX,
+      redrawBarByY,
+      marginTime,
+    }
   },
 )

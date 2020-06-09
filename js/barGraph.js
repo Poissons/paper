@@ -1,8 +1,8 @@
-/* globals d3 dataPromise $ */
+/* globals d3 dataPromise */
 window.barGraphPromise = dataPromise.then(([earlyData, PhylumClassOrderFamilyGenusSpecies]) => {
   const padding = { top: 1, right: 20, bottom: 18.5, left: 30 }
-  const height = $('#barGraph').height()
-  const width = $('#barGraph').width()
+  const barGraph = document.getElementById('barGraph')
+  const { width, height } = barGraph.getBoundingClientRect()
   // 准备数据
   const minYear = d3.min(earlyData, (d) => d.start_year)
   const maxYear = d3.max(earlyData, (d) => d.end_year)
@@ -13,7 +13,7 @@ window.barGraphPromise = dataPromise.then(([earlyData, PhylumClassOrderFamilyGen
     .range([padding.left, width - padding.right])
 
   const formatDate = (d) => (d < 0 ? `${-d}MA` : `${d}AD`)
-  const xAaxis = d3.axisBottom(x).tickFormat(formatDate)
+  const xAxis = d3.axisBottom(x).tickFormat(formatDate)
 
   const thresholds = x.ticks(maxYear - minYear)
 
@@ -70,13 +70,14 @@ window.barGraphPromise = dataPromise.then(([earlyData, PhylumClassOrderFamilyGen
     .domain([0, d3.max(newData)])
     .range([height - padding.bottom, padding.top])
 
-  const yAaxis = d3.axisLeft(y)
+  const yAxis = d3.axisLeft(y)
 
-  const svg = d3.select('#barGraph').append('svg').attr('width', width).attr('height', height)
+  const svg = d3.select(barGraph).append('svg').attr('width', width).attr('height', height)
   const rectWidth = x(thresholds[1]) - x(thresholds[0])
   const rectStep = rectWidth
 
   svg
+    .append('g')
     .selectAll('rect')
     .data(newData)
     .enter()
@@ -99,16 +100,14 @@ window.barGraphPromise = dataPromise.then(([earlyData, PhylumClassOrderFamilyGen
     .append('g')
     .attr('transform', `translate(${padding.left},${height - padding.bottom})`)
     .attr('text-anchor', 'end')
-    .attr('font-weight', 'bold')
-    .call(xAaxis)
+    .call(xAxis)
 
   svg
     .append('g')
-    .call(yAaxis)
+    .call(yAxis)
     .attr('transform', `translate(${padding.left + 9},0)`)
     .attr('text-anchor', 'end')
-    .attr('font-weight', 'bold')
-    .attr('font-size', '7')
+    .attr('font-size', y(0) - y(100))
 
   const text = document.getElementById('text')
   const range = document.getElementById('range')

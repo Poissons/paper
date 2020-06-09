@@ -1,8 +1,9 @@
-/* global d3 $ timeGraphPromise */
+/* global d3 timeGraphPromise */
 Promise.all([d3.json('./data/picture.json'), timeGraphPromise]).then(
-  ([pictureJson, { redrawBarByY }]) => {
-    const height = $('#picture').height()
-    const width = $('#picture').width()
+  ([pictureJson, { redrawBarByY, marginTime }]) => {
+    const picture = document.getElementById('picture')
+    const margin = { right: marginTime.right, left: marginTime.left }
+    const { width, height } = picture.getBoundingClientRect()
     const format = d3.format('.2f')
     const color = d3.scaleOrdinal(
       d3.quantize(d3.interpolateRainbow, pictureJson.children.length + 1),
@@ -19,7 +20,9 @@ Promise.all([d3.json('./data/picture.json'), timeGraphPromise]).then(
 
     const partition = (data) => {
       const root = d3.hierarchy(data).sum((d) => (d.children ? 0 : d.max - d.min))
-      return d3.partition().size([width, ((root.height + 1) * height) / 3])(root)
+      return d3
+        .partition()
+        .size([width - margin.left - margin.right, ((root.height + 1) * height) / 3])(root)
     }
 
     const chart = (() => {
@@ -37,7 +40,7 @@ Promise.all([d3.json('./data/picture.json'), timeGraphPromise]).then(
         .selectAll('g')
         .data(root.descendants())
         .join('g')
-        .attr('transform', (d) => `translate(${d.x0},${d.y0})`)
+        .attr('transform', (d) => `translate(${d.x0 + margin.left},${d.y0})`)
 
       function updateLineY(node) {
         let lineYPosition
@@ -111,7 +114,7 @@ Promise.all([d3.json('./data/picture.json'), timeGraphPromise]).then(
         const t = cell
           .transition()
           .duration(750)
-          .attr('transform', (d) => `translate(${d.target.x0},${d.target.y0})`)
+          .attr('transform', (d) => `translate(${d.target.x0 + margin.left},${d.target.y0})`)
 
         rect.transition(t).attr('width', (d) => rectWidth(d.target))
         text.transition(t).attr('fill-opacity', (d) => +labelVisible(d.target))
@@ -131,6 +134,6 @@ Promise.all([d3.json('./data/picture.json'), timeGraphPromise]).then(
       return svg.node()
     })()
 
-    document.getElementById('picture').appendChild(chart)
+    picture.appendChild(chart)
   },
 )

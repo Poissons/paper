@@ -1,10 +1,12 @@
-/* global timeGraphPromise d3 $ */
+/* global timeGraphPromise d3 */
 timeGraphPromise.then(
-  ({ PhylumClassOrderFamilyGenusSpecies, kdeDatum, reHighlight, redrawBarByX }) => {
+  ({ PhylumClassOrderFamilyGenusSpecies, kdeDatum, reHighlight, redrawBarByX, marginTime }) => {
     // barGraphPromise.then(([finalData, PhylumClassOrderFamilyGenusSpecies, kdeDatum]) => {
-    const marginT = { top: 1, bottom: 1, left: 1 }
-    const height = $('#tree').height() - marginT.top - marginT.bottom
-    const width = $('#tree').width() - marginT.left
+    const marginTree = { top: marginTime.top, bottom: marginTime.bottom, left: 1 }
+    const tree = document.getElementById('tree')
+    let { width, height } = tree.getBoundingClientRect()
+    height -= marginTree.top + marginTree.bottom
+    width -= marginTree.left
 
     function transform(node) {
       if (Array.isArray(node)) {
@@ -71,9 +73,14 @@ timeGraphPromise.then(
 
       const svg = d3
         .create('svg')
-        .attr('viewBox', [0, 0, width + marginT.left, height + marginT.top + marginT.bottom])
-        .attr('width', width + marginT.left)
-        .attr('height', height + marginT.top + marginT.bottom)
+        .attr('viewBox', [
+          0,
+          0,
+          width + marginTree.left,
+          height + marginTree.top + marginTree.bottom,
+        ])
+        .attr('width', width + marginTree.left)
+        .attr('height', height + marginTree.top + marginTree.bottom)
         .style('font', '10px sans-serif')
 
       let timer = 0
@@ -106,7 +113,7 @@ timeGraphPromise.then(
           .attr('class', 'tree-cell')
           .attr(
             'transform',
-            (d) => `translate(${d.target.y0 + marginT.left},${d.target.x0 + marginT.top})`,
+            (d) => `translate(${d.target.y0 + marginTree.left},${d.target.x0 + marginTree.top})`,
           )
 
         cell
@@ -217,7 +224,7 @@ timeGraphPromise.then(
           .duration(750)
           .attr(
             'transform',
-            (d) => `translate(${d.target.y0 + marginT.left},${d.target.x0 + marginT.top})`,
+            (d) => `translate(${d.target.y0 + marginTree.left},${d.target.x0 + marginTree.top})`,
           )
 
         svg
@@ -251,6 +258,6 @@ timeGraphPromise.then(
       return svg.node()
     })()
 
-    document.getElementById('tree').appendChild(chart)
+    tree.appendChild(chart)
   },
 )

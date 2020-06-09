@@ -129,7 +129,7 @@ timeGraphPromise.then(
             //   else return 'lightgrey'
             // }
           )
-          .style('outline', 'rgb(179, 179, 179) solid 1px')
+          .style('outline', 'rgb(179, 179, 179) solid 0.5px')
           .style('cursor', (d) => (d.children ? 'pointer' : 'not-allowed'))
           .filter((d) => d.children && d !== root)
           .on('click', clickListener)

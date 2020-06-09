@@ -6,9 +6,6 @@ Promise.all([d3.json('./data/picture.json'), timeGraphPromise]).then(
     let { width, height } = picture.getBoundingClientRect()
     width -= margin.left + margin.right
     const format = d3.format('.2f')
-    const color = d3.scaleOrdinal(
-      d3.quantize(d3.interpolateRainbow, pictureJson.children.length + 1),
-    )
 
     ;(function ensureMinMax(node) {
       if (!node.children) return
@@ -34,6 +31,8 @@ Promise.all([d3.json('./data/picture.json'), timeGraphPromise]).then(
         .attr('width', width + margin.left + margin.right)
         .attr('height', height)
         .style('font', '10px sans-serif')
+        .style('font-weight', 'bold')
+        .style('text-shadow', 'white 0 0 1px')
 
       const cell = svg
         .selectAll('g')
@@ -53,21 +52,12 @@ Promise.all([d3.json('./data/picture.json'), timeGraphPromise]).then(
         }
         redrawBarByY(lineYPosition, node.data.min, node.data.max)
       }
-      root._color = 'rgb(224, 224, 224)'
-      for (const child of root.children) {
-        const fill = d3.color(color(child.data.name))
-        fill.r = fill.r * 0.6 + 0xff * 0.4
-        fill.g = fill.g * 0.6 + 0xff * 0.4
-        fill.b = fill.b * 0.6 + 0xff * 0.4
-        child._color = fill.toString()
-      }
       const rect = cell
         .append('rect')
         .attr('width', (d) => rectWidth(d))
         .attr('height', (d) => d.y1 - d.y0 - 1)
         .attr('fill', (d) => {
-          while (!d._color) d = d.parent
-          return d._color
+          return d.data.color
         })
         .style('outline', 'white solid 0.5px')
         .style('cursor', 'pointer')

@@ -169,6 +169,10 @@ window.timeGraphPromise = Promise.all([barGraphPromise, reHighlightPromise]).the
           return
         }
         const start = (this._lowerBound(startYear) >> 1) << 1
+        if (start === segments.length) {
+          segments.push(startYear, endYear)
+          return
+        }
         segments.splice(
           start,
           end - start + 1,

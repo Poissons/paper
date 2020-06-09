@@ -78,9 +78,7 @@ timeGraphPromise.then(
 
       let timer = 0
       let lastNode = null
-      let isAnimating = false
       const clickListener = (node) => {
-        if (isAnimating) return
         if (node.depth === 1) {
           if (node === lastNode) {
             lastNode = null
@@ -108,15 +106,14 @@ timeGraphPromise.then(
           .attr('class', 'tree-cell')
           .attr(
             'transform',
-            (d) =>
-              `translate(${(d.target || d).y0 + marginT.left},${(d.target || d).x0 + marginT.top})`,
+            (d) => `translate(${d.target.y0 + marginT.left},${d.target.x0 + marginT.top})`,
           )
 
         cell
           .append('rect')
           .attr('class', 'tree-rect')
-          .attr('width', (d) => (d.target || d).y1 - (d.target || d).y0 - 1)
-          .attr('height', (d) => rectHeight(d.target || d))
+          .attr('width', (d) => d.target.y1 - d.target.y0 - 1)
+          .attr('height', (d) => rectHeight(d.target))
           .attr(
             'fill',
             'white',
@@ -125,8 +122,9 @@ timeGraphPromise.then(
             //   else return 'lightgrey'
             // }
           )
-          .attr('style', 'outline: rgb(179, 179, 179) solid 1px;')
-          .style('cursor', 'pointer')
+          .style('outline', 'rgb(179, 179, 179) solid 1px')
+          .style('cursor', (d) => (d.children ? 'pointer' : 'not-allowed'))
+          .filter((d) => d.children && d !== root)
           .on('click', clickListener)
 
         const text = cell
@@ -135,8 +133,8 @@ timeGraphPromise.then(
           .style('user-select', 'none')
           .attr('pointer-events', 'none')
           .attr('x', 33)
-          .attr('y', (d) => rectHeight(d.target || d) / 2 + 5)
-          .attr('fill-opacity', (d) => +labelVisible(d.target || d))
+          .attr('y', (d) => rectHeight(d.target) / 2 + 5)
+          .attr('fill-opacity', (d) => +labelVisible(d.target))
 
         text.append('tspan').text((d) => d.data.name)
 
@@ -160,6 +158,14 @@ timeGraphPromise.then(
         redrawBarByX(datumArr, node.data.linePos)
       }
 
+      const calcPosition = (d) =>
+        (d.target = {
+          x0: ((d.x0 - focus.x0) / (focus.x1 - focus.x0)) * height,
+          x1: ((d.x1 - focus.x0) / (focus.x1 - focus.x0)) * height,
+          y0: d.y0 - focus.y0,
+          y1: d.y1 - focus.y0,
+        })
+
       function ensureNodes(focus) {
         const nodes = []
         const check = (node) => {
@@ -168,25 +174,18 @@ timeGraphPromise.then(
           }
         }
         check(focus)
-        if (focus.parent) {
-          check(focus.parent)
-          for (const child of focus.parent.children) {
-            check(child)
-          }
-        }
         for (const child of focus.children) {
           check(child)
         }
         for (const node of nodes) {
           node._inDom = true
+          calcPosition(node)
         }
         createCell(nodes)
       }
 
-      function endAnimation() {
-        isAnimating = false
+      function clearNodes() {
         svg
-          .attr('pointer-events', 'auto')
           .selectAll('.tree-cell')
           .filter((d) => {
             if (
@@ -201,28 +200,19 @@ timeGraphPromise.then(
             return false
           })
           .remove()
+          .size()
       }
 
       function clicked(node) {
         if (!node.children || node === root) return
-        isAnimating = true
-        svg.attr('pointer-events', 'none')
-        focus = focus === node ? node.parent : node
-        ensureNodes(focus)
+        const nextFocus = focus === node ? node.parent : node
+        ensureNodes(nextFocus)
+        focus = nextFocus
         trigger(focus)
-
-        root.each(
-          (d) =>
-            (d.target = {
-              x0: ((d.x0 - focus.x0) / (focus.x1 - focus.x0)) * height,
-              x1: ((d.x1 - focus.x0) / (focus.x1 - focus.x0)) * height,
-              y0: d.y0 - focus.y0,
-              y1: d.y1 - focus.y0,
-            }),
-        )
 
         const t = svg
           .selectAll('.tree-cell')
+          .each(calcPosition)
           .transition()
           .duration(750)
           .attr(
@@ -240,7 +230,7 @@ timeGraphPromise.then(
           .attr('fill-opacity', (d) => +labelVisible(d.target))
           .attr('y', (d) => rectHeight(d.target) / 2 + 5)
 
-        t.end().then(endAnimation)
+        t.end().then(clearNodes, () => {})
       }
 
       const handleDblClick = (d) => {

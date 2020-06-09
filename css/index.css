@@ -32,8 +32,6 @@ body {
 #barPart {
 	display: grid;
 	grid-template-columns: 120px auto;
-	overflow-y: scroll;
-	overflow-x: hidden;
 }
 
 #down {

@@ -1,6 +1,6 @@
 /* globals d3 dataPromise $ */
 window.barGraphPromise = dataPromise.then(([earlyData, PhylumClassOrderFamilyGenusSpecies]) => {
-  const padding = { top: 20, right: 20, bottom: 20, left: 30 }
+  const padding = { top: 1, right: 20, bottom: 18.5, left: 30 }
   const height = $('#barGraph').height()
   const width = $('#barGraph').width()
   // 准备数据
@@ -23,14 +23,13 @@ window.barGraphPromise = dataPromise.then(([earlyData, PhylumClassOrderFamilyGen
     all: {
       show: true,
       data: newData,
-      dataSum: 0,
     },
   }
+  let dataSum = 0
   for (const phylumName of PhylumClassOrderFamilyGenusSpecies.keys()) {
     datum[phylumName] = {
       show: false,
       data: new Array(maxYear - minYear).fill(0),
-      dataSum: 0,
     }
   }
   let lastDataLane = -1
@@ -43,7 +42,7 @@ window.barGraphPromise = dataPromise.then(([earlyData, PhylumClassOrderFamilyGen
     const min = Math.max(data.start_year - minYear, lastDataMax)
     const max = Math.max(data.end_year - minYear, lastDataMax)
     lastDataMax = max
-    datum[data.Phylum].dataSum += max - min
+    dataSum += max - min
     const arr = datum[data.Phylum].data
     for (let i = min; i < max; i++) {
       arr[i]++
@@ -53,7 +52,6 @@ window.barGraphPromise = dataPromise.then(([earlyData, PhylumClassOrderFamilyGen
     for (const [key, val] of datum[phylumName].data.entries()) {
       newData[key] += val
     }
-    datum.all.dataSum += datum[phylumName].dataSum
   }
 
   function kde(kernel, thresholds, data, dataSum, offset) {
@@ -88,30 +86,29 @@ window.barGraphPromise = dataPromise.then(([earlyData, PhylumClassOrderFamilyGen
       return padding.left + i * rectStep + 10
     })
     .attr('y', function (d) {
-      return height - padding.bottom - d
+      return y(d)
     })
     .attr('width', function (d, i) {
       return rectWidth
     })
     .attr('height', function (d) {
-      return d
+      return y(0) - y(d)
     })
 
   svg
     .append('g')
     .attr('transform', `translate(${padding.left},${height - padding.bottom})`)
-    .attr('fill', '#000')
     .attr('text-anchor', 'end')
     .attr('font-weight', 'bold')
     .call(xAaxis)
 
   svg
     .append('g')
+    .call(yAaxis)
     .attr('transform', `translate(${padding.left + 9},0)`)
     .attr('text-anchor', 'end')
     .attr('font-weight', 'bold')
-    .attr('font-size', '8px')
-    .call(yAaxis)
+    .attr('font-size', '7')
 
   const text = document.getElementById('text')
   const range = document.getElementById('range')
@@ -127,7 +124,7 @@ window.barGraphPromise = dataPromise.then(([earlyData, PhylumClassOrderFamilyGen
 
   function drawLine(key, info) {
     const bandwidth = range.value
-    const density = kde(epanechnikov(bandwidth), thresholds, info.data, info.dataSum, minYear)
+    const density = kde(epanechnikov(bandwidth), thresholds, info.data, dataSum, minYear)
 
     const line = d3
       .line()

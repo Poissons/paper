@@ -3,7 +3,8 @@ Promise.all([d3.json('./data/picture.json'), timeGraphPromise]).then(
   ([pictureJson, { redrawBarByY, marginTime }]) => {
     const picture = document.getElementById('picture')
     const margin = { right: marginTime.right, left: marginTime.left }
-    const { width, height } = picture.getBoundingClientRect()
+    let { width, height } = picture.getBoundingClientRect()
+    width -= margin.left + margin.right
     const format = d3.format('.2f')
     const color = d3.scaleOrdinal(
       d3.quantize(d3.interpolateRainbow, pictureJson.children.length + 1),
@@ -20,9 +21,7 @@ Promise.all([d3.json('./data/picture.json'), timeGraphPromise]).then(
 
     const partition = (data) => {
       const root = d3.hierarchy(data).sum((d) => (d.children ? 0 : d.max - d.min))
-      return d3
-        .partition()
-        .size([width - margin.left - margin.right, ((root.height + 1) * height) / 3])(root)
+      return d3.partition().size([width, ((root.height + 1) * height) / 3])(root)
     }
 
     const chart = (() => {
@@ -31,8 +30,8 @@ Promise.all([d3.json('./data/picture.json'), timeGraphPromise]).then(
 
       const svg = d3
         .create('svg')
-        .attr('viewBox', [0, 0, width, height])
-        .attr('width', width)
+        .attr('viewBox', [0, 0, width + margin.left + margin.right, height])
+        .attr('width', width + margin.left + margin.right)
         .attr('height', height)
         .style('font', '10px sans-serif')
 
@@ -70,6 +69,7 @@ Promise.all([d3.json('./data/picture.json'), timeGraphPromise]).then(
           while (!d._color) d = d.parent
           return d._color
         })
+        .style('outline', 'white solid 0.5px')
         .style('cursor', 'pointer')
         .on('click', clicked)
 
@@ -122,7 +122,7 @@ Promise.all([d3.json('./data/picture.json'), timeGraphPromise]).then(
       }
 
       function rectWidth(d) {
-        return d.x1 - d.x0 - Math.min(1, (d.x1 - d.x0) / 2)
+        return d.x1 - d.x0
       }
 
       function labelVisible(d) {

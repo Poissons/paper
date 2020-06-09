@@ -245,7 +245,7 @@ timeGraphPromise.then(
       }
 
       function rectHeight(d) {
-        return d.x1 - d.x0 - Math.min(1, (d.x1 - d.x0) / 2)
+        return d.x1 - d.x0
       }
 
       function labelVisible(d) {

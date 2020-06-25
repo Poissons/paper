@@ -121,6 +121,17 @@ window.barGraphPromise = dataPromise.then(([earlyData, PhylumClassOrderFamilyGen
   }
   range.addEventListener('input', redraw, false)
 
+
+  function lineColor(key){
+      if(key=="all") return "#d62728"
+      else if(key=="Angiospermae") return "#ff7f0e"
+      else if(key=="Bryophyta") return "#dff415"
+      else if(key=="Gymnospermae") return "#2ca02c"
+      else if(key=="Pteridophyta") return "#1f77b4"
+      else return "#9467bd"
+
+  }
+
   function drawLine(key, info) {
     const bandwidth = range.value
     const density = kde(epanechnikov(bandwidth), thresholds, info.data, dataSum, minYear)
@@ -136,7 +147,7 @@ window.barGraphPromise = dataPromise.then(([earlyData, PhylumClassOrderFamilyGen
       .datum(density)
       .attr('class', 'thisPath path-' + key.toLowerCase())
       .attr('fill', 'none')
-      .attr('stroke', '#000')
+      .attr('stroke', lineColor(key))
       .attr('stroke-width', 1.5)
       .attr('stroke-linejoin', 'round')
       .attr('d', line)

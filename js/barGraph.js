@@ -82,7 +82,7 @@ window.barGraphPromise = dataPromise.then(([earlyData, PhylumClassOrderFamilyGen
     .data(newData)
     .enter()
     .append('rect')
-    .attr('fill', 'steelblue')
+    .attr('fill', '#ff8c00')
     .attr('x', function (d, i) {
       return padding.left + i * rectStep + 10
     })
@@ -105,6 +105,7 @@ window.barGraphPromise = dataPromise.then(([earlyData, PhylumClassOrderFamilyGen
   svg
     .append('g')
     .call(yAxis)
+    .call(g => g.select(".domain").remove())
     .attr('transform', `translate(${padding.left + 9},0)`)
     .attr('text-anchor', 'end')
     .attr('font-size', y(0) - y(100))
@@ -124,7 +125,7 @@ window.barGraphPromise = dataPromise.then(([earlyData, PhylumClassOrderFamilyGen
 
   function lineColor(key){
       if(key=="all") return "#d62728"
-      else if(key=="Angiospermae") return "#ff7f0e"
+      else if(key=="Angiospermae") return "#152bf4"
       else if(key=="Bryophyta") return "#dff415"
       else if(key=="Gymnospermae") return "#2ca02c"
       else if(key=="Pteridophyta") return "#1f77b4"

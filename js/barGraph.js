@@ -3,6 +3,10 @@ window.barGraphPromise = dataPromise.then(([earlyData, PhylumClassOrderFamilyGen
   const padding = { top: 1, right: 20, bottom: 18.5, left: 30 }
   const barGraph = document.getElementById('barGraph')
   const { width, height } = barGraph.getBoundingClientRect()
+
+  const tempWidth = $('#temp').width()
+  const tempHeight = $('#temp').height()
+
   // 准备数据
   const minYear = d3.min(earlyData, (d) => d.start_year)
   const maxYear = d3.max(earlyData, (d) => d.end_year)
@@ -105,7 +109,7 @@ window.barGraphPromise = dataPromise.then(([earlyData, PhylumClassOrderFamilyGen
   svg
     .append('g')
     .call(yAxis)
-    .call(g => g.select(".domain").remove())
+    .call((g) => g.select('.domain').remove())
     .attr('transform', `translate(${padding.left + 9},0)`)
     .attr('text-anchor', 'end')
     .attr('font-size', y(0) - y(100))
@@ -122,15 +126,13 @@ window.barGraphPromise = dataPromise.then(([earlyData, PhylumClassOrderFamilyGen
   }
   range.addEventListener('input', redraw, false)
 
-
-  function lineColor(key){
-      if(key=="all") return "#d62728"
-      else if(key=="Angiospermae") return "#152bf4"
-      else if(key=="Bryophyta") return "#dff415"
-      else if(key=="Gymnospermae") return "#2ca02c"
-      else if(key=="Pteridophyta") return "#1f77b4"
-      else return "#9467bd"
-
+  function lineColor(key) {
+    if (key == 'all') return '#d62728'
+    else if (key == 'Angiospermae') return '#152bf4'
+    else if (key == 'Bryophyta') return '#dff415'
+    else if (key == 'Gymnospermae') return '#2ca02c'
+    else if (key == 'Pteridophyta') return '#1f77b4'
+    else return '#9467bd'
   }
 
   function drawLine(key, info) {
@@ -139,7 +141,7 @@ window.barGraphPromise = dataPromise.then(([earlyData, PhylumClassOrderFamilyGen
 
     const line = d3
       .line()
-      .curve(d3.curveBasis)
+      .curve(d3.curveNatural)
       .x((d) => x(d[0]))
       .y((d) => y(d[1] * 70000))
 
@@ -152,6 +154,74 @@ window.barGraphPromise = dataPromise.then(([earlyData, PhylumClassOrderFamilyGen
       .attr('stroke-width', 1.5)
       .attr('stroke-linejoin', 'round')
       .attr('d', line)
+
+    let densitySlope = new Array()
+    let densityLength = density.length
+    for (let i = 0; i <= densityLength - 1; i++) {
+      let every=[]
+      every.push(i-298)
+      if(i==densityLength - 1){
+        every.push(0)
+
+      }else{
+        let slope = (density[i + 1][1] - density[i][1]) / (density[i + 1][0] - density[i][0])
+        every.push(slope)
+      }
+      densitySlope.push(every)
+    }
+
+    console.log(density)
+    console.log(densitySlope)
+    //画基础图
+    const tempx = d3
+      .scaleLinear()
+      .domain([minYear, maxYear])
+      .range([padding.left - 20, tempWidth - padding.right - 30])
+
+    const formatDate = (d) => (d < 0 ? `${-d}MA` : `${d}AD`)
+    const tempxAxis = d3.axisBottom(tempx).tickFormat(formatDate)
+
+    const tempy = d3
+      .scaleLinear()
+      .domain([0, d3.max(densitySlope)])
+      .range([tempHeight - padding.bottom, padding.top])
+
+    const tempyAxis = d3.axisLeft(tempy)
+    const tempsvg = d3
+      .select(temp)
+      .append('svg')
+      .attr('width', tempWidth)
+      .attr('height', tempHeight)
+
+    tempsvg
+      .append('g')
+      .attr('transform', `translate(${padding.left},${tempHeight - padding.bottom})`)
+      .attr('text-anchor', 'end')
+      .call(tempxAxis)
+
+    tempsvg
+      .append('g')
+      .call(tempyAxis)
+      .call((g) => g.select('.domain').remove())
+      .attr('transform', `translate(${padding.left + 9},0)`)
+      .attr('text-anchor', 'end')
+      .attr('font-size', y(0) - y(100))
+
+    const templine = d3
+      .line()
+      .curve(d3.curveNatural)
+      .x((d) => tempx(d[0]))
+      .y((d) => tempy(d[1] * 70000))
+
+    tempsvg
+      .append('path')
+      .datum(densitySlope)
+      .attr('class', 'thisDensityPath path-' + key.toLowerCase())
+      .attr('fill', 'none')
+      .attr('stroke', lineColor(key))
+      .attr('stroke-width', 1.5)
+      .attr('stroke-linejoin', 'round')
+      .attr('d', templine)
   }
   for (const [key, info] of Object.entries(datum)) {
     let show = info.show

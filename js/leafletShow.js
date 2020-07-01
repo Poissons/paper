@@ -150,7 +150,7 @@ window.reHighlightPromise = dataPromise.then(
     const myHeatMaps = ancientMaps.map((map) => L.heatLayer([], heatmapOptions).addTo(map))
 
     function reHighlight(dataCollection) {
-      const skip = true
+      const skip = false
       if (skip) return
       requestAnimationFrame(() => {
         const latLngDatum = myHeatMaps.map(() => [])

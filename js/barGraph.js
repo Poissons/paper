@@ -1,11 +1,10 @@
-/* globals d3 dataPromise $ */
+/* globals d3 dataPromise */
 window.barGraphPromise = dataPromise.then(([earlyData, PhylumClassOrderFamilyGenusSpecies]) => {
   const padding = { top: 1, right: 20, bottom: 18.5, left: 30 }
   const barGraph = document.getElementById('barGraph')
   const { width, height } = barGraph.getBoundingClientRect()
-
-  const tempWidth = $('#temp').width()
-  const tempHeight = $('#temp').height()
+  const tempElem = document.getElementById('temp')
+  const { width: tempWidth, height: tempHeight } = tempElem.getBoundingClientRect()
 
   // 准备数据
   const minYear = d3.min(earlyData, (d) => d.start_year)
@@ -163,19 +162,12 @@ window.barGraphPromise = dataPromise.then(([earlyData, PhylumClassOrderFamilyGen
     const densitySlope = []
     const densityLength = density.length
     for (let i = 0; i < densityLength - 1; i++) {
-      const every = []
-      every.push(i - 298)
-      if (i === densityLength - 1) {
-        every.push(0)
-      } else {
-        const slope = (density[i + 1][1] - density[i][1]) / (density[i + 1][0] - density[i][0])
-        every.push(slope)
-      }
-      densitySlope.push(every)
+      const slope = (density[i + 1][1] - density[i][1]) / (density[i + 1][0] - density[i][0])
+      densitySlope.push([i - 298, slope])
     }
 
-    console.log(density)
-    console.log(densitySlope)
+    // console.log(density)
+    // console.log(densitySlope)
     // 画基础图
     const tempX = d3
       .scaleLinear()
@@ -187,12 +179,12 @@ window.barGraphPromise = dataPromise.then(([earlyData, PhylumClassOrderFamilyGen
 
     const tempY = d3
       .scaleLinear()
-      .domain([0, d3.max(densitySlope)])
+      .domain([d3.min(densitySlope, (d) => d[1]), d3.max(densitySlope, (d) => d[1])])
       .range([tempHeight - padding.bottom, padding.top])
 
     const tempYAxis = d3.axisLeft(tempY)
     const tempSvg = d3
-      .select(document.getElementById('temp'))
+      .select(tempElem)
       .append('svg')
       .attr('width', tempWidth)
       .attr('height', tempHeight)
@@ -215,7 +207,7 @@ window.barGraphPromise = dataPromise.then(([earlyData, PhylumClassOrderFamilyGen
       .line()
       .curve(d3.curveNatural)
       .x((d) => tempX(d[0]))
-      .y((d) => tempY(d[1] * 70000))
+      .y((d) => tempY(d[1]))
 
     tempSvg
       .append('path')

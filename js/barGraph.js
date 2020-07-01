@@ -1,4 +1,4 @@
-/* globals d3 dataPromise */
+/* globals d3 dataPromise $ */
 window.barGraphPromise = dataPromise.then(([earlyData, PhylumClassOrderFamilyGenusSpecies]) => {
   const padding = { top: 1, right: 20, bottom: 18.5, left: 30 }
   const barGraph = document.getElementById('barGraph')
@@ -126,12 +126,17 @@ window.barGraphPromise = dataPromise.then(([earlyData, PhylumClassOrderFamilyGen
   }
   range.addEventListener('input', redraw, false)
 
+  const lineColors = {
+    all: '#d62728',
+    Angiospermae: '#152bf4',
+    Bryophyta: '#dff415',
+    Gymnospermae: '#2ca02c',
+    Pteridophyta: '#1f77b4',
+  }
+
   function lineColor(key) {
-    if (key == 'all') return '#d62728'
-    else if (key == 'Angiospermae') return '#152bf4'
-    else if (key == 'Bryophyta') return '#dff415'
-    else if (key == 'Gymnospermae') return '#2ca02c'
-    else if (key == 'Pteridophyta') return '#1f77b4'
+    const hasOwnProperty = Object.prototype.hasOwnProperty
+    if (hasOwnProperty.call(lineColors, key)) return lineColors[key]
     else return '#9467bd'
   }
 
@@ -155,16 +160,15 @@ window.barGraphPromise = dataPromise.then(([earlyData, PhylumClassOrderFamilyGen
       .attr('stroke-linejoin', 'round')
       .attr('d', line)
 
-    let densitySlope = new Array()
-    let densityLength = density.length
-    for (let i = 0; i <= densityLength - 1; i++) {
-      let every=[]
-      every.push(i-298)
-      if(i==densityLength - 1){
+    const densitySlope = []
+    const densityLength = density.length
+    for (let i = 0; i < densityLength - 1; i++) {
+      const every = []
+      every.push(i - 298)
+      if (i === densityLength - 1) {
         every.push(0)
-
-      }else{
-        let slope = (density[i + 1][1] - density[i][1]) / (density[i + 1][0] - density[i][0])
+      } else {
+        const slope = (density[i + 1][1] - density[i][1]) / (density[i + 1][0] - density[i][0])
         every.push(slope)
       }
       densitySlope.push(every)
@@ -172,48 +176,48 @@ window.barGraphPromise = dataPromise.then(([earlyData, PhylumClassOrderFamilyGen
 
     console.log(density)
     console.log(densitySlope)
-    //画基础图
-    const tempx = d3
+    // 画基础图
+    const tempX = d3
       .scaleLinear()
       .domain([minYear, maxYear])
       .range([padding.left - 20, tempWidth - padding.right - 30])
 
     const formatDate = (d) => (d < 0 ? `${-d}MA` : `${d}AD`)
-    const tempxAxis = d3.axisBottom(tempx).tickFormat(formatDate)
+    const tempXAxis = d3.axisBottom(tempX).tickFormat(formatDate)
 
-    const tempy = d3
+    const tempY = d3
       .scaleLinear()
       .domain([0, d3.max(densitySlope)])
       .range([tempHeight - padding.bottom, padding.top])
 
-    const tempyAxis = d3.axisLeft(tempy)
-    const tempsvg = d3
-      .select(temp)
+    const tempYAxis = d3.axisLeft(tempY)
+    const tempSvg = d3
+      .select(document.getElementById('temp'))
       .append('svg')
       .attr('width', tempWidth)
       .attr('height', tempHeight)
 
-    tempsvg
+    tempSvg
       .append('g')
       .attr('transform', `translate(${padding.left},${tempHeight - padding.bottom})`)
       .attr('text-anchor', 'end')
-      .call(tempxAxis)
+      .call(tempXAxis)
 
-    tempsvg
+    tempSvg
       .append('g')
-      .call(tempyAxis)
+      .call(tempYAxis)
       .call((g) => g.select('.domain').remove())
       .attr('transform', `translate(${padding.left + 9},0)`)
       .attr('text-anchor', 'end')
       .attr('font-size', y(0) - y(100))
 
-    const templine = d3
+    const tempLine = d3
       .line()
       .curve(d3.curveNatural)
-      .x((d) => tempx(d[0]))
-      .y((d) => tempy(d[1] * 70000))
+      .x((d) => tempX(d[0]))
+      .y((d) => tempY(d[1] * 70000))
 
-    tempsvg
+    tempSvg
       .append('path')
       .datum(densitySlope)
       .attr('class', 'thisDensityPath path-' + key.toLowerCase())
@@ -221,7 +225,7 @@ window.barGraphPromise = dataPromise.then(([earlyData, PhylumClassOrderFamilyGen
       .attr('stroke', lineColor(key))
       .attr('stroke-width', 1.5)
       .attr('stroke-linejoin', 'round')
-      .attr('d', templine)
+      .attr('d', tempLine)
   }
   for (const [key, info] of Object.entries(datum)) {
     let show = info.show

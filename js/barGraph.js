@@ -113,15 +113,39 @@ window.barGraphPromise = dataPromise.then(([earlyData, PhylumClassOrderFamilyGen
     .attr('text-anchor', 'end')
     .attr('font-size', y(0) - y(100))
 
+  // 画斜率图
+  const tempX = d3
+    .scaleLinear()
+    .domain([minYear, maxYear])
+    .range([padding.left - 20, tempWidth - padding.right - 30])
+
+  const tempXAxis = d3.axisBottom(tempX).tickFormat(formatDate)
+
+  const tempSvg = d3
+    .select(tempElem)
+    .append('svg')
+    .attr('width', tempWidth)
+    .attr('height', tempHeight)
+
+  tempSvg
+    .append('g')
+    .attr('transform', `translate(${padding.left},${tempHeight - padding.bottom})`)
+    .attr('text-anchor', 'end')
+    .call(tempXAxis)
+
   const text = document.getElementById('text')
   const range = document.getElementById('range')
   const redraw = () => {
     text.value = Math.round(range.value * 1000) / 1000 + ' bandwidth'
-    d3.selectAll('.thisPath').remove()
+    svg.selectAll('.thisPath').remove()
+    tempSvg.selectAll('.thisDensityPath, .slope-axis-y').remove()
+    const slopesArr = []
     for (const [key, info] of Object.entries(datum)) {
       if (!info.show) continue
       drawLine(key, info)
+      slopesArr.push(key, info.densitySlope)
     }
+    drawSlopes(slopesArr)
   }
   range.addEventListener('input', redraw, false)
 
@@ -140,6 +164,8 @@ window.barGraphPromise = dataPromise.then(([earlyData, PhylumClassOrderFamilyGen
   }
 
   function drawLine(key, info) {
+    const densitySlope = (datum[key].densitySlope = [])
+
     const bandwidth = range.value
     const density = kde(epanechnikov(bandwidth), thresholds, info.data, dataSum, minYear)
 
@@ -159,44 +185,27 @@ window.barGraphPromise = dataPromise.then(([earlyData, PhylumClassOrderFamilyGen
       .attr('stroke-linejoin', 'round')
       .attr('d', line)
 
-    const densitySlope = []
     const densityLength = density.length
     for (let i = 0; i < densityLength - 1; i++) {
       const slope = (density[i + 1][1] - density[i][1]) / (density[i + 1][0] - density[i][0])
-      densitySlope.push([i - 298, slope])
+      densitySlope.push(slope)
     }
+  }
 
-    // console.log(density)
-    // console.log(densitySlope)
-    // 画基础图
-    const tempX = d3
-      .scaleLinear()
-      .domain([minYear, maxYear])
-      .range([padding.left - 20, tempWidth - padding.right - 30])
-
-    const formatDate = (d) => (d < 0 ? `${-d}MA` : `${d}AD`)
-    const tempXAxis = d3.axisBottom(tempX).tickFormat(formatDate)
-
+  const drawSlopes = (slopesArr) => {
     const tempY = d3
       .scaleLinear()
-      .domain([d3.min(densitySlope, (d) => d[1]), d3.max(densitySlope, (d) => d[1])])
+      .domain([
+        d3.min(slopesArr.map(([key, slopes]) => d3.min(slopes))),
+        d3.max(slopesArr.map(([key, slopes]) => d3.max(slopes))),
+      ])
       .range([tempHeight - padding.bottom, padding.top])
 
     const tempYAxis = d3.axisLeft(tempY)
-    const tempSvg = d3
-      .select(tempElem)
-      .append('svg')
-      .attr('width', tempWidth)
-      .attr('height', tempHeight)
 
     tempSvg
       .append('g')
-      .attr('transform', `translate(${padding.left},${tempHeight - padding.bottom})`)
-      .attr('text-anchor', 'end')
-      .call(tempXAxis)
-
-    tempSvg
-      .append('g')
+      .attr('class', 'slope-axis-y')
       .call(tempYAxis)
       .call((g) => g.select('.domain').remove())
       .attr('transform', `translate(${padding.left + 9},0)`)
@@ -206,19 +215,22 @@ window.barGraphPromise = dataPromise.then(([earlyData, PhylumClassOrderFamilyGen
     const tempLine = d3
       .line()
       .curve(d3.curveNatural)
-      .x((d) => tempX(d[0]))
-      .y((d) => tempY(d[1]))
+      .x((slope, index) => tempX(index + minYear))
+      .y((slope) => tempY(slope))
 
-    tempSvg
-      .append('path')
-      .datum(densitySlope)
-      .attr('class', 'thisDensityPath path-' + key.toLowerCase())
-      .attr('fill', 'none')
-      .attr('stroke', lineColor(key))
-      .attr('stroke-width', 1.5)
-      .attr('stroke-linejoin', 'round')
-      .attr('d', tempLine)
+    for (const [key, slopes] of slopesArr) {
+      tempSvg
+        .append('path')
+        .datum(slopes)
+        .attr('class', 'thisDensityPath path-' + key.toLowerCase())
+        .attr('fill', 'none')
+        .attr('stroke', lineColor(key))
+        .attr('stroke-width', 1.5)
+        .attr('stroke-linejoin', 'round')
+        .attr('d', tempLine)
+    }
   }
+
   for (const [key, info] of Object.entries(datum)) {
     let show = info.show
     Object.defineProperty(info, 'show', {
@@ -231,8 +243,10 @@ window.barGraphPromise = dataPromise.then(([earlyData, PhylumClassOrderFamilyGen
         if (newShow) {
           drawLine(key, info)
         } else {
-          d3.select('.thisPath.path-' + key.toLowerCase()).remove()
+          svg.select('.thisPath.path-' + key.toLowerCase()).remove()
         }
+        tempSvg.selectAll('.thisDensityPath, .slope-axis-y').remove()
+        drawSlopes(Object.entries(datum).filter(([key, info]) => info.show))
       },
       enumerable: true,
       configurable: true,

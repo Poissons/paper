@@ -143,7 +143,7 @@ window.barGraphPromise = dataPromise.then(([earlyData, PhylumClassOrderFamilyGen
     for (const [key, info] of Object.entries(datum)) {
       if (!info.show) continue
       drawLine(key, info)
-      slopesArr.push(key, info.densitySlope)
+      slopesArr.push([key, info.densitySlope])
     }
     drawSlopes(slopesArr)
   }
@@ -215,7 +215,7 @@ window.barGraphPromise = dataPromise.then(([earlyData, PhylumClassOrderFamilyGen
     const tempLine = d3
       .line()
       .curve(d3.curveNatural)
-      .x((slope, index) => tempX(index + minYear))
+      .x((slope, index) => tempX(index + minYear) + padding.left)
       .y((slope) => tempY(slope))
 
     for (const [key, slopes] of slopesArr) {
@@ -246,7 +246,11 @@ window.barGraphPromise = dataPromise.then(([earlyData, PhylumClassOrderFamilyGen
           svg.select('.thisPath.path-' + key.toLowerCase()).remove()
         }
         tempSvg.selectAll('.thisDensityPath, .slope-axis-y').remove()
-        drawSlopes(Object.entries(datum).filter(([key, info]) => info.show))
+        drawSlopes(
+          Object.entries(datum)
+            .filter(([key, info]) => info.show)
+            .map(([key, info]) => [key, info.densitySlope]),
+        )
       },
       enumerable: true,
       configurable: true,

@@ -206,7 +206,7 @@ window.barGraphPromise = dataPromise.then(([earlyData, PhylumClassOrderFamilyGen
     const tempLine = d3
       .line()
       .curve(d3.curveNatural)
-      .x((d) => tempX(d[0]))
+      .x((d) => tempX(d[0]+padding.left + 9))
       .y((d) => tempY(d[1]))
 
     tempSvg

@@ -21,6 +21,14 @@ for era, csv in enumerate(csv_list):
 
 all_csv = pd.concat(all_csv_data)
 
+TIME_RANGE = (-251.9, -66.0)
+
+all_csv = all_csv[(all_csv['start_year'] <= TIME_RANGE[1])
+                  & (all_csv['end_year'] >= TIME_RANGE[0])]
+all_csv.loc[all_csv['start_year'] <
+            TIME_RANGE[0], 'start_year'] = TIME_RANGE[0]
+all_csv.loc[all_csv['end_year'] > TIME_RANGE[1], 'end_year'] = TIME_RANGE[1]
+
 NAMES = ('Phylum', 'Class', 'Order', 'Family', 'Genus', 'Species')
 SPECIAL_VALUES = [name[0] for name in NAMES]
 COL_NAMES = ['is_' + value for value in SPECIAL_VALUES]

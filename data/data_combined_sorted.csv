@@ -14,7 +14,7 @@
 12,Angiospermae,Dicotyledoneae,O,Caprifoliaceae,Viburnum,Viburnum lakesii,129.89700000000002,46.728,-100.0,-66.0,119.67,52.15,7
 13,Angiospermae,Dicotyledoneae,O,Celastraceae,Celastrophyllum,Celastrophyllum newberryanum,130.365,42.862,-100.0,-66.0,121.21,47.77,7
 14,Angiospermae,Dicotyledoneae,O,Celastraceae,Celastrophyllum,Celastrophyllum ovale,112.577,40.894,-100.0,-66.0,103.53,42.79,7
-15,Angiospermae,Dicotyledoneae,O,Celastraceae,Celastrus,Celastrus minor,87.656,29.379,-100.0,-33.0,79.13,12.39,7
+15,Angiospermae,Dicotyledoneae,O,Celastraceae,Celastrus,Celastrus minor,87.656,29.379,-100.0,-66.0,79.13,12.39,7
 16,Angiospermae,Dicotyledoneae,O,Ceratophyllaceae,Ceratophyllum,Ceratophyllum jilinense,130.365,42.862,-100.0,-66.0,121.21,47.77,7
 17,Angiospermae,Dicotyledoneae,O,Cercidiphyllaceae,Cercidiphyllum,Cercidiphyllum arcticum,127.96,45.21100000000001,-100.0,-66.0,118.2,50.34,7
 18,Angiospermae,Dicotyledoneae,O,Cercidiphyllaceae,Cercidiphyllum,Cercidiphyllum elliptcum,89.053,29.294,-100.0,-66.0,80.38,12.39,7
@@ -41,7 +41,7 @@
 39,Angiospermae,Dicotyledoneae,O,Dicksoniaceae,Dicksonia,Dicksonia arctica,123.471,48.124,-145.0,-100.0,125.05,50.23,6
 40,Angiospermae,Dicotyledoneae,O,Dicksoniaceae,Dicksonia,Dicksonia arctica,123.552,42.447,-145.0,-100.0,125.43,43.98,6
 41,Angiospermae,Dicotyledoneae,O,Ebenaceae,Diospyros,Diospyros rotundifolia,124.444,46.862,-100.0,-66.0,113.8,51.3,7
-42,Angiospermae,Dicotyledoneae,O,Fagaceae,Quercus,Quercus orbicularis,87.656,29.379,-100.0,-33.0,79.13,12.39,7
+42,Angiospermae,Dicotyledoneae,O,Fagaceae,Quercus,Quercus orbicularis,87.656,29.379,-100.0,-66.0,79.13,12.39,7
 43,Angiospermae,Dicotyledoneae,O,Filiaceae?,Nordenskioldia,Nordenskioldia cf.borealis,130.403,48.889,-100.0,-66.0,119.28,54.32,7
 44,Angiospermae,Dicotyledoneae,O,Gleicheniaceae,Gleichenites,Gleichenites gracilis,130.41,48.894,-100.0,-66.0,119.28,54.33,7
 45,Angiospermae,Dicotyledoneae,O,Hamamelidaceae,Corylopsiphyllum,Corylopsiphyllum jilinense,130.365,42.862,-100.0,-66.0,121.21,47.77,7
@@ -57,17 +57,17 @@
 55,Angiospermae,Dicotyledoneae,O,Lauraceae,Cinnamomum,Cinnamomum newberryi,108.629,22.609,-100.0,-66.0,107.74,23.45,7
 56,Angiospermae,Dicotyledoneae,O,Lauraceae,Nectandra,Nectandra guangxiensis,108.629,22.609,-100.0,-66.0,107.74,23.45,7
 57,Angiospermae,Dicotyledoneae,O,Lauraceae,Nectandra,Nectandra prolifica,108.629,22.609,-100.0,-66.0,107.74,23.45,7
-58,Angiospermae,Dicotyledoneae,O,Leguminosae,Cassia,Cassia cf.fayettensis,88.35700000000001,29.355,-100.0,-33.0,79.76,12.41,7
-59,Angiospermae,Dicotyledoneae,O,Leguminosae,Cassia,Cassia marshalensis,80.76100000000002,31.177,-100.0,-33.0,60.53,-28.75,7
+58,Angiospermae,Dicotyledoneae,O,Leguminosae,Cassia,Cassia cf.fayettensis,88.35700000000001,29.355,-100.0,-66.0,79.76,12.41,7
+59,Angiospermae,Dicotyledoneae,O,Leguminosae,Cassia,Cassia marshalensis,80.76100000000002,31.177,-100.0,-66.0,60.53,-28.75,7
 60,Angiospermae,Dicotyledoneae,O,Magnoliaceae,Schisandra,Schisandra durbudensis,124.444,46.862,-100.0,-66.0,113.8,51.3,7
 61,Angiospermae,Dicotyledoneae,O,Menisspermaceae,Stephanofolium,Stephanofolium ovatiphyllum,130.365,42.862,-100.0,-66.0,121.21,47.77,7
 62,Angiospermae,Dicotyledoneae,O,Moraceae,Ficus,Ficus daphnogenoides,89.814,29.317,-100.0,-66.0,81.06,12.46,7
-63,Angiospermae,Dicotyledoneae,O,Moraceae,Ficus,Ficus myrtifolius,80.76100000000002,31.177,-100.0,-33.0,60.53,-28.75,7
+63,Angiospermae,Dicotyledoneae,O,Moraceae,Ficus,Ficus myrtifolius,80.76100000000002,31.177,-100.0,-66.0,60.53,-28.75,7
 64,Angiospermae,Dicotyledoneae,O,Moraceae,Ficus,Ficus platanicostata,127.96,45.21100000000001,-100.0,-66.0,118.2,50.34,7
-65,Angiospermae,Dicotyledoneae,O,Myrtaceae,Eucalyptus,Eucalyptus angusta,88.35700000000001,29.355,-100.0,-33.0,79.76,12.41,7
-66,Angiospermae,Dicotyledoneae,O,Myrtaceae,Eucalyptus,Eucalyptus geinitzii,80.76100000000002,31.177,-100.0,-33.0,60.53,-28.75,7
-67,Angiospermae,Dicotyledoneae,O,Myrtaceae,Eucalyptus,Eucalyptus geinitzii,88.35700000000001,29.355,-100.0,-33.0,79.76,12.41,7
-68,Angiospermae,Dicotyledoneae,O,Myrtaceae,Eucalyptus,Eucalyptus oblongifolia,80.76100000000002,31.177,-100.0,-33.0,60.53,-28.75,7
+65,Angiospermae,Dicotyledoneae,O,Myrtaceae,Eucalyptus,Eucalyptus angusta,88.35700000000001,29.355,-100.0,-66.0,79.76,12.41,7
+66,Angiospermae,Dicotyledoneae,O,Myrtaceae,Eucalyptus,Eucalyptus geinitzii,80.76100000000002,31.177,-100.0,-66.0,60.53,-28.75,7
+67,Angiospermae,Dicotyledoneae,O,Myrtaceae,Eucalyptus,Eucalyptus geinitzii,88.35700000000001,29.355,-100.0,-66.0,79.76,12.41,7
+68,Angiospermae,Dicotyledoneae,O,Myrtaceae,Eucalyptus,Eucalyptus oblongifolia,80.76100000000002,31.177,-100.0,-66.0,60.53,-28.75,7
 69,Angiospermae,Dicotyledoneae,O,Myrtaceae,Myrtophyllum,Myrtophyllum penzhinense,130.365,42.862,-100.0,-66.0,121.21,47.77,7
 70,Angiospermae,Dicotyledoneae,O,Nymphaceae,Rhizoma,Rhizoma elliptica,120.836,41.615,-163.0,-145.0,124.04,42.86,5
 71,Angiospermae,Dicotyledoneae,O,Nymphaeaceae,Nymphaeites,Nymphaeites browni,130.403,48.889,-100.0,-66.0,119.28,54.32,7
@@ -92,7 +92,7 @@
 90,Angiospermae,Dicotyledoneae,O,Ranunculaceae,Ranunculus,Ranunculus jeholensis,119.357,40.96100000000001,-163.0,-145.0,122.52,42.22,5
 91,Angiospermae,Dicotyledoneae,O,Rhamnaceae,Paliurus,Paliurus jurassinicus,120.351,45.966,-174.0,-163.0,126.14,49.68,4
 92,Angiospermae,Dicotyledoneae,O,Rhamnaceae,Rhamnites,Rhamnites eminens,89.814,29.317,-100.0,-66.0,81.06,12.46,7
-93,Angiospermae,Dicotyledoneae,O,Rhamnaceae,Rhamnus,Rhamnus menchigesis,80.76100000000002,31.177,-100.0,-33.0,60.53,-28.75,7
+93,Angiospermae,Dicotyledoneae,O,Rhamnaceae,Rhamnus,Rhamnus menchigesis,80.76100000000002,31.177,-100.0,-66.0,60.53,-28.75,7
 94,Angiospermae,Dicotyledoneae,O,Rhamnaceae,Rhamnus,Rhamnus shangzhiensis,127.96,45.21100000000001,-100.0,-66.0,118.2,50.34,7
 95,Angiospermae,Dicotyledoneae,O,Rhamnaceae,Zizyphus,Zizyphus liaoxijujuba,120.351,45.966,-174.0,-163.0,126.14,49.68,4
 96,Angiospermae,Dicotyledoneae,O,Rhamnaceae,Zizyphus,Zizyphus pseudocretacea,130.403,48.889,-100.0,-66.0,119.28,54.32,7
@@ -220,7 +220,7 @@
 218,Angiospermae,Dicotyledoneae,O,F,Ussuriocladus,Ussuriocladus antuensis,128.56799999999998,42.661,-145.0,-100.0,130.54,44.48,6
 219,Angiospermae,Dicotyledoneae,O,F,Zamiophyllum,Zamiophyllum angustifolium,115.179,23.638,-145.0,-100.0,121.17,25.19,6
 220,Angiospermae,Monocotyledoneae,O,Alangiaceae,Alangium,Alangium feijiajieense,127.96,45.21100000000001,-100.0,-66.0,118.2,50.34,7
-221,Angiospermae,Monocotyledoneae,O,Liliaceae,Dianella,Dianella longifolia,88.833,29.358,-100.0,-33.0,80.18,12.44,7
+221,Angiospermae,Monocotyledoneae,O,Liliaceae,Dianella,Dianella longifolia,88.833,29.358,-100.0,-66.0,80.18,12.44,7
 222,Angiospermae,Monocotyledoneae,O,Potamogetonaceae,Potamogeton,Potamogeton jeholensis,119.357,40.96100000000001,-174.0,-145.0,122.52,42.22,4
 223,Angiospermae,Monocotyledoneae,O,Taxodiaceae,Athrotaxites,Athrotaxites cf.berryi,121.41,41.78,-145.0,-100.0,123.31,43.19,6
 224,Angiospermae,Monocotyledoneae,O,F,Anomozamites,Anomozamites arcticus,130.29,47.347,-145.0,-100.0,132.28,49.89,6
@@ -231,7 +231,7 @@
 229,Angiospermae,C,Gnetales,F,Chaoyangia,Chaoyangia liangii,120.445,41.57100000000001,-163.0,-145.0,123.64,42.82,5
 230,Angiospermae,C,O,Araliaceae,Araliaephyllum,Araliaephyllum obtusilobum,129.434,42.764,-145.0,-100.0,131.42,44.63,6
 231,Angiospermae,C,O,Fagaceae,Castanea,Castanea tangyuaensis,129.89700000000002,46.728,-100.0,-66.0,119.67,52.15,7
-232,Angiospermae,C,O,Marantaceae,Phrynium,Phrynium tibeticum,88.35700000000001,29.355,-100.0,-33.0,79.76,12.41,7
+232,Angiospermae,C,O,Marantaceae,Phrynium,Phrynium tibeticum,88.35700000000001,29.355,-100.0,-66.0,79.76,12.41,7
 233,Angiospermae,C,O,Schizaceae,Ruffordia,Ruffordia goepperti,117.371,25.948,-145.0,-100.0,122.34,28.05,6
 234,Angiospermae,C,O,Schizaceae,Ruffordia,Ruffordia goepperti,129.254,42.894,-145.0,-100.0,131.22,44.75,6
 235,Angiospermae,C,O,Tiliaceae,Cf.Tiliaephyllum,Cf.Tiliaephyllum tsagajannicum,130.403,48.889,-100.0,-66.0,119.28,54.32,7
@@ -1229,8 +1229,8 @@
 1227,Gymnospermae,Coniferopsida,O,F,Equisetum,Equisetum cf.ramosus,125.325,41.637,-145.0,-100.0,127.33,43.27,6
 1228,Gymnospermae,Coniferopsida,O,F,Foliosites,Foliosites formosus,121.424,49.499,-145.0,-100.0,122.7,51.45,6
 1229,Gymnospermae,Coniferopsida,O,F,Glyptolepis,Glyptolepis longbracteata,110.488,19.129,-251.0,-247.0,104.84,3.58,0
-1230,Gymnospermae,Coniferopsida,O,F,Gomphostrobus,Gomphostrobus bifidus,116.194,39.97,-298.0,-201.0,89.47,22.28,0
-1231,Gymnospermae,Coniferopsida,O,F,Hallea,Hallea pekinensis,116.194,39.97,-298.0,-201.0,89.47,22.28,0
+1230,Gymnospermae,Coniferopsida,O,F,Gomphostrobus,Gomphostrobus bifidus,116.194,39.97,-251.9,-201.0,89.47,22.28,0
+1231,Gymnospermae,Coniferopsida,O,F,Hallea,Hallea pekinensis,116.194,39.97,-251.9,-201.0,89.47,22.28,0
 1232,Gymnospermae,Coniferopsida,O,F,Jixia,Jixia chenzihenura,131.011,45.337,-145.0,-100.0,133.3,47.94,6
 1233,Gymnospermae,Coniferopsida,O,F,Leptostrobus,Leptostrobus cf.marginatus,120.504,29.933000000000003,-145.0,-100.0,123.66,32.77,6
 1234,Gymnospermae,Coniferopsida,O,F,Liaoningocladus,Liaoningocladus boii,123.423,41.833,-163.0,-145.0,126.68,43.05,5
@@ -3677,7 +3677,7 @@
 3675,Gymnospermae,incertaesedisorconiferales,O,Schizaceae,Ruffordia,Ruffordia goepperti,120.376,27.368,-145.0,-100.0,124.64,30.34,6
 3676,Gymnospermae,C,Bennetittales,Celastraceae,Celastrophyllum,Celastrophyllum subprotophyllum,130.403,48.889,-100.0,-66.0,119.28,54.32,7
 3677,Gymnospermae,C,Bennetittales,Cupressaceae,Cupressinocladus,Cupressinocladus lii,120.088,27.705,-145.0,-100.0,124.22,30.56,6
-3678,Gymnospermae,C,Bennetittales,Moraceae,Ficus,Ficus steophensoni,87.656,29.379,-100.0,-33.0,79.13,12.39,7
+3678,Gymnospermae,C,Bennetittales,Moraceae,Ficus,Ficus steophensoni,87.656,29.379,-100.0,-66.0,79.13,12.39,7
 3679,Gymnospermae,C,Bennetittales,F,Dicotylophyllum,Dicotylophyllum subpyrifolium,130.365,42.862,-100.0,-66.0,121.21,47.77,7
 3680,Gymnospermae,C,Bennetittales,F,Dryophyllum,Dryophyllum subcretaceum,124.444,46.862,-100.0,-66.0,113.8,51.3,7
 3681,Gymnospermae,C,Bennetittales,F,Phoroxylon,Phoroxylon multiforium,122.89299999999999,46.721000000000004,-163.0,-145.0,126.73,48.51,5
@@ -4081,7 +4081,7 @@
 4079,Gymnospermae,C,Ginkgoales,Dicksoniaceae,Coniopteris,Coniopteris onychioides,123.552,42.447,-145.0,-100.0,125.43,43.98,6
 4080,Gymnospermae,C,Ginkgoales,Dicksoniaceae,Coniopteris,Coniopteris saportana,119.787,29.078000000000007,-145.0,-100.0,123.35,31.75,6
 4081,Gymnospermae,C,Ginkgoales,Dicksoniaceae,Coniopteris,Coniopteris saportana,121.668,42.032,-145.0,-100.0,123.55,43.46,6
-4082,Gymnospermae,C,Ginkgoales,Marantaceae,Phrynium,Phrynium tibeticum,80.76100000000002,31.177,-100.0,-33.0,60.53,-28.75,7
+4082,Gymnospermae,C,Ginkgoales,Marantaceae,Phrynium,Phrynium tibeticum,80.76100000000002,31.177,-100.0,-66.0,60.53,-28.75,7
 4083,Gymnospermae,C,Ginkgoales,Moraceae,Debeya,Debeya tikhonovichii,130.403,48.889,-100.0,-66.0,119.28,54.32,7
 4084,Gymnospermae,C,Ginkgoales,Pinaceae,Pityocladus,Pityocladus pseudolarixioides,121.67,41.999,-145.0,-100.0,123.55,43.42,6
 4085,Gymnospermae,C,Ginkgoales,Pinaceae,Pityocladus,Pityocladus robustus,126.934,43.51,-145.0,-100.0,128.77,45.23,6
@@ -4864,7 +4864,7 @@
 4862,Gymnospermae,C,O,F,Carpolithus,Carpolithus pachythelis,123.423,41.833,-163.0,-145.0,126.68,43.05,5
 4863,Gymnospermae,C,O,F,Carpolithus,Carpolithus retioformus,96.016,37.523,-201.0,-163.0,102.45,40.76,3
 4864,Gymnospermae,C,O,F,Carpolithus,Carpolithus strumatus,96.016,37.523,-201.0,-163.0,102.45,40.76,3
-4865,Gymnospermae,C,O,F,Carpolithus,Carpolithus yamasidai,104.214,26.484,-259.0,-251.0,96.74,-11.42,0
+4865,Gymnospermae,C,O,F,Carpolithus,Carpolithus yamasidai,104.214,26.484,-251.9,-251.0,96.74,-11.42,0
 4866,Gymnospermae,C,O,F,Carpolithus,Carpolithus yamasidai,103.041,30.013,-201.0,-145.0,108.14,30.39,3
 4867,Gymnospermae,C,O,F,Carpolithus,Carpolithus yamasidai,109.935,33.864000000000004,-201.0,-145.0,113.5,35.76,3
 4868,Gymnospermae,C,O,F,Cedroxylon,Cedroxylon jinshaense,119.586,45.427,-163.0,-145.0,123.31,47.21,5

@@ -1,67 +1,69 @@
 body {
-	margin: 0 !important;
+  margin: 0 !important;
 }
 
 #container {
-	display: grid;
-	grid-template-rows: 75% 25%;
-	position: absolute;
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom: 0;
+  display: grid;
+  grid-template-rows: 75% 25%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
 }
 
 #up {
-	display: grid;
-	grid-template-columns: 20% 80%;
+  display: grid;
+  grid-template-columns: 20% 80%;
 }
 
 #left {
-	display: grid;
-	grid-template-rows: 30% 70%;
+  display: grid;
+  grid-template-rows: 30% 70%;
 }
 
-
 #right {
-	display: grid;
-	grid-template-rows: 15% 15% 70%;
-	overflow: hidden;
+  display: grid;
+  grid-template-rows: 15% 15% 70%;
+  overflow: hidden;
+}
+
+input {
+  position: absolute;
+  margin-left: 1050px;
 }
 
 #barPart {
-	display: grid;
-	grid-template-columns: 120px auto;
+  display: grid;
+  grid-template-columns: 120px auto;
 }
 
 #down {
-	display: grid;
-	grid-template-columns: 20% 80%;
+  display: grid;
+  grid-template-columns: 20% 80%;
 }
 
 #mapid {
-	overflow-x: scroll;
-	overflow-y: hidden;
-	white-space: nowrap;
+  overflow-x: scroll;
+  overflow-y: hidden;
+  white-space: nowrap;
 }
 
 #mapid .selectMap {
-	display: inline-block;
-	width: calc((25vh - 20px) * 2);
-	height: calc(25vh - 20px);
+  display: inline-block;
+  width: calc((25vh - 20px) * 2);
+  height: calc(25vh - 20px);
 }
 
-
-
 .leaflet-container:hover path.leaflet-interactive {
-	visibility: hidden;
+  visibility: hidden;
 }
 
 .leaflet-marker-icon.leaflet-div-icon.light,
 .leaflet-pane.leaflet-shadow-pane {
-	display: none;
+  display: none;
 }
 
 .my-leaflet-marker {
-	pointer-events: none;
+  pointer-events: none;
 }

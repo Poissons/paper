@@ -1,7 +1,7 @@
 /* globals d3 dataPromise */
 window.barGraphPromise = dataPromise.then(([earlyData, PhylumClassOrderFamilyGenusSpecies]) => {
   const padding = { top: 1, right: 20, bottom: 18.5, left: 30 }
-  const barGraph = document.getElementById('barGraph')
+  const barGraph = document.getElementById('barPart')
   const { width, height } = barGraph.getBoundingClientRect()
   const tempElem = document.getElementById('temp')
   const { width: tempWidth, height: tempHeight } = tempElem.getBoundingClientRect()

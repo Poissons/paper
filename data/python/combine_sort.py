@@ -1,3 +1,4 @@
+import math
 import operator
 from functools import reduce
 
@@ -21,7 +22,7 @@ for era, csv in enumerate(csv_list):
 
 all_csv = pd.concat(all_csv_data)
 
-TIME_RANGE = (-251.9, -66.0)
+TIME_RANGE = (math.ceil(-251.9), math.floor(-66.0))
 
 all_csv = all_csv[(all_csv['start_year'] <= TIME_RANGE[1])
                   & (all_csv['end_year'] >= TIME_RANGE[0])]

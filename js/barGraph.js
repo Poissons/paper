@@ -1,6 +1,6 @@
 /* globals d3 dataPromise */
 window.barGraphPromise = dataPromise.then(([earlyData, PhylumClassOrderFamilyGenusSpecies]) => {
-  const padding = { top: 1, right: 20, bottom: 18.5, left: 30 }
+  const padding = { top: 1, right: 20, bottom: 18.5, left: 9 }
   const barGraph = document.getElementById('barPart')
   const { width, height } = barGraph.getBoundingClientRect()
   const tempElem = document.getElementById('temp')
@@ -117,7 +117,7 @@ window.barGraphPromise = dataPromise.then(([earlyData, PhylumClassOrderFamilyGen
   const tempX = d3
     .scaleLinear()
     .domain([minYear, maxYear])
-    .range([padding.left - 20, tempWidth - padding.right - 30])
+    .range([padding.left +1, tempWidth - padding.right - 30])
 
   const tempXAxis = d3.axisBottom(tempX).tickFormat(formatDate)
 
@@ -129,7 +129,7 @@ window.barGraphPromise = dataPromise.then(([earlyData, PhylumClassOrderFamilyGen
 
   tempSvg
     .append('g')
-    .attr('transform', `translate(${padding.left},${tempHeight - padding.bottom})`)
+    .attr('transform', `translate(${padding.left+21},${tempHeight - padding.bottom})`)
     .attr('text-anchor', 'end')
     .call(tempXAxis)
 
@@ -208,14 +208,14 @@ window.barGraphPromise = dataPromise.then(([earlyData, PhylumClassOrderFamilyGen
       .attr('class', 'slope-axis-y')
       .call(tempYAxis)
       .call((g) => g.select('.domain').remove())
-      .attr('transform', `translate(${padding.left + 9},0)`)
+      .attr('transform', `translate(${padding.left + 30},0)`)
       .attr('text-anchor', 'end')
       .attr('font-size', y(0) - y(100))
 
     const tempLine = d3
       .line()
       .curve(d3.curveNatural)
-      .x((slope, index) => tempX(index + minYear) + padding.left)
+      .x((slope, index) => tempX(index + minYear) + padding.left+21)
       .y((slope) => tempY(slope))
 
     for (const [key, slopes] of slopesArr) {

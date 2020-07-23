@@ -22,11 +22,6 @@ for era, csv in enumerate(csv_list):
 
 all_csv = pd.concat(all_csv_data)
 
-all_csv['Phylum'].replace('P', 'incertae sedis', inplace=True)
-all_csv['Class'].replace('C', 'incertae sedis', inplace=True)
-all_csv['Order'].replace('O', 'incertae sedis', inplace=True)
-all_csv['Family'].replace('F', 'incertae sedis', inplace=True)
-
 TIME_RANGE = (math.ceil(-251.9), math.floor(-66.0))
 
 all_csv = all_csv[(all_csv['start_year'] <= TIME_RANGE[1])
@@ -51,8 +46,9 @@ all_csv.drop(COL_NAMES, axis=1, inplace=True)
 
 all_csv.reset_index(drop=True, inplace=True)
 
-all_csv.drop([4537], inplace=True)
-
-all_csv.reset_index(drop=True, inplace=True)
+all_csv['Phylum'].replace('P', 'incertae sedis', inplace=True)
+all_csv['Class'].replace('C', 'incertae sedis', inplace=True)
+all_csv['Order'].replace('O', 'incertae sedis', inplace=True)
+all_csv['Family'].replace('F', 'incertae sedis', inplace=True)
 
 all_csv.to_csv('../data_combined_sorted.csv', encoding='utf-8')

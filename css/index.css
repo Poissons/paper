@@ -28,14 +28,30 @@ body {
   overflow: hidden;
 }
 
-input {
+#bandwidth {
   position: absolute;
-  margin-left: 1050px;
+  right: 100px;
 }
 
-#barPart {
+#range {
+  width: 120px;
+}
+
+#text {
+  font-size: smaller;
+  font-style: oblique;
+  display: block;
+}
+
+#bar-part {
   display: grid;
   grid-template-columns: 120px auto;
+}
+
+#bar-graph {
+  position: absolute;
+  width: 100%;
+  height: 100%;
 }
 
 #down {
@@ -43,13 +59,13 @@ input {
   grid-template-columns: 20% 80%;
 }
 
-#mapid {
+#map-id {
   overflow-x: scroll;
   overflow-y: hidden;
   white-space: nowrap;
 }
 
-#mapid .selectMap {
+#map-id .select-map {
   display: inline-block;
   width: calc((25vh - 20px) * 2);
   height: calc(25vh - 20px);
@@ -65,5 +81,28 @@ input {
 }
 
 .my-leaflet-marker {
+  pointer-events: none;
+}
+
+#switchable {
+  position: relative;
+}
+
+#switchable>.switches {
+  position: absolute;
+  z-index: 1;
+  right: 250px;
+}
+
+#switchable>.page {
+  position: absolute;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+}
+
+#switchable>.page.hidden {
+  z-index: -1;
+  visibility: hidden;
   pointer-events: none;
 }

@@ -1,7 +1,7 @@
 /* global dataPromise L */
 window.reHighlightPromise = dataPromise.then(
   ([dataCollection, PhylumClassOrderFamilyGenusSpecies]) => {
-    // var mymap = L.map("mapid").setView([37.595, 112.069], 2);
+    // var mymap = L.map("map-id").setView([37.595, 112.069], 2);
     // var myIcon = L.icon({
     //   iconUrl: "leaflet/images/marker-icon-2x.png",
     //
@@ -62,7 +62,7 @@ window.reHighlightPromise = dataPromise.then(
 
     /* var layer2 = L.tileLayer('./img/Map_200.jpg', stamenOptions) */
 
-    const map1 = L.map('map1', {
+    const map1 = L.map('map-1', {
       layers: [layer1],
       crs: L.CRS.EPSG3857,
       minZoom: 1, // mapbox will give a 404 when zoom level sets to 0
@@ -102,7 +102,7 @@ window.reHighlightPromise = dataPromise.then(
     ]
     const ancientMaps = mapImgs.map((url, i) => {
       const layers = imageBoundsArr.map((imageBounds) => L.imageOverlay(url, imageBounds))
-      return L.map('map' + (i + 2), {
+      return L.map('map-' + (i + 2), {
         layers,
         maxBounds,
         crs: L.CRS.EPSG4326,
@@ -180,7 +180,7 @@ window.reHighlightPromise = dataPromise.then(
     // const mapsTop = []
     // const idList = []
 
-    // for (const map of document.querySelectorAll('div[class^="selectMap"]')) {
+    // for (const map of document.querySelectorAll('div.select-map')) {
     //   map.addEventListener(
     //     'click',
     //     function (e) {
@@ -247,7 +247,7 @@ window.reHighlightPromise = dataPromise.then(
     //             }
     //             const group = L.layerGroup()
     //             options.layers.push(group)
-    //             mapsTop[i] = L.map('map' + (i + 10), options).setView(
+    //             mapsTop[i] = L.map('map-' + (i + 10), options).setView(
     //               maps[id - 1].getCenter(),
     //               maps[id - 1].getZoom(),
     //             )

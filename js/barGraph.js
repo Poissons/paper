@@ -1,10 +1,8 @@
 /* globals d3 dataPromise */
 window.barGraphPromise = dataPromise.then(([earlyData, PhylumClassOrderFamilyGenusSpecies]) => {
-  const padding = { top: 1, right: 20, bottom: 18.5, left: 9 }
-  const barGraph = document.getElementById('barPart')
+  const padding = { top: 10, right: 85, bottom: 18.5, left: 40 }
+  const barGraph = document.getElementById('bar-graph')
   const { width, height } = barGraph.getBoundingClientRect()
-  const tempElem = document.getElementById('temp')
-  const { width: tempWidth, height: tempHeight } = tempElem.getBoundingClientRect()
 
   // 准备数据
   const minYear = d3.min(earlyData, (d) => d.start_year)
@@ -87,7 +85,7 @@ window.barGraphPromise = dataPromise.then(([earlyData, PhylumClassOrderFamilyGen
     .append('rect')
     .attr('fill', '#ff8c00')
     .attr('x', function (d, i) {
-      return padding.left + i * rectStep + 10
+      return padding.left + i * rectStep
     })
     .attr('y', function (d) {
       return y(d)
@@ -101,44 +99,21 @@ window.barGraphPromise = dataPromise.then(([earlyData, PhylumClassOrderFamilyGen
 
   svg
     .append('g')
-    .attr('transform', `translate(${padding.left},${height - padding.bottom})`)
+    .attr('transform', `translate(0,${height - padding.bottom})`)
     .attr('text-anchor', 'end')
     .call(xAxis)
 
   svg
     .append('g')
     .call(yAxis)
-    .call((g) => g.select('.domain').remove())
-    .attr('transform', `translate(${padding.left + 9},0)`)
+    .attr('transform', `translate(${padding.left},0)`)
     .attr('text-anchor', 'end')
-    .attr('font-size', y(0) - y(100))
-
-  // 画斜率图
-  const tempX = d3
-    .scaleLinear()
-    .domain([minYear, maxYear])
-    .range([padding.left +1, tempWidth - padding.right - 30])
-
-  const tempXAxis = d3.axisBottom(tempX).tickFormat(formatDate)
-
-  const tempSvg = d3
-    .select(tempElem)
-    .append('svg')
-    .attr('width', tempWidth)
-    .attr('height', tempHeight)
-
-  tempSvg
-    .append('g')
-    .attr('transform', `translate(${padding.left+21},${tempHeight - padding.bottom})`)
-    .attr('text-anchor', 'end')
-    .call(tempXAxis)
 
   const text = document.getElementById('text')
   const range = document.getElementById('range')
   const redraw = () => {
     text.value = Math.round(range.value * 1000) / 1000 + ' bandwidth'
-    svg.selectAll('.thisPath').remove()
-    tempSvg.selectAll('.thisDensityPath, .slope-axis-y').remove()
+    svg.selectAll('.thisPath, .thisDensityPath, .slope-axis-y').remove()
     const slopesArr = []
     for (const [key, info] of Object.entries(datum)) {
       if (!info.show) continue
@@ -193,41 +168,40 @@ window.barGraphPromise = dataPromise.then(([earlyData, PhylumClassOrderFamilyGen
   }
 
   const drawSlopes = (slopesArr) => {
-    const tempY = d3
+    const slopeY = d3
       .scaleLinear()
       .domain([
         d3.min(slopesArr.map(([key, slopes]) => d3.min(slopes))),
         d3.max(slopesArr.map(([key, slopes]) => d3.max(slopes))),
       ])
-      .range([tempHeight - padding.bottom, padding.top])
+      .range([height - padding.bottom, padding.top])
 
-    const tempYAxis = d3.axisLeft(tempY)
+    const slopeYAxis = d3.axisRight(slopeY).tickPadding(45)
 
-    tempSvg
+    svg
       .append('g')
       .attr('class', 'slope-axis-y')
-      .call(tempYAxis)
-      .call((g) => g.select('.domain').remove())
-      .attr('transform', `translate(${padding.left + 30},0)`)
+      .call(slopeYAxis)
+      .attr('transform', `translate(${width - padding.right},0)`)
       .attr('text-anchor', 'end')
-      .attr('font-size', y(0) - y(100))
 
-    const tempLine = d3
+    const slopeLine = d3
       .line()
       .curve(d3.curveNatural)
-      .x((slope, index) => tempX(index + minYear) + padding.left+21)
-      .y((slope) => tempY(slope))
+      .x((slope, index) => x(index + minYear + 0.5))
+      .y((slope) => slopeY(slope))
 
     for (const [key, slopes] of slopesArr) {
-      tempSvg
+      svg
         .append('path')
         .datum(slopes)
         .attr('class', 'thisDensityPath path-' + key.toLowerCase())
         .attr('fill', 'none')
         .attr('stroke', lineColor(key))
         .attr('stroke-width', 1.5)
+        .attr('stroke-dasharray', '10')
         .attr('stroke-linejoin', 'round')
-        .attr('d', tempLine)
+        .attr('d', slopeLine)
     }
   }
 
@@ -245,7 +219,7 @@ window.barGraphPromise = dataPromise.then(([earlyData, PhylumClassOrderFamilyGen
         } else {
           svg.select('.thisPath.path-' + key.toLowerCase()).remove()
         }
-        tempSvg.selectAll('.thisDensityPath, .slope-axis-y').remove()
+        svg.selectAll('.thisDensityPath, .slope-axis-y').remove()
         drawSlopes(
           Object.entries(datum)
             .filter(([key, info]) => info.show)

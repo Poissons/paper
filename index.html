@@ -17,54 +17,52 @@
     <div id="container">
       <div id="up">
         <div id="left">
-          <div id="map1" class="selectMap"></div>
+          <div id="map-1" class="select-map"></div>
           <div id="tree"></div>
         </div>
         <div id="right">
-          <div id="barPart">
-            <form id="select">
-              <input
-                type="range"
-                id="range"
-                name="i"
-                min="20"
-                max="40"
-                value="7"
-                step="any"
-                style="width: 120px;"
-              />
-              <output
-                type="text"
-                id="text"
-                name="o"
-                style="font-size: smaller; font-style: oblique; display: block;position: absolute; margin-left: 1050px;margin-top: 20px;"
-              ></output>
-            </form>
-            <div id="barGraph"></div>
+          <div class="placeholder">
+            <!-- 这留白难道不丑吗…… -->
           </div>
           <div id="picture"></div>
-          <div id="time"></div>
+          <div id="switchable">
+            <div class="switches">
+              <button class="switch" data-id="time">time</button>
+              <button class="switch" data-id="bar-part">bar</button>
+            </div>
+            <div id="time" class="page"></div>
+            <div id="bar-part" class="page hidden">
+              <div id="bar-graph"></div>
+              <div id="bandwidth">
+                <input type="range" id="range" name="i" min="20" max="40" value="7" step="any" />
+                <output type="text" id="text"></output>
+              </div>
+            </div>
+            <div id="large-map" class="page hidden"></div>
+          </div>
         </div>
       </div>
       <div id="down">
-        <div id="temp"></div>
-        <div id="mapid">
-          <div id="map2" class="selectMap"></div>
-          <div id="map3" class="selectMap"></div>
-          <div id="map4" class="selectMap"></div>
-          <div id="map5" class="selectMap"></div>
-          <div id="map6" class="selectMap"></div>
-          <div id="map7" class="selectMap"></div>
-          <div id="map8" class="selectMap"></div>
-          <div id="map9" class="selectMap"></div>
+        <div class="placeholder">
+          <!-- 这留白难道不丑吗…… -->
+        </div>
+        <div id="map-id">
+          <div id="map-2" class="select-map"></div>
+          <div id="map-3" class="select-map"></div>
+          <div id="map-4" class="select-map"></div>
+          <div id="map-5" class="select-map"></div>
+          <div id="map-6" class="select-map"></div>
+          <div id="map-7" class="select-map"></div>
+          <div id="map-8" class="select-map"></div>
+          <div id="map-9" class="select-map"></div>
         </div>
       </div>
     </div>
+    <script type="text/javascript" src="/js/switchPage.js"></script>
     <script type="text/javascript" src="/js/barGraph.js"></script>
     <script type="text/javascript" src="/js/leafletShow.js"></script>
     <script type="text/javascript" src="/js/time.js"></script>
     <script type="text/javascript" src="/js/picture.js"></script>
     <script type="text/javascript" src="/js/tree.js"></script>
-    <!-- <script type="text/javascript" src="/js/treeGraph.js"></script> -->
   </body>
 </html>

@@ -128,16 +128,12 @@ window.reHighlightPromise = dataPromise.then(
 
     const myGroup = L.layerGroup().addTo(map1)
 
-    const icon = L.icon({
-      iconUrl: './img/dot_5x5.png',
-      iconSize: [5, 5],
-      // iconAnchor: [13, 41],
-      className: 'my-leaflet-marker',
-    })
     const leafletConfig = {
-      icon,
+      radius: 1,
+      color: '#ff0000',
       keyboard: false,
       interactive: false,
+      pane: 'markerPane',
     }
 
     const heatmapOptions = {
@@ -221,7 +217,7 @@ window.reHighlightPromise = dataPromise.then(
           largeMap.map.removeLayer(largeMap.layer)
           largeMap.layer.clearLayers()
           for (const data of modernLatLng) {
-            L.marker(data, leafletConfig).addTo(largeMap.layer)
+            L.circleMarker(data, leafletConfig).addTo(largeMap.layer)
           }
           largeMap.layer.addTo(largeMap.map)
         } else {
@@ -262,7 +258,7 @@ window.reHighlightPromise = dataPromise.then(
         map1.removeLayer(myGroup)
         myGroup.clearLayers()
         for (const data of modernLatLng) {
-          L.marker(data, leafletConfig).addTo(myGroup)
+          L.circleMarker(data, leafletConfig).addTo(myGroup)
         }
         myGroup.addTo(map1)
         if (largeMap.hasMap()) largeMap.updateLayer()

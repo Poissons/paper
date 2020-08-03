@@ -2,7 +2,7 @@
 /* exported reHighlightPromise */
 const reHighlightPromise = dataPromise.then(
   ([dataCollection, PhylumClassOrderFamilyGenusSpecies]) => {
-    // var mymap = L.map("map-id").setView([37.595, 112.069], 2);
+    // var mymap = L.map("map-id").setView([37.595, 112.069], 2, NO_ANIMATION);
     // var myIcon = L.icon({
     //   iconUrl: "leaflet/images/marker-icon-2x.png",
     //
@@ -35,6 +35,12 @@ const reHighlightPromise = dataPromise.then(
     //     ).addTo(mymap);
     //
     // L.control.sideBySide(temporary, ancient).addTo(mymap);
+
+    const NO_ANIMATION = {
+      animate: false,
+      reset: true,
+      disableViewprereset: true,
+    }
 
     var center = [37.595, 112.069]
 
@@ -71,7 +77,7 @@ const reHighlightPromise = dataPromise.then(
       scrollWheelZoom: true,
     })
 
-    map1.setView(center, 1)
+    map1.setView(center, 1, NO_ANIMATION)
 
     const imageBoundsArr = [
       [
@@ -109,7 +115,7 @@ const reHighlightPromise = dataPromise.then(
         crs: L.CRS.EPSG4326,
         zoomControl: false,
         minZoom: 1,
-      }).setView(center, 0)
+      }).setView(center, 0, NO_ANIMATION)
     })
     const maps = [map1, ...ancientMaps]
 
@@ -120,10 +126,10 @@ const reHighlightPromise = dataPromise.then(
     //         zoomControl: false
     //     });
 
-    //   map2.setView([10, 0], 1);
+    //   map2.setView([10, 0], 1, NO_ANIMATION);
     for (const map of maps) {
       for (const anotherMap of maps) {
-        if (anotherMap !== map) map.sync(anotherMap, { syncCursor: true })
+        if (anotherMap !== map) map.sync(anotherMap, { syncCursor: true, noInitialSync: true })
       }
     }
 
@@ -168,8 +174,10 @@ const reHighlightPromise = dataPromise.then(
               return
             }
             const id = Number(this.id.slice(4))
-            switchPage('large-map', largeMap.destroy)
-            largeMap.init(id)
+            requestAnimationFrame(() => {
+              switchPage('large-map', largeMap.destroy)
+              largeMap.init(id)
+            })
           })
       }
 
@@ -217,10 +225,11 @@ const reHighlightPromise = dataPromise.then(
         largeMap.map = L.map('map-10', options).setView(
           maps[id - 1].getCenter(),
           maps[id - 1].getZoom(),
+          NO_ANIMATION,
         )
         for (const anotherMap of maps) {
-          largeMap.map.sync(anotherMap, { syncCursor: true })
-          anotherMap.sync(largeMap.map, { syncCursor: true })
+          largeMap.map.sync(anotherMap, { syncCursor: true, noInitialSync: true })
+          anotherMap.sync(largeMap.map, { syncCursor: true, noInitialSync: true })
         }
         largeMap.updateLayer()
       }
@@ -249,6 +258,18 @@ const reHighlightPromise = dataPromise.then(
         largeMap.layer = null
       }
     })()
+
+    const offsetWidthGetter = Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'offsetWidth')
+      .get
+
+    Object.defineProperty(HTMLElement.prototype, 'offsetWidth', {
+      get() {
+        if (this.classList.contains('leaflet-tile-container')) return 0
+        return offsetWidthGetter.call(this)
+      },
+      enumerable: true,
+      configurable: true,
+    })
 
     function reHighlight(dataCollection) {
       const skip = false

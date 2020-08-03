@@ -137,7 +137,6 @@ timeGraphPromise.then(
         const text = cell
           .append('text')
           .attr('class', 'tree-text')
-          .style('user-select', 'none')
           .attr('pointer-events', 'none')
           .attr('x', 33)
           .attr('y', (d) => rectHeight(d.target) / 2 + 5)

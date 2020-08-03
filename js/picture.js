@@ -65,7 +65,6 @@ Promise.all([d3.json('./data/picture.json'), timeGraphPromise]).then(
 
       const text = cell
         .append('text')
-        .style('user-select', 'none')
         .attr('pointer-events', 'none')
         .attr('x', 4)
         .attr('y', 13)

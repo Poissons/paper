@@ -1,4 +1,4 @@
-/* global dataPromise L */
+/* global dataPromise L d3 switchPage */
 window.reHighlightPromise = dataPromise.then(
   ([dataCollection, PhylumClassOrderFamilyGenusSpecies]) => {
     // var mymap = L.map("map-id").setView([37.595, 112.069], 2);
@@ -107,7 +107,7 @@ window.reHighlightPromise = dataPromise.then(
         maxBounds,
         crs: L.CRS.EPSG4326,
         zoomControl: false,
-        minZoom: 0,
+        minZoom: 1,
       }).setView(center, 0)
     })
     const maps = [map1, ...ancientMaps]
@@ -149,137 +149,125 @@ window.reHighlightPromise = dataPromise.then(
 
     const myHeatMaps = ancientMaps.map((map) => L.heatLayer([], heatmapOptions).addTo(map))
 
+    let ancientLatLng = myHeatMaps.map(() => [])
+    let modernLatLng = []
+
+    const largeMap = new (class LargeMap {
+      constructor() {
+        this.map = null
+        this.mapId = null
+        this.layer = null
+        d3.selectAll('.select-map').on('click', function () {
+          const id = Number(this.id.slice(4))
+          switchPage('large-map', largeMap.destroy)
+          largeMap.init(id)
+        })
+      }
+
+      hasMap() {
+        return !!largeMap.map
+      }
+
+      init(id) {
+        largeMap.mapId = id
+        let options
+        if (id === 1) {
+          const layer1 = L.tileLayer(
+            'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}',
+            {
+              maxZoom: 18,
+              id: 'mapbox/streets-v11',
+              tileSize: 512,
+              zoomOffset: -1,
+              accessToken:
+                'pk.eyJ1IjoidGF5dGF5dGF5dGF5bG9yIiwiYSI6ImNqeGZkMWxpZTBsNDYzb29nNnh4Nm5wOTIifQ.wqEeGFygVQ-Uor1_rWvVNg',
+            },
+            stamenOptions,
+          )
+          largeMap.layer = L.layerGroup()
+          options = {
+            layers: [layer1, largeMap.layer],
+            crs: L.CRS.EPSG3857,
+            minZoom: 1, // mapbox will give a 404 when zoom level sets to 0
+            zoomControl: false,
+          }
+        } else {
+          const layers = imageBoundsArr.map((imageBounds) =>
+            L.imageOverlay(mapImgs[id - 2], imageBounds),
+          )
+          largeMap.layer = L.heatLayer([], heatmapOptions)
+          layers.push(largeMap.layer)
+          options = {
+            layers,
+            maxBounds,
+            crs: L.CRS.EPSG4326,
+            minZoom: 1,
+            zoomControl: false,
+          }
+        }
+        largeMap.map = L.map('map-10', options).setView(
+          maps[id - 1].getCenter(),
+          maps[id - 1].getZoom(),
+        )
+        for (const anotherMap of maps) {
+          largeMap.map.sync(anotherMap, { syncCursor: true })
+          anotherMap.sync(largeMap.map, { syncCursor: true })
+        }
+        largeMap.updateLayer()
+      }
+
+      updateLayer() {
+        if (largeMap.mapId === 1) {
+          largeMap.map.removeLayer(largeMap.layer)
+          largeMap.layer.clearLayers()
+          for (const data of modernLatLng) {
+            L.marker(data, leafletConfig).addTo(largeMap.layer)
+          }
+          largeMap.layer.addTo(largeMap.map)
+        } else {
+          largeMap.layer.setLatLngs(ancientLatLng[largeMap.mapId - 2])
+        }
+      }
+
+      destroy() {
+        for (const anotherMap of maps) {
+          largeMap.map.unsync(anotherMap)
+          anotherMap.unsync(largeMap.map)
+        }
+        largeMap.map.remove()
+        largeMap.map = null
+        largeMap.mapId = null
+        largeMap.layer = null
+      }
+    })()
+
     function reHighlight(dataCollection) {
       const skip = false
       if (skip) return
       requestAnimationFrame(() => {
-        const latLngDatum = myHeatMaps.map(() => [])
+        ancientLatLng = myHeatMaps.map(() => [])
         const modernSet = new Set()
-        const modern = []
+        modernLatLng = []
         for (const data of dataCollection) {
           const key = data.modern_latitude + ' ' + data.modern_longitude
           if (!modernSet.has(key)) {
             modernSet.add(key)
-            modern.push([data.modern_latitude, data.modern_longitude])
+            modernLatLng.push([data.modern_latitude, data.modern_longitude])
           }
-          latLngDatum[data.era].push([data.ancient_latitude, data.ancient_longitude])
+          ancientLatLng[data.era].push([data.ancient_latitude, data.ancient_longitude])
         }
-        for (const [i, data] of latLngDatum.entries()) {
+        for (const [i, data] of ancientLatLng.entries()) {
           myHeatMaps[i].setLatLngs(data)
         }
         map1.removeLayer(myGroup)
         myGroup.clearLayers()
-        for (const data of modern) {
+        for (const data of modernLatLng) {
           L.marker(data, leafletConfig).addTo(myGroup)
         }
         myGroup.addTo(map1)
+        if (largeMap.hasMap()) largeMap.updateLayer()
       })
     }
-
-    // 之前select功能
-    // const mapsTop = []
-    // const idList = []
-
-    // for (const map of document.querySelectorAll('div.select-map')) {
-    //   map.addEventListener(
-    //     'click',
-    //     function (e) {
-    //       if (e.ctrlKey) {
-    //         e.preventDefault()
-    //         e.stopImmediatePropagation()
-    //         const id = Number(map.id.slice(3))
-    //         if (idList.length === 1 && idList[0] === id) {
-    //           return
-    //         }
-    //         if (idList.length === 0) {
-    //           for (const selected of document.querySelectorAll('.selected')) {
-    //             selected.classList.remove('selected', 'selected-1', 'selected-2')
-    //           }
-    //         }
-
-    //         idList.push(id)
-    //         map.classList.add('selected', 'selected-' + idList.length)
-
-    //         if (idList.length === 2) {
-    //           if (mapsTop.length) {
-    //             mapsTop[0].unsync(mapsTop[1])
-    //             mapsTop[1].unsync(mapsTop[0])
-    //             for (const map of mapsTop) {
-    //               for (const anotherMap of maps) {
-    //                 map.unsync(anotherMap)
-    //                 anotherMap.unsync(map)
-    //               }
-    //               map.remove()
-    //             }
-    //           }
-    //           for (const [i, id] of idList.entries()) {
-    //             let options
-    //             if (id === 1) {
-    //               const layer1 = L.tileLayer(
-    //                 'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}',
-    //                 {
-    //                   attribution:
-    //                     'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-    //                   maxZoom: 18,
-    //                   id: 'mapbox/streets-v11',
-    //                   tileSize: 512,
-    //                   zoomOffset: -1,
-    //                   accessToken:
-    //                     'pk.eyJ1IjoidGF5dGF5dGF5dGF5bG9yIiwiYSI6ImNqeGZkMWxpZTBsNDYzb29nNnh4Nm5wOTIifQ.wqEeGFygVQ-Uor1_rWvVNg',
-    //                 },
-    //                 stamenOptions,
-    //               )
-    //               options = {
-    //                 layers: [layer1],
-    //                 crs: L.CRS.EPSG3857,
-    //                 minZoom: 1, // mapbox will give a 404 when zoom level sets to 0
-    //               }
-    //             } else {
-    //               const layers = imageBoundsArr.map((imageBounds) =>
-    //                 L.imageOverlay(mapImgs[id - 2], imageBounds),
-    //               )
-    //               options = {
-    //                 layers,
-    //                 maxBounds,
-    //                 crs: L.CRS.EPSG4326,
-    //                 minZoom: 0,
-    //               }
-    //             }
-    //             const group = L.layerGroup()
-    //             options.layers.push(group)
-    //             mapsTop[i] = L.map('map-' + (i + 10), options).setView(
-    //               maps[id - 1].getCenter(),
-    //               maps[id - 1].getZoom(),
-    //             )
-    //             for (const anotherMap of maps) {
-    //               mapsTop[i].sync(anotherMap, { syncCursor: true })
-    //               anotherMap.sync(mapsTop[i], { syncCursor: true })
-    //             }
-    //             updateTop[i] = () => {
-    //               mapsTop[i].removeLayer(group)
-    //               group.clearLayers()
-    //               const cache = new Set()
-    //               for (const [lat, lng] of latLngDatum[id - 1]) {
-    //                 const key = lat + ' ' + lng
-    //                 if (!cache.has(key)) {
-    //                   cache.add(key)
-    //                   L.marker([lat, lng], leafletConfig).addTo(group)
-    //                 }
-    //               }
-    //               mapsTop[i].addLayer(group)
-    //             }
-    //             updateTop[i]()
-    //           }
-    //           mapsTop[0].sync(mapsTop[1], { syncCursor: true })
-    //           mapsTop[1].sync(mapsTop[0], { syncCursor: true })
-    //           idList.length = 0
-    //         }
-    //       }
-    //     },
-    //     true,
-    //   )
-    // }
-
     return reHighlight
   },
 )

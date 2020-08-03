@@ -153,11 +153,23 @@ window.reHighlightPromise = dataPromise.then(
         this.map = null
         this.mapId = null
         this.layer = null
-        d3.selectAll('.select-map').on('click', function () {
-          const id = Number(this.id.slice(4))
-          switchPage('large-map', largeMap.destroy)
-          largeMap.init(id)
-        })
+        const ALLOWED_MOVING_DISTANCE = 5 // 鼠标移动 5px 及以内算作点击
+        let lastMousePos = null
+        d3.selectAll('.select-map')
+          .on('mousedown', function () {
+            lastMousePos = d3.mouse(this)
+          })
+          .on('click', function () {
+            const movedDistance = d3
+              .mouse(this)
+              .reduce((acc, val, i) => acc + (val - lastMousePos[i]) ** 2, 0)
+            if (movedDistance > ALLOWED_MOVING_DISTANCE) {
+              return
+            }
+            const id = Number(this.id.slice(4))
+            switchPage('large-map', largeMap.destroy)
+            largeMap.init(id)
+          })
       }
 
       hasMap() {

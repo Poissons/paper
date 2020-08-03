@@ -17,20 +17,18 @@ const barGraphPromise = dataPromise.then(([earlyData, PhylumClassOrderFamilyGenu
   const formatDate = (d) => (d < 0 ? `${-d}MA` : `${d}AD`)
   const xAxis = d3.axisBottom(x).tickFormat(formatDate)
 
-  const thresholds = x.ticks(maxYear - minYear)
-
   // 准备种数据
-  const newData = new Array(maxYear - minYear).fill(0)
-  const datum = {
+  const allData = new Int32Array(maxYear - minYear)
+  const kdeDatum = {
     all: {
       show: true,
-      data: newData,
+      data: allData,
     },
   }
   for (const phylumName of PhylumClassOrderFamilyGenusSpecies.keys()) {
-    datum[phylumName] = {
+    kdeDatum[phylumName] = {
       show: false,
-      data: new Array(maxYear - minYear).fill(0),
+      data: new Int32Array(maxYear - minYear),
     }
   }
   let lastDataLane = -1
@@ -43,57 +41,78 @@ const barGraphPromise = dataPromise.then(([earlyData, PhylumClassOrderFamilyGenu
     const min = Math.max(data.start_year - minYear, lastDataMax)
     const max = Math.max(data.end_year - minYear, lastDataMax)
     lastDataMax = max
-    const arr = datum[data.Phylum].data
-    for (let i = min; i < max; i++) {
-      arr[i]++
+    const arr = kdeDatum[data.Phylum].data
+    if (min !== arr.length) {
+      arr[min]++
+      if (max !== arr.length) arr[max]--
     }
   }
   for (const phylumName of PhylumClassOrderFamilyGenusSpecies.keys()) {
-    for (const [key, val] of datum[phylumName].data.entries()) {
-      newData[key] += val
+    const arr = kdeDatum[phylumName].data
+    let sum = 0
+    for (let i = 0; i < arr.length; i++) {
+      arr[i] = sum += arr[i]
+      allData[i] += sum
+    }
+  }
+  const barRects = []
+  {
+    let last = 0
+    for (let i = 0; i < allData.length; i++) {
+      if (allData[i] !== last) {
+        if (barRects.length) {
+          barRects[barRects.length - 1][2] = i
+        }
+        last = allData[i]
+        barRects.push([last, i, allData.length])
+      }
     }
   }
 
-  function kde(kernel, thresholds, data, offset) {
-    return thresholds.map((t) => [
-      t,
-      data.reduce((acc, val, index) => acc + val * kernel(t - (index + offset)), 0),
-    ])
-  }
-
-  function epanechnikov(bandwidth) {
-    return (x) => (Math.abs((x /= bandwidth)) <= 1 ? (0.75 * (1 - x * x)) / bandwidth : 0)
+  function kde(bandwidth, data, density) {
+    // epanechnikov as kernel
+    const bandwidthSquare = bandwidth * bandwidth
+    const point75BandwidthCubeInv = 0.75 / (bandwidthSquare * bandwidth)
+    for (let index = 0; index <= data.length; index++) {
+      const rangeMin = Math.max(Math.ceil(index - bandwidth), 0)
+      const rangeMax = Math.min(Math.floor(index + bandwidth) + 1, data.length)
+      let sum = 0
+      for (let i = rangeMin, x = i - index; i < rangeMax; i++, x++) {
+        sum += data[i] * (bandwidthSquare - x * x)
+      }
+      density[index] = sum * point75BandwidthCubeInv
+    }
   }
 
   const y = d3
     .scaleLinear()
-    .domain([0, d3.max(newData)])
+    .domain([0, d3.max(barRects, (d) => d[0])])
     .range([height - padding.bottom, padding.top])
 
   const yAxis = d3.axisLeft(y)
 
   const svg = d3.select(barGraph).append('svg').attr('width', width).attr('height', height)
-  const rectWidth = x(thresholds[1]) - x(thresholds[0])
+  const rectWidth = x(minYear + 1) - x(minYear)
   const rectStep = rectWidth
 
   svg
     .append('g')
     .selectAll('rect')
-    .data(newData)
+    .data(barRects)
     .enter()
     .append('rect')
     .attr('fill', '#ff8c00')
-    .attr('x', function (d, i) {
-      return padding.left + i * rectStep
+    .attr('x', function (d) {
+      return padding.left + d[1] * rectStep
     })
     .attr('y', function (d) {
-      return y(d)
+      return y(d[0])
     })
     .attr('width', function (d, i) {
-      return rectWidth
+      return rectWidth * (d[2] - d[1])
     })
     .attr('height', function (d) {
-      return y(0) - y(d)
+      return y(0) - y(d[0])
     })
 
   svg
@@ -112,9 +131,9 @@ const barGraphPromise = dataPromise.then(([earlyData, PhylumClassOrderFamilyGenu
   const range = document.getElementById('range')
   const redraw = () => {
     text.value = Math.round(range.value * 1000) / 1000 + ' bandwidth'
-    svg.selectAll('.thisPath, .thisDensityPath, .slope-axis-y').remove()
+    svg.selectAll('.this-path, .this-density-path, .slope-axis-y').remove()
     const slopesArr = []
-    for (const [key, info] of Object.entries(datum)) {
+    for (const [key, info] of Object.entries(kdeDatum)) {
       if (!info.show) continue
       drawLine(key, info)
       slopesArr.push([key, info.densitySlope])
@@ -137,22 +156,26 @@ const barGraphPromise = dataPromise.then(([earlyData, PhylumClassOrderFamilyGenu
     else return '#9467bd'
   }
 
+  const line = d3
+    .line()
+    .curve(d3.curveNatural)
+    .x((density, index) => x(index + minYear))
+    .y((density) => y(density))
+
   function drawLine(key, info) {
-    const densitySlope = (datum[key].densitySlope = [])
-
-    const bandwidth = range.value
-    const density = kde(epanechnikov(bandwidth), thresholds, info.data, minYear)
-
-    const line = d3
-      .line()
-      .curve(d3.curveNatural)
-      .x((d) => x(d[0]))
-      .y((d) => y(d[1]))
+    const bandwidth = +range.value
+    let density = kdeDatum[key].densitySlope
+    if (density) {
+      density.push(0)
+    } else {
+      density = new Array(info.data.length + 1).fill(0)
+    }
+    kde(bandwidth, info.data, density)
 
     svg
       .append('path')
       .datum(density)
-      .attr('class', 'thisPath path-' + key.toLowerCase())
+      .attr('class', 'this-path path-' + key.toLowerCase())
       .attr('fill', 'none')
       .attr('stroke', lineColor(key))
       .attr('stroke-width', 1.5)
@@ -161,9 +184,10 @@ const barGraphPromise = dataPromise.then(([earlyData, PhylumClassOrderFamilyGenu
 
     const densityLength = density.length
     for (let i = 0; i < densityLength - 1; i++) {
-      const slope = (density[i + 1][1] - density[i][1]) / (density[i + 1][0] - density[i][0])
-      densitySlope.push(slope)
+      density[i] = density[i + 1] - density[i]
     }
+    density.pop()
+    kdeDatum[key].densitySlope = density
   }
 
   const drawSlopes = (slopesArr) => {
@@ -194,7 +218,7 @@ const barGraphPromise = dataPromise.then(([earlyData, PhylumClassOrderFamilyGenu
       svg
         .append('path')
         .datum(slopes)
-        .attr('class', 'thisDensityPath path-' + key.toLowerCase())
+        .attr('class', 'this-density-path path-' + key.toLowerCase())
         .attr('fill', 'none')
         .attr('stroke', lineColor(key))
         .attr('stroke-width', 1.5)
@@ -204,7 +228,7 @@ const barGraphPromise = dataPromise.then(([earlyData, PhylumClassOrderFamilyGenu
     }
   }
 
-  for (const [key, info] of Object.entries(datum)) {
+  for (const [key, info] of Object.entries(kdeDatum)) {
     let show = info.show
     Object.defineProperty(info, 'show', {
       get() {
@@ -216,11 +240,11 @@ const barGraphPromise = dataPromise.then(([earlyData, PhylumClassOrderFamilyGenu
         if (newShow) {
           drawLine(key, info)
         } else {
-          svg.select('.thisPath.path-' + key.toLowerCase()).remove()
+          svg.select('.this-path.path-' + key.toLowerCase()).remove()
         }
-        svg.selectAll('.thisDensityPath, .slope-axis-y').remove()
+        svg.selectAll('.this-density-path, .slope-axis-y').remove()
         drawSlopes(
-          Object.entries(datum)
+          Object.entries(kdeDatum)
             .filter(([key, info]) => info.show)
             .map(([key, info]) => [key, info.densitySlope]),
         )
@@ -230,5 +254,5 @@ const barGraphPromise = dataPromise.then(([earlyData, PhylumClassOrderFamilyGenu
     })
   }
   redraw()
-  return [earlyData, PhylumClassOrderFamilyGenusSpecies, datum]
+  return [earlyData, PhylumClassOrderFamilyGenusSpecies, kdeDatum]
 })

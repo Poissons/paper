@@ -136,6 +136,7 @@ const reHighlightPromise = dataPromise.then(
     const myGroup = L.layerGroup().addTo(map1)
 
     const leafletConfig = {
+      fill: true,
       radius: 1,
       color: '#ff0000',
       keyboard: false,
@@ -274,18 +275,18 @@ const reHighlightPromise = dataPromise.then(
     function reHighlight(dataCollection) {
       const skip = false
       if (skip) return
-      requestAnimationFrame(() => {
-        ancientLatLng = myHeatMaps.map(() => [])
-        const modernSet = new Set()
-        modernLatLng = []
-        for (const data of dataCollection) {
-          const key = data.modern_latitude + ' ' + data.modern_longitude
-          if (!modernSet.has(key)) {
-            modernSet.add(key)
-            modernLatLng.push([data.modern_latitude, data.modern_longitude])
-          }
-          ancientLatLng[data.era].push([data.ancient_latitude, data.ancient_longitude])
+      ancientLatLng = myHeatMaps.map(() => [])
+      const modernSet = new Set()
+      modernLatLng = []
+      for (const data of dataCollection) {
+        const key = data.modern_latitude + ' ' + data.modern_longitude
+        if (!modernSet.has(key)) {
+          modernSet.add(key)
+          modernLatLng.push([data.modern_latitude, data.modern_longitude])
         }
+        ancientLatLng[data.era].push([data.ancient_latitude, data.ancient_longitude])
+      }
+      requestAnimationFrame(() => {
         for (const [i, data] of ancientLatLng.entries()) {
           myHeatMaps[i].setLatLngs(data)
         }

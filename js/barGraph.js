@@ -1,6 +1,6 @@
 /* globals d3 dataPromise */
 window.barGraphPromise = dataPromise.then(([earlyData, PhylumClassOrderFamilyGenusSpecies]) => {
-  const padding = { top: 10, right: 85, bottom: 18.5, left: 40 }
+  const padding = { top: 10, right: 40, bottom: 18.5, left: 40 }
   const barGraph = document.getElementById('bar-graph')
   const { width, height } = barGraph.getBoundingClientRect()
 
@@ -26,7 +26,6 @@ window.barGraphPromise = dataPromise.then(([earlyData, PhylumClassOrderFamilyGen
       data: newData,
     },
   }
-  let dataSum = 0
   for (const phylumName of PhylumClassOrderFamilyGenusSpecies.keys()) {
     datum[phylumName] = {
       show: false,
@@ -43,7 +42,6 @@ window.barGraphPromise = dataPromise.then(([earlyData, PhylumClassOrderFamilyGen
     const min = Math.max(data.start_year - minYear, lastDataMax)
     const max = Math.max(data.end_year - minYear, lastDataMax)
     lastDataMax = max
-    dataSum += max - min
     const arr = datum[data.Phylum].data
     for (let i = min; i < max; i++) {
       arr[i]++
@@ -55,10 +53,10 @@ window.barGraphPromise = dataPromise.then(([earlyData, PhylumClassOrderFamilyGen
     }
   }
 
-  function kde(kernel, thresholds, data, dataSum, offset) {
+  function kde(kernel, thresholds, data, offset) {
     return thresholds.map((t) => [
       t,
-      data.reduce((acc, val, index) => acc + val * kernel(t - (index + offset)), 0) / dataSum,
+      data.reduce((acc, val, index) => acc + val * kernel(t - (index + offset)), 0),
     ])
   }
 
@@ -142,13 +140,13 @@ window.barGraphPromise = dataPromise.then(([earlyData, PhylumClassOrderFamilyGen
     const densitySlope = (datum[key].densitySlope = [])
 
     const bandwidth = range.value
-    const density = kde(epanechnikov(bandwidth), thresholds, info.data, dataSum, minYear)
+    const density = kde(epanechnikov(bandwidth), thresholds, info.data, minYear)
 
     const line = d3
       .line()
       .curve(d3.curveNatural)
       .x((d) => x(d[0]))
-      .y((d) => y(d[1] * 70000))
+      .y((d) => y(d[1]))
 
     svg
       .append('path')
@@ -176,7 +174,7 @@ window.barGraphPromise = dataPromise.then(([earlyData, PhylumClassOrderFamilyGen
       ])
       .range([height - padding.bottom, padding.top])
 
-    const slopeYAxis = d3.axisRight(slopeY).tickPadding(45)
+    const slopeYAxis = d3.axisRight(slopeY).tickPadding(20)
 
     svg
       .append('g')

@@ -1,5 +1,6 @@
 /* globals d3 */
-window.dataPromise = d3.csv('./data/data_combined_sorted.csv').then((dataCollection) => {
+/* exported dataPromise */
+const dataPromise = d3.csv('./data/data_combined_sorted.csv').then((dataCollection) => {
   const NUMERIC_KEYS = [
     'modern_longitude',
     'modern_latitude',

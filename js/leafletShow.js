@@ -1,5 +1,6 @@
 /* global dataPromise L d3 switchPage */
-window.reHighlightPromise = dataPromise.then(
+/* exported reHighlightPromise */
+const reHighlightPromise = dataPromise.then(
   ([dataCollection, PhylumClassOrderFamilyGenusSpecies]) => {
     // var mymap = L.map("map-id").setView([37.595, 112.069], 2);
     // var myIcon = L.icon({

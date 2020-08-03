@@ -1,5 +1,6 @@
 /* globals d3 dataPromise */
-window.barGraphPromise = dataPromise.then(([earlyData, PhylumClassOrderFamilyGenusSpecies]) => {
+/* exported barGraphPromise */
+const barGraphPromise = dataPromise.then(([earlyData, PhylumClassOrderFamilyGenusSpecies]) => {
   const padding = { top: 10, right: 40, bottom: 18.5, left: 40 }
   const barGraph = document.getElementById('bar-graph')
   const { width, height } = barGraph.getBoundingClientRect()

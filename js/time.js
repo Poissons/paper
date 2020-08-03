@@ -1,5 +1,6 @@
 /* global d3 barGraphPromise reHighlightPromise */
-window.timeGraphPromise = Promise.all([barGraphPromise, reHighlightPromise]).then(
+/* exported timeGraphPromise */
+const timeGraphPromise = Promise.all([barGraphPromise, reHighlightPromise]).then(
   ([[finalData, PhylumClassOrderFamilyGenusSpecies, kdeDatum], reHighlight]) => {
     // 画timeline图
     const time = document.getElementById('time')

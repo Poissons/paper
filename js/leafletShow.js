@@ -260,17 +260,43 @@ const reHighlightPromise = dataPromise.then(
       }
     })()
 
-    const offsetWidthGetter = Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'offsetWidth')
-      .get
+    {
+      const hook = (parent, key, hookedGet) => {
+        Object.defineProperty(parent, key, {
+          get: hookedGet(Object.getOwnPropertyDescriptor(parent, key).get),
+          enumerable: true,
+          configurable: true,
+        })
+      }
 
-    Object.defineProperty(HTMLElement.prototype, 'offsetWidth', {
-      get() {
-        if (this.classList.contains('leaflet-tile-container')) return 0
-        return offsetWidthGetter.call(this)
-      },
-      enumerable: true,
-      configurable: true,
-    })
+      hook(
+        HTMLElement.prototype,
+        'offsetWidth',
+        (getter) =>
+          function () {
+            if (this.classList.contains('leaflet-tile-container')) return 0
+            return getter.call(this)
+          },
+      )
+      hook(
+        Element.prototype,
+        'clientWidth',
+        (getter) =>
+          function () {
+            if (this.classList.contains('select-map')) return (window.innerHeight / 4 - 20) * 2
+            return getter.call(this)
+          },
+      )
+      hook(
+        Element.prototype,
+        'clientHeight',
+        (getter) =>
+          function () {
+            if (this.classList.contains('select-map')) return window.innerHeight / 4 - 20
+            return getter.call(this)
+          },
+      )
+    }
 
     function reHighlight(dataCollection) {
       const skip = false

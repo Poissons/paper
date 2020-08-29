@@ -70,6 +70,7 @@ body {
   display: inline-block;
   width: calc((25vh - 20px) * 2);
   height: calc(25vh - 20px);
+  content-visibility: auto;
 }
 
 .leaflet-container:hover path.leaflet-interactive {

@@ -1,10 +1,10 @@
-/* global d3 barGraphPromise reHighlightPromise */
+/* global d3 barGraphPromise reHighlightPromise whenResize */
 /* exported timeGraphPromise */
 const timeGraphPromise = Promise.all([barGraphPromise, reHighlightPromise]).then(
   ([[finalData, PhylumClassOrderFamilyGenusSpecies, kdeDatum], reHighlight]) => {
     // 画timeline图
     const time = document.getElementById('time')
-    const { width: widthT, height: heightT } = time.getBoundingClientRect()
+    let { width: widthT, height: heightT } = time.getBoundingClientRect()
 
     const marginTime = { top: 30, right: 30, bottom: 20, left: 10 }
 
@@ -237,6 +237,13 @@ const timeGraphPromise = Promise.all([barGraphPromise, reHighlightPromise]).then
     //   return parent
     // })()
 
+    whenResize(() => {
+      const { width, height } = time.getBoundingClientRect()
+      ;[widthT, heightT] = [width, height]
+      xT.range([0, widthT - marginTime.left - marginTime.right])
+      yT.range([0, heightT - marginTime.bottom - marginTime.top])
+      draw()
+    })
     return {
       PhylumClassOrderFamilyGenusSpecies,
       kdeDatum,
